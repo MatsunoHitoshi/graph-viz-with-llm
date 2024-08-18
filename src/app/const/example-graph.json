@@ -1,0 +1,1035 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "name": "クレア・ビショップ",
+      "label": "Person",
+      "properties": {}
+    },
+    { "id": 1, "name": "村田大輔", "label": "Person", "properties": {} },
+    { "id": 2, "name": "現代美術館", "label": "Concept", "properties": {} },
+    { "id": 3, "name": "日本の美術館", "label": "Concept", "properties": {} },
+    {
+      "id": 4,
+      "name": "ラディカル・ミュゼオロジー",
+      "label": "Book",
+      "properties": {}
+    },
+    {
+      "id": 5,
+      "name": "人工地獄──現代アートと観客の政治学",
+      "label": "Book",
+      "properties": {}
+    },
+    {
+      "id": 6,
+      "name": "ソーシャル・プラクティス（社会的実践）のアート",
+      "label": "Concept",
+      "properties": {}
+    },
+    {
+      "id": 7,
+      "name": "敵対と関係性の美学",
+      "label": "Book",
+      "properties": {}
+    },
+    {
+      "id": 8,
+      "name": "ブラック・ボックス、ホワイト・キューブ、グレイゾーン──ダンスの展示と観客の関心",
+      "label": "Book",
+      "properties": {}
+    },
+    {
+      "id": 9,
+      "name": "情報オーバーロード",
+      "label": "Article",
+      "properties": {}
+    },
+    {
+      "id": 10,
+      "name": "リサーチ・ベースト・アート",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 11, "name": "美術", "label": "Concept", "properties": {} },
+    { "id": 12, "name": "Contemporary", "label": "Concept", "properties": {} },
+    {
+      "id": 13,
+      "name": "Contemporaneity",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 14, "name": "poraneity", "label": "Concept", "properties": {} },
+    { "id": 15, "name": "ビショップ", "label": "Person", "properties": {} },
+    { "id": 16, "name": "美術館", "label": "Organization", "properties": {} },
+    { "id": 17, "name": "1990年代", "label": "Time_period", "properties": {} },
+    {
+      "id": 18,
+      "name": "ロザリンド・クラウス",
+      "label": "Person",
+      "properties": {}
+    },
+    {
+      "id": 19,
+      "name": "クレメント・グリーンバーグ",
+      "label": "Person",
+      "properties": {}
+    },
+    {
+      "id": 20,
+      "name": "ハロルド・ローゼンバーグ",
+      "label": "Person",
+      "properties": {}
+    },
+    { "id": 21, "name": "トム・ウルフ", "label": "Person", "properties": {} },
+    {
+      "id": 22,
+      "name": "オク トーバー",
+      "label": "Publication",
+      "properties": {}
+    },
+    {
+      "id": 23,
+      "name": "後期資本主義的美術館の文化理論",
+      "label": "Publication",
+      "properties": {}
+    },
+    {
+      "id": 24,
+      "name": "弁証法的同時代性",
+      "label": "Publication",
+      "properties": {}
+    },
+    {
+      "id": 25,
+      "name": "新自由主義的マーケティング手法",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 26, "name": "グローバル化", "label": "Concept", "properties": {} },
+    {
+      "id": 27,
+      "name": "民営化・私有化",
+      "label": "Concept",
+      "properties": {}
+    },
+    {
+      "id": 28,
+      "name": "コンテンポラリーの劇場化",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 29, "name": "大衆迎合的", "label": "Concept", "properties": {} },
+    { "id": 30, "name": "政治的な領域", "label": "Concept", "properties": {} },
+    { "id": 31, "name": "時間制", "label": "Concept", "properties": {} },
+    { "id": 32, "name": "歴史的景気", "label": "Concept", "properties": {} },
+    { "id": 33, "name": "芸術作品", "label": "Concept", "properties": {} },
+    {
+      "id": 34,
+      "name": "政治化されたプロジェクト",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 35, "name": "未来", "label": "Concept", "properties": {} },
+    { "id": 36, "name": "弁証法", "label": "Concept", "properties": {} },
+    { "id": 37, "name": "プラトン", "label": "Person", "properties": {} },
+    { "id": 38, "name": "ヘーゲル", "label": "Person", "properties": {} },
+    { "id": 39, "name": "マルクス", "label": "Person", "properties": {} },
+    { "id": 40, "name": "帰納法", "label": "Concept", "properties": {} },
+    { "id": 41, "name": "演繹法", "label": "Concept", "properties": {} },
+    {
+      "id": 42,
+      "name": "コンテンポラリー",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 43, "name": "時間性", "label": "Concept", "properties": {} },
+    { "id": 44, "name": "現代美術館", "label": "Concept", "properties": {} },
+    { "id": 45, "name": "現代美術", "label": "Concept", "properties": {} },
+    { "id": 46, "name": "資本主義", "label": "Concept", "properties": {} },
+    { "id": 47, "name": "経済的価値観", "label": "Concept", "properties": {} },
+    { "id": 48, "name": "有名建築家", "label": "Person", "properties": {} },
+    { "id": 49, "name": "スター作家", "label": "Person", "properties": {} },
+    { "id": 50, "name": "巨大な資本", "label": "Concept", "properties": {} },
+    {
+      "id": 51,
+      "name": "人的ネットワーク",
+      "label": "Concept",
+      "properties": {}
+    },
+    {
+      "id": 52,
+      "name": "パワーキュレーター",
+      "label": "Person",
+      "properties": {}
+    },
+    { "id": 53, "name": "商業画廊", "label": "Concept", "properties": {} },
+    { "id": 54, "name": "後援機関", "label": "Concept", "properties": {} },
+    { "id": 55, "name": "寄付", "label": "Concept", "properties": {} },
+    { "id": 56, "name": "批評", "label": "Concept", "properties": {} },
+    { "id": 57, "name": "観客", "label": "Person", "properties": {} },
+    { "id": 58, "name": "ビショップ", "label": "Person", "properties": {} },
+    {
+      "id": 59,
+      "name": "館長・キュレーター",
+      "label": "Person",
+      "properties": {}
+    },
+    { "id": 60, "name": "美術館の任務", "label": "Concept", "properties": {} },
+    {
+      "id": 61,
+      "name": "ニコラ・ブリオー",
+      "label": "Person",
+      "properties": {}
+    },
+    { "id": 62, "name": "関係性の美学", "label": "Concept", "properties": {} },
+    {
+      "id": 63,
+      "name": "リクリット・ティラヴァーニャ",
+      "label": "Person",
+      "properties": {}
+    },
+    {
+      "id": 64,
+      "name": "トーマス・ヒルシュホルン",
+      "label": "Person",
+      "properties": {}
+    },
+    {
+      "id": 65,
+      "name": "サンティアゴ・シエラ",
+      "label": "Person",
+      "properties": {}
+    },
+    {
+      "id": 66,
+      "name": "リレーショナル・アート",
+      "label": "Concept",
+      "properties": {}
+    },
+    {
+      "id": 67,
+      "name": "ソーシャリー・エンゲイジド・アート",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 68, "name": "代表的作家", "label": "Person", "properties": {} },
+    { "id": 69, "name": "日本の状況", "label": "Concept", "properties": {} },
+    { "id": 70, "name": "公立の美術館", "label": "施設", "properties": {} },
+    { "id": 71, "name": "森美術館", "label": "施設", "properties": {} },
+    { "id": 72, "name": "金沢21世紀美術館", "label": "施設", "properties": {} },
+    { "id": 73, "name": "水戸芸術館", "label": "施設", "properties": {} },
+    { "id": 74, "name": "クンストハレ", "label": "施設", "properties": {} },
+    { "id": 75, "name": "クンストムゼウム", "label": "施設", "properties": {} },
+    { "id": 76, "name": "ビエンナーレ", "label": "イベント", "properties": {} },
+    {
+      "id": 77,
+      "name": "トリエンナーレ",
+      "label": "イベント",
+      "properties": {}
+    },
+    { "id": 78, "name": "欧米のキュレーター", "label": "人", "properties": {} },
+    { "id": 79, "name": "日本の学芸員", "label": "人", "properties": {} },
+    { "id": 80, "name": "現代美術", "label": "Concept", "properties": {} },
+    { "id": 81, "name": "日本の学芸員", "label": "Person", "properties": {} },
+    { "id": 82, "name": "美術館", "label": "Concept", "properties": {} },
+    { "id": 83, "name": "鑑賞者", "label": "Person", "properties": {} },
+    {
+      "id": 84,
+      "name": "政治的・社会的課題",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 85, "name": "評論書", "label": "Concept", "properties": {} },
+    { "id": 86, "name": "研究書", "label": "Concept", "properties": {} },
+    { "id": 87, "name": "訳者", "label": "Person", "properties": {} },
+    {
+      "id": 88,
+      "name": "日本の美術館の現況",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 89, "name": "日本語版出版", "label": "Concept", "properties": {} },
+    {
+      "id": 90,
+      "name": "国立西洋美術館",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 91, "name": "日本人作家", "label": "Person", "properties": {} },
+    { "id": 92, "name": "日本人作家", "label": "Person", "properties": {} },
+    {
+      "id": 93,
+      "name": "ヨコハマトリエンナーレ2024",
+      "label": "Event",
+      "properties": {}
+    },
+    { "id": 94, "name": "ビショップ", "label": "Person", "properties": {} },
+    {
+      "id": 95,
+      "name": "ラディカル・ミュゼオロジー",
+      "label": "Concept",
+      "properties": {}
+    },
+    { "id": 96, "name": "アート関係者", "label": "Person", "properties": {} },
+    { "id": 97, "name": "学生", "label": "Person", "properties": {} },
+    {
+      "id": 98,
+      "name": "身体表現パフォーマンス",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    {
+      "id": 99,
+      "name": "美術作品や展覧会",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    { "id": 100, "name": "現代", "label": "ExtraNode", "properties": {} },
+    { "id": 101, "name": "同時代", "label": "ExtraNode", "properties": {} },
+    { "id": 102, "name": "現代性", "label": "ExtraNode", "properties": {} },
+    { "id": 103, "name": "同時代性", "label": "ExtraNode", "properties": {} },
+    {
+      "id": 104,
+      "name": "抽象表現主義絵画",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    { "id": 105, "name": "concept", "label": "ExtraNode", "properties": {} },
+    {
+      "id": 106,
+      "name": "お仲間の悪事",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    { "id": 107, "name": "状況", "label": "ExtraNode", "properties": {} },
+    { "id": 108, "name": "2003", "label": "ExtraNode", "properties": {} },
+    { "id": 109, "name": "2004", "label": "ExtraNode", "properties": {} },
+    { "id": 110, "name": "1990", "label": "ExtraNode", "properties": {} },
+    { "id": 111, "name": "観光促進", "label": "ExtraNode", "properties": {} },
+    {
+      "id": 112,
+      "name": "町おこし機能",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    { "id": 113, "name": "日本", "label": "ExtraNode", "properties": {} },
+    {
+      "id": 114,
+      "name": "コレクション軽視",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    { "id": 115, "name": "学芸員", "label": "ExtraNode", "properties": {} },
+    { "id": 116, "name": "緊縮財政", "label": "ExtraNode", "properties": {} },
+    {
+      "id": 117,
+      "name": "収集や陳列の意味",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    {
+      "id": 118,
+      "name": "パブリックとの関係性",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    {
+      "id": 119,
+      "name": "長期的展望の欠如",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    {
+      "id": 120,
+      "name": "時空を超えた多角的な検証",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    { "id": 121, "name": "社会", "label": "ExtraNode", "properties": {} },
+    {
+      "id": 122,
+      "name": "現代の政治的対立や戦争",
+      "label": "ExtraNode",
+      "properties": {}
+    },
+    { "id": 123, "name": "読書会", "label": "ExtraNode", "properties": {} }
+  ],
+  "relationships": [
+    {
+      "id": 0,
+      "sourceName": "クレア・ビショップ",
+      "sourceId": 0,
+      "type": "AUTHOR",
+      "targetName": "ラディカル・ミュゼオロジー",
+      "targetId": 4,
+      "properties": {}
+    },
+    {
+      "id": 1,
+      "sourceName": "村田大輔",
+      "sourceId": 1,
+      "type": "TRANSLATOR",
+      "targetName": "ラディカル・ミュゼオロジー",
+      "targetId": 4,
+      "properties": {}
+    },
+    {
+      "id": 2,
+      "sourceName": "現代美術館",
+      "sourceId": 2,
+      "type": "DISCUSSION_OF",
+      "targetName": "ラディカル・ミュゼオロジー",
+      "targetId": 4,
+      "properties": {}
+    },
+    {
+      "id": 3,
+      "sourceName": "日本の美術館",
+      "sourceId": 3,
+      "type": "MENTIONED_IN",
+      "targetName": "ラディカル・ミュゼオロジー",
+      "targetId": 4,
+      "properties": {}
+    },
+    {
+      "id": 4,
+      "sourceName": "人工地獄──現代アートと観客の政治学",
+      "sourceId": 5,
+      "type": "PROPOSES",
+      "targetName": "ソーシャル・プラクティス（社会的実践）のアート",
+      "targetId": 6,
+      "properties": {}
+    },
+    {
+      "id": 5,
+      "sourceName": "敵対と関係性の美学",
+      "sourceId": 7,
+      "type": "DISCUSSES",
+      "targetName": "身体表現パフォーマンス",
+      "targetId": 98,
+      "properties": {}
+    },
+    {
+      "id": 6,
+      "sourceName": "ブラック・ボックス、ホワイト・キューブ、グレイゾーン──ダンスの展示と観客の関心",
+      "sourceId": 8,
+      "type": "DISCUSSES",
+      "targetName": "身体表現パフォーマンス",
+      "targetId": 98,
+      "properties": {}
+    },
+    {
+      "id": 7,
+      "sourceName": "情報オーバーロード",
+      "sourceId": 9,
+      "type": "CONSIDERS",
+      "targetName": "リサーチ・ベースト・アート",
+      "targetId": 10,
+      "properties": {}
+    },
+    {
+      "id": 8,
+      "sourceName": "美術",
+      "sourceId": 11,
+      "type": "SURROUNDS",
+      "targetName": "美術作品や展覧会",
+      "targetId": 99,
+      "properties": {}
+    },
+    {
+      "id": 9,
+      "sourceName": "Contemporary",
+      "sourceId": 12,
+      "type": "HAS_TRANSLATION",
+      "targetName": "現代",
+      "targetId": 100,
+      "properties": {}
+    },
+    {
+      "id": 10,
+      "sourceName": "Contemporary",
+      "sourceId": 12,
+      "type": "HAS_TRANSLATION",
+      "targetName": "同時代",
+      "targetId": 101,
+      "properties": {}
+    },
+    {
+      "id": 11,
+      "sourceName": "Contemporary",
+      "sourceId": 12,
+      "type": "HAS_TRANSLATION",
+      "targetName": "コンテンポラリー",
+      "targetId": 42,
+      "properties": {}
+    },
+    {
+      "id": 12,
+      "sourceName": "Contemporaneity",
+      "sourceId": 13,
+      "type": "HAS_TRANSLATION",
+      "targetName": "現代性",
+      "targetId": 102,
+      "properties": {}
+    },
+    {
+      "id": 13,
+      "sourceName": "Contemporaneity",
+      "sourceId": 13,
+      "type": "HAS_TRANSLATION",
+      "targetName": "同時代性",
+      "targetId": 103,
+      "properties": {}
+    },
+    {
+      "id": 14,
+      "sourceName": "ビショップ",
+      "sourceId": 15,
+      "type": "DERIVES_FROM",
+      "targetName": "美術館",
+      "targetId": 16,
+      "properties": {}
+    },
+    {
+      "id": 15,
+      "sourceName": "美術館",
+      "sourceId": 16,
+      "type": "TRANSITION_TO",
+      "targetName": "1990年代",
+      "targetId": 17,
+      "properties": {}
+    },
+    {
+      "id": 16,
+      "sourceName": "ロザリンド・クラウス",
+      "sourceId": 18,
+      "type": "AUTHOR_OF",
+      "targetName": "後期資本主義的美術館の文化理論",
+      "targetId": 23,
+      "properties": {}
+    },
+    {
+      "id": 17,
+      "sourceName": "ロザリンド・クラウス",
+      "sourceId": 18,
+      "type": "FOUNDER_OF",
+      "targetName": "オク トーバー",
+      "targetId": 22,
+      "properties": {}
+    },
+    {
+      "id": 18,
+      "sourceName": "クレメント・グリーンバーグ",
+      "sourceId": 19,
+      "type": "MENTOR_OF",
+      "targetName": "ロザリンド・クラウス",
+      "targetId": 18,
+      "properties": {}
+    },
+    {
+      "id": 19,
+      "sourceName": "トム・ウルフ",
+      "sourceId": 21,
+      "type": "CRITICIZES",
+      "targetName": "クレメント・グリーンバーグ",
+      "targetId": 19,
+      "properties": {}
+    },
+    {
+      "id": 20,
+      "sourceName": "トム・ウルフ",
+      "sourceId": 21,
+      "type": "CRITICIZES",
+      "targetName": "ハロルド・ローゼンバーグ",
+      "targetId": 20,
+      "properties": {}
+    },
+    {
+      "id": 21,
+      "sourceName": "クレメント・グリーンバーグ",
+      "sourceId": 19,
+      "type": "THEORIZER_OF",
+      "targetName": "抽象表現主義絵画",
+      "targetId": 104,
+      "properties": {}
+    },
+    {
+      "id": 22,
+      "sourceName": "ハロルド・ローゼンバーグ",
+      "sourceId": 20,
+      "type": "THEORIZER_OF",
+      "targetName": "抽象表現主義絵画",
+      "targetId": 104,
+      "properties": {}
+    },
+    {
+      "id": 23,
+      "sourceName": "政治的な領域",
+      "sourceId": 30,
+      "type": "INCLUDES",
+      "targetName": "政治化されたプロジェクト",
+      "targetId": 34,
+      "properties": {}
+    },
+    {
+      "id": 24,
+      "sourceName": "時間制",
+      "sourceId": 31,
+      "type": "APPEARS_IN",
+      "targetName": "歴史的景気",
+      "targetId": 32,
+      "properties": {}
+    },
+    {
+      "id": 25,
+      "sourceName": "政治化されたプロジェクト",
+      "sourceId": 34,
+      "type": "DIRECTED_TOWARDS",
+      "targetName": "未来",
+      "targetId": 35,
+      "properties": {}
+    },
+    {
+      "id": 26,
+      "sourceName": "弁証法",
+      "sourceId": 36,
+      "type": "RELATED_TO",
+      "targetName": "プラトン",
+      "targetId": 37,
+      "properties": {}
+    },
+    {
+      "id": 27,
+      "sourceName": "弁証法",
+      "sourceId": 36,
+      "type": "RELATED_TO",
+      "targetName": "ヘーゲル",
+      "targetId": 38,
+      "properties": {}
+    },
+    {
+      "id": 28,
+      "sourceName": "弁証法",
+      "sourceId": 36,
+      "type": "RELATED_TO",
+      "targetName": "マルクス",
+      "targetId": 39,
+      "properties": {}
+    },
+    {
+      "id": 29,
+      "sourceName": "concept",
+      "sourceId": 105,
+      "type": "CONTAINS",
+      "targetName": "コンテンポラリー",
+      "targetId": 42,
+      "properties": {}
+    },
+    {
+      "id": 30,
+      "sourceName": "concept",
+      "sourceId": 105,
+      "type": "CONTAINS",
+      "targetName": "時間性",
+      "targetId": 43,
+      "properties": {}
+    },
+    {
+      "id": 31,
+      "sourceName": "concept",
+      "sourceId": 105,
+      "type": "CONTAINS",
+      "targetName": "政治化されたプロジェクト",
+      "targetId": 34,
+      "properties": {}
+    },
+    {
+      "id": 32,
+      "sourceName": "concept",
+      "sourceId": 105,
+      "type": "CONTAINS",
+      "targetName": "政治的な領域",
+      "targetId": 30,
+      "properties": {}
+    },
+    {
+      "id": 33,
+      "sourceName": "concept",
+      "sourceId": 105,
+      "type": "BASED_ON",
+      "targetName": "資本主義",
+      "targetId": 46,
+      "properties": {}
+    },
+    {
+      "id": 34,
+      "sourceName": "concept",
+      "sourceId": 105,
+      "type": "BASED_ON",
+      "targetName": "経済的価値観",
+      "targetId": 47,
+      "properties": {}
+    },
+    {
+      "id": 35,
+      "sourceName": "有名建築家",
+      "sourceId": 48,
+      "type": "FUNCTIONS_IN",
+      "targetName": "経済的価値観",
+      "targetId": 47,
+      "properties": {}
+    },
+    {
+      "id": 36,
+      "sourceName": "スター作家",
+      "sourceId": 49,
+      "type": "FUNCTIONS_IN",
+      "targetName": "経済的価値観",
+      "targetId": 47,
+      "properties": {}
+    },
+    {
+      "id": 37,
+      "sourceName": "巨大な資本",
+      "sourceId": 50,
+      "type": "SUPPORTS",
+      "targetName": "人的ネットワーク",
+      "targetId": 51,
+      "properties": {}
+    },
+    {
+      "id": 38,
+      "sourceName": "パワーキュレーター",
+      "sourceId": 52,
+      "type": "PART_OF",
+      "targetName": "人的ネットワーク",
+      "targetId": 51,
+      "properties": {}
+    },
+    {
+      "id": 39,
+      "sourceName": "商業画廊",
+      "sourceId": 53,
+      "type": "PART_OF",
+      "targetName": "人的ネットワーク",
+      "targetId": 51,
+      "properties": {}
+    },
+    {
+      "id": 40,
+      "sourceName": "後援機関",
+      "sourceId": 54,
+      "type": "PART_OF",
+      "targetName": "人的ネットワーク",
+      "targetId": 51,
+      "properties": {}
+    },
+    {
+      "id": 41,
+      "sourceName": "寄付",
+      "sourceId": 55,
+      "type": "PART_OF",
+      "targetName": "人的ネットワーク",
+      "targetId": 51,
+      "properties": {}
+    },
+    {
+      "id": 42,
+      "sourceName": "批評",
+      "sourceId": 56,
+      "type": "PART_OF",
+      "targetName": "人的ネットワーク",
+      "targetId": 51,
+      "properties": {}
+    },
+    {
+      "id": 43,
+      "sourceName": "観客",
+      "sourceId": 57,
+      "type": "INVOLVED_IN",
+      "targetName": "お仲間の悪事",
+      "targetId": 106,
+      "properties": {}
+    },
+    {
+      "id": 44,
+      "sourceName": "ビショップ",
+      "sourceId": 15,
+      "type": "ANALYZES",
+      "targetName": "状況",
+      "targetId": 107,
+      "properties": {}
+    },
+    {
+      "id": 45,
+      "sourceName": "館長・キュレーター",
+      "sourceId": 59,
+      "type": "VERIFIES",
+      "targetName": "美術館の任務",
+      "targetId": 60,
+      "properties": {}
+    },
+    {
+      "id": 46,
+      "sourceName": "ニコラ・ブリオー",
+      "sourceId": 61,
+      "type": "AUTHORED",
+      "targetName": "関係性の美学",
+      "targetId": 62,
+      "properties": {}
+    },
+    {
+      "id": 47,
+      "sourceName": "リクリット・ティラヴァーニャ",
+      "sourceId": 63,
+      "type": "REPRESENTS",
+      "targetName": "リレーショナル・アート",
+      "targetId": 66,
+      "properties": {}
+    },
+    {
+      "id": 48,
+      "sourceName": "トーマス・ヒルシュホルン",
+      "sourceId": 64,
+      "type": "REPRESENTS",
+      "targetName": "リレーショナル・アート",
+      "targetId": 66,
+      "properties": {}
+    },
+    {
+      "id": 49,
+      "sourceName": "サンティアゴ・シエラ",
+      "sourceId": 65,
+      "type": "REPRESENTS",
+      "targetName": "リレーショナル・アート",
+      "targetId": 66,
+      "properties": {}
+    },
+    {
+      "id": 50,
+      "sourceName": "代表的作家",
+      "sourceId": 68,
+      "type": "WRITES_ABOUT",
+      "targetName": "日本の状況",
+      "targetId": 69,
+      "properties": {}
+    },
+    {
+      "id": 51,
+      "sourceName": "森美術館",
+      "sourceId": 71,
+      "type": "建設",
+      "targetName": "2003",
+      "targetId": 108,
+      "properties": {}
+    },
+    {
+      "id": 52,
+      "sourceName": "金沢21世紀美術館",
+      "sourceId": 72,
+      "type": "建設",
+      "targetName": "2004",
+      "targetId": 109,
+      "properties": {}
+    },
+    {
+      "id": 53,
+      "sourceName": "水戸芸術館",
+      "sourceId": 73,
+      "type": "建設",
+      "targetName": "1990",
+      "targetId": 110,
+      "properties": {}
+    },
+    {
+      "id": 54,
+      "sourceName": "クンストハレ",
+      "sourceId": 74,
+      "type": "関連",
+      "targetName": "クンストムゼウム",
+      "targetId": 75,
+      "properties": {}
+    },
+    {
+      "id": 55,
+      "sourceName": "ビエンナーレ",
+      "sourceId": 76,
+      "type": "機能",
+      "targetName": "観光促進",
+      "targetId": 111,
+      "properties": {}
+    },
+    {
+      "id": 56,
+      "sourceName": "トリエンナーレ",
+      "sourceId": 77,
+      "type": "機能",
+      "targetName": "町おこし機能",
+      "targetId": 112,
+      "properties": {}
+    },
+    {
+      "id": 57,
+      "sourceName": "欧米のキュレーター",
+      "sourceId": 78,
+      "type": "分業制",
+      "targetName": "日本の学芸員",
+      "targetId": 79,
+      "properties": {}
+    },
+    {
+      "id": 58,
+      "sourceName": "日本",
+      "sourceId": 113,
+      "type": "傾向",
+      "targetName": "コレクション軽視",
+      "targetId": 114,
+      "properties": {}
+    },
+    {
+      "id": 59,
+      "sourceName": "日本",
+      "sourceId": 113,
+      "type": "業務過多",
+      "targetName": "学芸員",
+      "targetId": 115,
+      "properties": {}
+    },
+    {
+      "id": 60,
+      "sourceName": "日本",
+      "sourceId": 113,
+      "type": "原因",
+      "targetName": "緊縮財政",
+      "targetId": 116,
+      "properties": {}
+    },
+    {
+      "id": 61,
+      "sourceName": "収集や陳列の意味",
+      "sourceId": 117,
+      "type": "問い",
+      "targetName": "パブリックとの関係性",
+      "targetId": 118,
+      "properties": {}
+    },
+    {
+      "id": 62,
+      "sourceName": "長期的展望の欠如",
+      "sourceId": 119,
+      "type": "関連",
+      "targetName": "時空を超えた多角的な検証",
+      "targetId": 120,
+      "properties": {}
+    },
+    {
+      "id": 63,
+      "sourceName": "現代美術",
+      "sourceId": 45,
+      "type": "共有物",
+      "targetName": "社会",
+      "targetId": 121,
+      "properties": {}
+    },
+    {
+      "id": 64,
+      "sourceName": "訳者",
+      "sourceId": 87,
+      "type": "CALLS_FOR",
+      "targetName": "日本の学芸員",
+      "targetId": 79,
+      "properties": {}
+    },
+    {
+      "id": 65,
+      "sourceName": "美術館",
+      "sourceId": 16,
+      "type": "SHOULD_BE_AWARE_OF",
+      "targetName": "政治的・社会的課題",
+      "targetId": 84,
+      "properties": {}
+    },
+    {
+      "id": 66,
+      "sourceName": "鑑賞者",
+      "sourceId": 83,
+      "type": "SHOULD_BE_AWARE_OF",
+      "targetName": "政治的・社会的課題",
+      "targetId": 84,
+      "properties": {}
+    },
+    {
+      "id": 67,
+      "sourceName": "訳者",
+      "sourceId": 87,
+      "type": "PROVIDES_EXPLANATION",
+      "targetName": "評論書",
+      "targetId": 85,
+      "properties": {}
+    },
+    {
+      "id": 68,
+      "sourceName": "訳者",
+      "sourceId": 87,
+      "type": "PROVIDES_EXPLANATION",
+      "targetName": "研究書",
+      "targetId": 86,
+      "properties": {}
+    },
+    {
+      "id": 69,
+      "sourceName": "訳者",
+      "sourceId": 87,
+      "type": "SHOWS_PROSPECT",
+      "targetName": "日本語版出版",
+      "targetId": 89,
+      "properties": {}
+    },
+    {
+      "id": 70,
+      "sourceName": "国立西洋美術館",
+      "sourceId": 90,
+      "type": "CELEBRATES",
+      "targetName": "日本人作家",
+      "targetId": 91,
+      "properties": {}
+    },
+    {
+      "id": 71,
+      "sourceName": "ヨコハマトリエンナーレ2024",
+      "sourceId": 93,
+      "type": "DISCUSSES",
+      "targetName": "現代の政治的対立や戦争",
+      "targetId": 122,
+      "properties": {}
+    },
+    {
+      "id": 72,
+      "sourceName": "ビショップ",
+      "sourceId": 15,
+      "type": "DEVELOPS",
+      "targetName": "ラディカル・ミュゼオロジー",
+      "targetId": 4,
+      "properties": {}
+    },
+    {
+      "id": 73,
+      "sourceName": "アート関係者",
+      "sourceId": 96,
+      "type": "HAS_NETWORK",
+      "targetName": "日本人作家",
+      "targetId": 91,
+      "properties": {}
+    },
+    {
+      "id": 74,
+      "sourceName": "学生",
+      "sourceId": 97,
+      "type": "PARTICIPATES_IN",
+      "targetName": "読書会",
+      "targetId": 123,
+      "properties": {}
+    }
+  ]
+}
