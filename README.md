@@ -1,1 +1,1 @@
-# Knowledge　Graph　Visualization　with　LLM
+# Knowledge Graph Visualization with LLM
