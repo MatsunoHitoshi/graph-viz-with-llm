@@ -21,6 +21,7 @@ import type {
   Relationship,
 } from "node_modules/@langchain/community/dist/graphs/graph_document";
 import { dataDisambiguation } from "@/app/_utils/kg/data-disambiguation";
+import { env } from "@/env";
 
 const pdfSchema = z.object({
   fileUrl: z.string(),
@@ -228,19 +229,20 @@ export const kgRouter = createTRPCRouter({
           ? await graphExtractionWithLangChain(localFilePath)
           : await graphExtractionWithAssistantsAPI(localFilePath, schema);
 
-      exportJson(
-        JSON.stringify(nodesAndRelationships),
-        "node-relationship.json",
-      );
-
       const disambiguatedNodesAndRelationships = dataDisambiguation(
         nodesAndRelationships,
       );
 
-      exportJson(
-        JSON.stringify(disambiguatedNodesAndRelationships),
-        "disambiguated-node-relationship.json",
-      );
+      if (env.NODE_ENV === "development") {
+        exportJson(
+          JSON.stringify(nodesAndRelationships),
+          "node-relationship.json",
+        );
+        exportJson(
+          JSON.stringify(disambiguatedNodesAndRelationships),
+          "disambiguated-node-relationship.json",
+        );
+      }
 
       return {
         data: { graph: disambiguatedNodesAndRelationships },
