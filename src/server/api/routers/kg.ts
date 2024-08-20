@@ -113,11 +113,20 @@ const graphExtractionWithLangChain = async (localFilePath: string) => {
     relationships.push(...graphDocument.relationships);
   });
   const newNodes = nodes.map((node, index) => {
+    console.log("id: ", node.id);
+    console.log("type: ", node.type);
+    console.log("lc_attributes: ", node.lc_attributes);
+    console.log("lc_aliases: ", node.lc_aliases);
+    console.log("lc_kwargs: ", node.lc_kwargs);
+    console.log("lc_namespace: ", node.lc_namespace);
+    console.log("lc_secrets: ", node.lc_secrets);
+    console.log("properties: ", node.properties);
+    console.log("---");
     return {
       id: index,
       name: node.id as string,
       label: node.type,
-      properties: {},
+      properties: node.properties,
     };
   });
   const nodesAndRelationships = {
@@ -138,7 +147,7 @@ const graphExtractionWithLangChain = async (localFilePath: string) => {
         type: relationship.type,
         targetName: relationship.target.id as string,
         targetId: target.id,
-        properties: {},
+        properties: relationship.properties,
       };
     }),
   };
