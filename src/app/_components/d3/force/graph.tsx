@@ -83,7 +83,7 @@ export const D3ForceGraph = ({
         "link",
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
-          .distance(30),
+          .distance(40),
       )
       .force("center", forceCenter(centerX, centerY))
       .force("charge", forceManyBody())
@@ -157,8 +157,8 @@ export const D3ForceGraph = ({
                 key={`${modSource.id}-${type}-${modTarget.id}`}
                 stroke={isFocused ? "#ef7234" : "white"}
                 className="link cursor-pointer"
-                strokeWidth={isFocused ? 4 : 3}
-                strokeOpacity={isFocused ? 1 : 0.6}
+                strokeWidth={isFocused ? 6 : 4}
+                strokeOpacity={isFocused ? 1 : 0.5}
                 x1={modSource.x}
                 y1={modSource.y}
                 x2={modTarget.x}
