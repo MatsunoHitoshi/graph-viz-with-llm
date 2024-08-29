@@ -14,7 +14,6 @@ import {
 } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { useEffect, useMemo, useState } from "react";
-import { Toolbar } from "../../toolbar/toolbar";
 import { ChevronLeftIcon, ChevronRightIcon } from "../../icons";
 import { Button } from "../../button/button";
 
@@ -40,12 +39,10 @@ const linkFilter = (nodes: CustomNodeType[], links: CustomLinkType[]) => {
 
 export const D3ForceGraph = ({
   graphDocument,
-  isUseExample,
-  setIsUseExample,
+  isLinkFiltered = false,
 }: {
   graphDocument: GraphDocument;
-  isUseExample: boolean;
-  setIsUseExample: React.Dispatch<React.SetStateAction<boolean>>;
+  isLinkFiltered?: boolean;
 }) => {
   const [innerWidth, innerHeight] = useWindowSize();
   const width = (innerWidth ?? 100) - 32;
@@ -53,7 +50,7 @@ export const D3ForceGraph = ({
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
 
-  const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
+  // const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const initNodes = isLinkFiltered
     ? linkFilter(nodes as CustomNodeType[], initLinks)
     : (nodes as CustomNodeType[]);
@@ -108,12 +105,6 @@ export const D3ForceGraph = ({
 
   return (
     <div className="flex flex-col">
-      <Toolbar
-        isLinkFiltered={isLinkFiltered}
-        setIsLinkFiltered={setIsLinkFiltered}
-        isUseExample={isUseExample}
-        setIsUseExample={setIsUseExample}
-      />
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
         <div
           className={`absolute flex flex-row items-start gap-2 rounded-[10px] p-4 backdrop-blur-sm ${isPanelOpen ? "right-5 w-[320px]" : "right-14 w-0"}`}

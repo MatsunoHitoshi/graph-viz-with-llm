@@ -1,6 +1,8 @@
-import { postRouter } from "@/server/api/routers/post";
+// import { postRouter } from "@/server/api/routers/post";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { kgRouter } from "./routers/kg";
+import { documentGraphRouter } from "./routers/document-graph";
+import { sourceDocumentRouter } from "./routers/source-document";
 
 /**
  * This is the primary router for your server.
@@ -8,8 +10,10 @@ import { kgRouter } from "./routers/kg";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
+  // post: postRouter,
   kg: kgRouter,
+  documentGraph: documentGraphRouter,
+  sourceDocument: sourceDocumentRouter
 });
 
 // export type definition of API

@@ -1,12 +1,15 @@
 import type { NextPage } from "next";
-import { GraphExtraction } from "./_components/graph";
+import { GraphEditor } from "@/app/_components/graph";
 
-const Page: NextPage = async () => {
-  // const session = await getServerAuthSession();
+type PageParams = { params: { id: string } };
+
+const Page: NextPage<PageParams> = async ({ params }: PageParams) => {
+  const graphId = params.id;
+  if (!graphId) return null;
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 pt-16 ">
-        <GraphExtraction />
+        <GraphEditor graphId={graphId} />
       </div>
     </main>
   );

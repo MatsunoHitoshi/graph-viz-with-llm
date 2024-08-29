@@ -3,28 +3,51 @@
 import { useState } from "react";
 import { Button } from "../button/button";
 
-export const UrlCopy = () => {
+export const UrlCopy = ({
+  className,
+  children,
+  messagePosition = "bottom",
+}: {
+  className?: string;
+  children: React.ReactNode;
+  messagePosition?: "bottom" | "inButton";
+}) => {
   const isBrowser = typeof window !== "undefined";
 
-  const [copyMessage, setCopyMessage] = useState<string>();
+  const [copyMessage, setCopyMessage] = useState<string | null>(null);
 
   const urlCopyHandler = async (url: string) => {
     if (!isBrowser) return;
 
     try {
       await navigator.clipboard.writeText(url);
-      setCopyMessage("URLをコピーしました");
+      setCopyMessage("OK");
     } catch {
-      setCopyMessage("URLのコピーに失敗しました");
+      setCopyMessage("!!");
     }
+    setTimeout(() => {
+      setCopyMessage(null);
+    }, 2000);
   };
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <Button type="button" onClick={() => urlCopyHandler(location.href)}>
-        このページのURLをコピーする
+      <Button
+        type="button"
+        className={className}
+        onClick={() => urlCopyHandler(location.href)}
+      >
+        {copyMessage && messagePosition === "inButton" ? (
+          <div className="text-sm text-slate-50">{copyMessage}</div>
+        ) : (
+          <>{children}</>
+        )}
       </Button>
-      {copyMessage ? <div className="text-sm">{copyMessage}</div> : <></>}
+      {copyMessage && messagePosition === "bottom" ? (
+        <div className="text-sm">{copyMessage}</div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

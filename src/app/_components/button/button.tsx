@@ -7,6 +7,7 @@ type ButtonProps = {
   type?: "button" | "submit";
   isLoading?: boolean;
   width?: "max" | "full";
+  className?: string;
 };
 
 export const Button = ({
@@ -16,6 +17,7 @@ export const Button = ({
   type = "button",
   isLoading = false,
   width = "max",
+  className,
 }: ButtonProps) => {
   return (
     <>
@@ -23,13 +25,13 @@ export const Button = ({
         <button
           id={id}
           type={type}
-          className={`font-md rounded-md bg-slate-700 px-3 py-2 text-slate-50 w-${width}`}
+          className={`font-md rounded-md bg-slate-700 px-3 py-2 text-slate-50 w-${width} ${className}`}
           onClick={onClick}
         >
           {children}
         </button>
       ) : (
-        <div className="font-md flex flex-row items-center justify-center rounded-md bg-slate-700 px-3 py-2 text-slate-50">
+        <div className="font-md flex flex-row items-center justify-center rounded-md bg-slate-700 px-3 py-2 text-slate-50 hover:bg-slate-700/90">
           <Loading color="white" size={20} />
         </div>
       )}

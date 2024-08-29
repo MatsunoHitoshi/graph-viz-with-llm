@@ -11,12 +11,14 @@ type DocumentFormProps = {
   file: File | null;
   setFile: React.Dispatch<SetStateAction<File | null>>;
   setGraphDocument: React.Dispatch<SetStateAction<GraphDocument | null>>;
+  setDocumentUrl: React.Dispatch<SetStateAction<string | null>>;
 };
 
 export const DocumentForm = ({
   file,
   setFile,
   setGraphDocument,
+  setDocumentUrl,
 }: DocumentFormProps) => {
   const fileInputRef = useRef(null);
   const [isExtracting, setIsExtracting] = useState<boolean>(false);
@@ -42,6 +44,7 @@ export const DocumentForm = ({
             base64Data,
             BUCKETS.PATH_TO_INPUT_PDF,
           );
+          setDocumentUrl(fileUrl);
           extractKG.mutate(
             { fileUrl: fileUrl, mode: "langChain" },
             {

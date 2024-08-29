@@ -24,7 +24,7 @@ import { dataDisambiguation } from "@/app/_utils/kg/data-disambiguation";
 import { env } from "@/env";
 
 const pdfSchema = z.object({
-  fileUrl: z.string(),
+  fileUrl: z.string().url(),
   mode: z.string().optional(),
 });
 
