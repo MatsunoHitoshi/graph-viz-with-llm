@@ -24,7 +24,7 @@ export const sourceDocumentRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ctx, input }) => {
-       return ctx.db.sourceDocument.findFirst({where: {id: input.id}});
+       return ctx.db.sourceDocument.findFirst({ where: { id: input.id }});
     }),
 
     getListBySession:  protectedProcedure.query(({ ctx }) => {
