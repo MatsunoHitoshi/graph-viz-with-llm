@@ -11,6 +11,15 @@ const SourceDocumentSchema = z.object({
   url: z.string().url(),
 });
 
+const SourceDocumentWithGraphSchema = z.object({
+  name: z.string(),
+  url: z.string().url(),
+  dataJson: z.object({
+    nodes: z.array(z.any()),
+    relationships: z.array(z.any()),
+  }),
+})
+
 export const sourceDocumentRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
@@ -34,5 +43,25 @@ export const sourceDocumentRouter = createTRPCRouter({
         },
       });
       return document
+    }),
+
+  createWithGraphData: protectedProcedure
+    .input(SourceDocumentWithGraphSchema)
+    .mutation(async ({ ctx, input }) => {
+      const document = await ctx.db.sourceDocument.create({
+        data: {
+          name: input.name,
+          url: input.url,
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
+      const graph = await ctx.db.documentGraph.create({
+        data: {
+          dataJson: input.dataJson,
+          user: { connect: { id: ctx.session.user.id } },
+          sourceDocument: { connect: { id: document.id } },
+        },
+      });
+      return graph
     }),
 });

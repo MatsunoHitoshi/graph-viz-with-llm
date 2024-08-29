@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { DocumentForm } from "./form/document-form";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { D3ForceGraph } from "./d3/force/graph";
@@ -12,47 +12,38 @@ import { Button } from "./button/button";
 import { api } from "@/trpc/react";
 import { ShareIcon } from "./icons";
 import { UrlCopy } from "./url-copy/url-copy";
+import { useSearchParams } from "next/navigation";
 
 export const GraphExtraction = () => {
+  const { data: session } = useSession();
   const [file, setFile] = useState<File | null>(null);
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
   const [isUseExample, setIsUseExample] = useState<boolean>(false);
   const [graphDocument, setGraphDocument] = useState<GraphDocument | null>(
     isUseExample ? EXAMPLE_DATA : null,
   );
-
-  useEffect(() => {
-    setGraphDocument(isUseExample ? EXAMPLE_DATA : null);
-  }, [isUseExample]);
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
-  const submitDocumentGraph = api.documentGraph.create.useMutation({});
-  const submitSourceDocument = api.sourceDocument.create.useMutation({});
+  const submitSourceDocumentWithGraph =
+    api.sourceDocument.createWithGraphData.useMutation({});
   const router = useRouter();
-  const { data: session } = useSession();
 
-  const submit = () => {
-    if (!graphDocument || !file || !documentUrl) return;
-    submitSourceDocument.mutate(
+  const searchParams = useSearchParams();
+  const hasGraphData = searchParams.get("has-graph-data");
+
+  const submit = (
+    graphDocument: GraphDocument,
+    fileName: string,
+    documentUrl: string,
+  ) => {
+    submitSourceDocumentWithGraph.mutate(
       {
-        name: file.name,
+        name: fileName,
         url: documentUrl,
+        dataJson: graphDocument,
       },
       {
         onSuccess: (res) => {
-          submitDocumentGraph.mutate(
-            {
-              sourceDocumentId: res.id,
-              dataJson: graphDocument,
-            },
-            {
-              onSuccess: (res) => {
-                router.push(`/graph/${res.id}`);
-              },
-              onError: (e) => {
-                console.log(e);
-              },
-            },
-          );
+          router.push(`/graph/${res.id}`);
         },
         onError: (e) => {
           console.log(e);
@@ -60,6 +51,25 @@ export const GraphExtraction = () => {
       },
     );
   };
+
+  useEffect(() => {
+    if (hasGraphData === "true") {
+      const stGraph = localStorage.getItem("graphDocument");
+      const fileName = localStorage.getItem("fileName");
+      const url = localStorage.getItem("fileUrl");
+      const graph = stGraph ? (JSON.parse(stGraph) as GraphDocument) : null;
+
+      if (graph && fileName && url) submit(graph, fileName, url);
+
+      localStorage.removeItem("graphDocument");
+      localStorage.removeItem("fileName");
+      localStorage.removeItem("fileUrl");
+    }
+  }, []);
+
+  useEffect(() => {
+    setGraphDocument(isUseExample ? EXAMPLE_DATA : null);
+  }, [isUseExample]);
 
   return graphDocument ? (
     <div>
@@ -72,11 +82,22 @@ export const GraphExtraction = () => {
           <div className="flex flex-row items-center gap-2">
             {file && documentUrl && (
               <Button
-                onClick={() => {
+                onClick={async () => {
                   if (session) {
-                    submit();
+                    submit(graphDocument, file.name, documentUrl);
                   } else {
                     console.log("Not sign in");
+                    // save graph-data, file-url and file-name to local storage
+                    localStorage.setItem(
+                      "graphDocument",
+                      JSON.stringify(graphDocument),
+                    );
+                    localStorage.setItem("fileName", file.name);
+                    localStorage.setItem("fileUrl", documentUrl);
+                    // then signIn
+                    await signIn("google", {
+                      callbackUrl: "/?has-graph-data=true",
+                    });
                   }
                 }}
               >
