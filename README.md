@@ -8,7 +8,7 @@ This is a tool to visualize the relationships between concepts from pdf document
 
 ![product-alpha](https://github.com/user-attachments/assets/cc3c76e8-5e55-4d2d-a2f7-2d318c710e01)
 
-## Running the Demos
+## Running the Demo
 
 1. Navigate to the root directory of this project.
 2. Create your .env file from .env.example.
