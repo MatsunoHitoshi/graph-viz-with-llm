@@ -40,10 +40,14 @@ export const DocumentForm = ({
         setIsExtracting(true);
         const base64Data = reader.result?.toString();
         if (base64Data) {
+          console.log("--data--");
+          console.log(base64Data);
           const fileUrl = await storageUtils.uploadFromDataURL(
             base64Data,
             BUCKETS.PATH_TO_INPUT_PDF,
           );
+          console.log("--fileUrl--");
+          console.log(fileUrl);
           setDocumentUrl(fileUrl);
           extractKG.mutate(
             { fileUrl: fileUrl, mode: "langChain" },
@@ -74,7 +78,7 @@ export const DocumentForm = ({
     <form
       encType="multipart/form-data"
       onSubmit={submit}
-      className="flex w-full flex-col items-center gap-4 text-slate-800"
+      className="flex w-full flex-col items-center gap-4 "
     >
       <div className="flex flex-col items-center gap-2">
         <div className="text-xl font-semibold">

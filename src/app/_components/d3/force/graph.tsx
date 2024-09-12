@@ -45,12 +45,10 @@ export const D3ForceGraph = ({
   isLinkFiltered?: boolean;
 }) => {
   const [innerWidth, innerHeight] = useWindowSize();
-  const width = (innerWidth ?? 100) - 32;
-  const height = (innerHeight ?? 100) - 128;
+  const width = (innerWidth ?? 100) - 18;
+  const height = (innerHeight ?? 100) - 130;
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
-
-  // const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const initNodes = isLinkFiltered
     ? linkFilter(nodes as CustomNodeType[], initLinks)
     : (nodes as CustomNodeType[]);
@@ -92,7 +90,17 @@ export const D3ForceGraph = ({
     // .force("collision", forceCollide(8 * 1.5))
 
     simulation.on("tick", () => {
-      setGraphNodes([...simulation.nodes()]);
+      setGraphNodes([
+        ...initNodes.map((d) => {
+          const neighborLinkCount = initLinks.filter((link) => {
+            return link.sourceId === d.id || link.targetId === d.id;
+          }).length;
+          return {
+            ...d,
+            neighborLinkCount: neighborLinkCount,
+          };
+        }),
+      ]);
       setGraphLinks([...newLinks]);
     });
 
@@ -101,7 +109,7 @@ export const D3ForceGraph = ({
     return () => {
       simulation.stop();
     };
-  }, [graphNodes, newLinks, initNodes, width, height]);
+  }, [graphNodes, newLinks, initNodes, width, height, initLinks]);
 
   return (
     <div className="flex flex-col">
@@ -115,9 +123,9 @@ export const D3ForceGraph = ({
             }}
           >
             {isPanelOpen ? (
-              <ChevronRightIcon width={16} height={16} />
+              <ChevronRightIcon width={16} height={16} color="white" />
             ) : (
-              <ChevronLeftIcon width={16} height={16} />
+              <ChevronLeftIcon width={16} height={16} color="white" />
             )}
           </Button>
 
@@ -195,7 +203,7 @@ export const D3ForceGraph = ({
             return (
               <circle
                 key={graphNode.id}
-                r={isFocused ? 9 : 6}
+                r={6 * ((graphNode.neighborLinkCount ?? 0) * 0.25 + 1)}
                 className="node cursor-pointer"
                 // stroke="black"
                 // strokeWidth={1}

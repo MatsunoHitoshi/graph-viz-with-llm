@@ -73,47 +73,51 @@ export const GraphExtraction = () => {
 
   return graphDocument ? (
     <div>
-      <Toolbar
-        isLinkFiltered={isLinkFiltered}
-        setIsLinkFiltered={setIsLinkFiltered}
-        isUseExample={isUseExample}
-        setIsUseExample={setIsUseExample}
-        rightArea={
-          <div className="flex flex-row items-center gap-2">
-            {file && documentUrl && (
-              <Button
-                onClick={async () => {
-                  if (session) {
-                    submit(graphDocument, file.name, documentUrl);
-                  } else {
-                    console.log("Not sign in");
-                    // save graph-data, file-url and file-name to local storage
-                    localStorage.setItem(
-                      "graphDocument",
-                      JSON.stringify(graphDocument),
-                    );
-                    localStorage.setItem("fileName", file.name);
-                    localStorage.setItem("fileUrl", documentUrl);
-                    // then signIn
-                    await signIn("google", {
-                      callbackUrl: "/?has-graph-data=true",
-                    });
-                  }
-                }}
-              >
-                保存して共有する
-              </Button>
-            )}
-          </div>
-        }
-      />
-      <D3ForceGraph
-        graphDocument={graphDocument}
-        isLinkFiltered={isLinkFiltered}
-      />
+      <div className="h-full w-full p-2">
+        <div className="flex h-full w-full flex-col divide-y divide-slate-400 overflow-hidden rounded-md border border-slate-400  text-slate-50">
+          <Toolbar
+            isLinkFiltered={isLinkFiltered}
+            setIsLinkFiltered={setIsLinkFiltered}
+            isUseExample={isUseExample}
+            setIsUseExample={setIsUseExample}
+            rightArea={
+              <div className="flex flex-row items-center gap-2">
+                {file && documentUrl && (
+                  <Button
+                    onClick={async () => {
+                      if (session) {
+                        submit(graphDocument, file.name, documentUrl);
+                      } else {
+                        console.log("Not sign in");
+                        // save graph-data, file-url and file-name to local storage
+                        localStorage.setItem(
+                          "graphDocument",
+                          JSON.stringify(graphDocument),
+                        );
+                        localStorage.setItem("fileName", file.name);
+                        localStorage.setItem("fileUrl", documentUrl);
+                        // then signIn
+                        await signIn("google", {
+                          callbackUrl: "/?has-graph-data=true",
+                        });
+                      }
+                    }}
+                  >
+                    保存して共有する
+                  </Button>
+                )}
+              </div>
+            }
+          />
+          <D3ForceGraph
+            graphDocument={graphDocument}
+            isLinkFiltered={isLinkFiltered}
+          />
+        </div>
+      </div>
     </div>
   ) : (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 text-slate-50">
       <DocumentForm
         file={file}
         setFile={setFile}
@@ -145,44 +149,50 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
   if (!graphDocument) return null;
   return (
     <div>
-      <Toolbar
-        isLinkFiltered={isLinkFiltered}
-        setIsLinkFiltered={setIsLinkFiltered}
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-        rightArea={
-          <div className="flex flex-row items-center gap-2">
-            <UrlCopy
-              messagePosition="inButton"
-              className="flex h-8 w-8 flex-row items-center justify-center px-0 py-0"
-            >
-              <ShareIcon height={16} width={16} />
-            </UrlCopy>
-            <div className="mx-4">
-              参照：
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:no-underline"
-                href={graphDocument.sourceDocument.url}
-              >
-                {graphDocument.sourceDocument.name}
-              </a>
-            </div>
-          </div>
-        }
-      />
-      {isEditing ? (
-        <D3ForceGraph
-          graphDocument={graphDocument.dataJson as GraphDocument}
-          isLinkFiltered={isLinkFiltered}
-        />
-      ) : (
-        <D3ForceGraph
-          graphDocument={graphDocument.dataJson as GraphDocument}
-          isLinkFiltered={isLinkFiltered}
-        />
-      )}
+      <div className="h-full w-full p-2">
+        <div className="flex h-full w-full flex-col divide-y divide-slate-400 overflow-hidden rounded-md border border-slate-400  text-slate-50">
+          <Toolbar
+            isLinkFiltered={isLinkFiltered}
+            setIsLinkFiltered={setIsLinkFiltered}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            rightArea={
+              <div className="flex flex-row items-center gap-4">
+                <UrlCopy
+                  messagePosition="inButton"
+                  className="flex !h-8 !w-8 flex-row items-center justify-center px-0 py-0"
+                >
+                  <div className="h-4 w-4">
+                    <ShareIcon height={16} width={16} color="white" />
+                  </div>
+                </UrlCopy>
+                <div>
+                  参照：
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:no-underline"
+                    href={graphDocument.sourceDocument.url}
+                  >
+                    {graphDocument.sourceDocument.name}
+                  </a>
+                </div>
+              </div>
+            }
+          />
+          {isEditing ? (
+            <D3ForceGraph
+              graphDocument={graphDocument.dataJson as GraphDocument}
+              isLinkFiltered={isLinkFiltered}
+            />
+          ) : (
+            <D3ForceGraph
+              graphDocument={graphDocument.dataJson as GraphDocument}
+              isLinkFiltered={isLinkFiltered}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

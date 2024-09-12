@@ -3,6 +3,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { kgRouter } from "./routers/kg";
 import { documentGraphRouter } from "./routers/document-graph";
 import { sourceDocumentRouter } from "./routers/source-document";
+import { TopicSpaceRouter } from "./routers/topic-space";
 
 /**
  * This is the primary router for your server.
@@ -13,7 +14,8 @@ export const appRouter = createTRPCRouter({
   // post: postRouter,
   kg: kgRouter,
   documentGraph: documentGraphRouter,
-  sourceDocument: sourceDocumentRouter
+  sourceDocument: sourceDocumentRouter,
+  topicSpaces: TopicSpaceRouter,
 });
 
 // export type definition of API

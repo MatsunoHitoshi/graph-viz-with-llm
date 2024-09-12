@@ -7,10 +7,12 @@ export const UrlCopy = ({
   className,
   children,
   messagePosition = "bottom",
+  url,
 }: {
   className?: string;
   children: React.ReactNode;
   messagePosition?: "bottom" | "inButton";
+  url?: string;
 }) => {
   const isBrowser = typeof window !== "undefined";
 
@@ -35,7 +37,7 @@ export const UrlCopy = ({
       <Button
         type="button"
         className={className}
-        onClick={() => urlCopyHandler(location.href)}
+        onClick={() => urlCopyHandler(url ?? location.href)}
       >
         {copyMessage && messagePosition === "inButton" ? (
           <div className="text-sm text-slate-50">{copyMessage}</div>

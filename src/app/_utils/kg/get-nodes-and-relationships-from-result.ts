@@ -27,6 +27,7 @@ export type NodeType = {
   name: string;
   label: string;
   properties: PropertyType;
+  neighborLinkCount?: number;
 };
 
 export type RelationshipType = {

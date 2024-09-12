@@ -14,16 +14,12 @@ export const FileUploader = ({
   file,
 }: FileUploaderProps) => {
   return (
-    <div className="flex min-h-[130px] w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-slate-700 bg-slate-200 p-4">
-      {/* <div className="text-lg font-semibold line-through">
-        ここにファイルをドロップ
-      </div>
-      <div className="text-base">または</div> */}
+    <div className="flex min-h-[130px] w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-500 p-4">
       <input
         type="file"
         id="file-upload"
         name={name}
-        accept="application/pdf"
+        accept="application/pdf, text/plain"
         className="hidden"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         ref={inputRef}

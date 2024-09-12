@@ -19,8 +19,8 @@ export const Toolbar = ({
   rightArea,
 }: ToolbarProps) => {
   return (
-    <div className="flex w-full flex-row items-center justify-between">
-      <div className="flex flex-row items-center gap-4 p-2">
+    <div className="flex h-[46px] w-full flex-row items-center justify-between px-4">
+      <div className="flex flex-row items-center gap-4">
         {!!setIsEditing && (
           <div className="flex flex-row items-center gap-2">
             <div className="text-sm">編集モード</div>
@@ -29,7 +29,7 @@ export const Toolbar = ({
                 checked={isEditing}
                 onChange={setIsEditing}
                 disabled={true}
-                className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400 data-[disabled]:bg-slate-200"
+                className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-500 transition data-[checked]:bg-orange-400 data-[disabled]:bg-slate-700"
               >
                 <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
               </Switch>
