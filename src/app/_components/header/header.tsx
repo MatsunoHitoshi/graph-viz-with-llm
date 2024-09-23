@@ -26,7 +26,9 @@ export const Header = () => {
         </div>
         {!session ? (
           <Button
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() =>
+              signIn("google", { callbackUrl: `/${location.pathname}` })
+            }
             className="text-sm underline hover:no-underline"
           >
             Sign In

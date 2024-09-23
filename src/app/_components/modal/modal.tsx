@@ -24,7 +24,7 @@ export const Modal = ({ isOpen, setIsOpen, children, title }: ModalProps) => {
         <div className="flex min-h-full items-center justify-center p-4">
           <DialogPanel
             transition
-            className="data-[closed]:transform-[scale(95%)] flex w-full max-w-md flex-col gap-4 rounded-xl bg-black/5 p-6 text-slate-50 backdrop-blur-3xl duration-300 ease-out data-[closed]:opacity-0"
+            className="data-[closed]:transform-[scale(95%)] flex w-full max-w-md flex-col gap-4 rounded-xl bg-black/20 p-6 text-slate-50 backdrop-blur-2xl duration-300 ease-out data-[closed]:opacity-0"
           >
             <div className="flex flex-row items-center justify-between">
               <DialogTitle as="h3" className="font-semibold">
@@ -41,9 +41,6 @@ export const Modal = ({ isOpen, setIsOpen, children, title }: ModalProps) => {
             </div>
 
             <div>{children}</div>
-            <div className="flex flex-row justify-end">
-              <Button onClick={() => setIsOpen(false)}>作成</Button>
-            </div>
           </DialogPanel>
         </div>
       </div>

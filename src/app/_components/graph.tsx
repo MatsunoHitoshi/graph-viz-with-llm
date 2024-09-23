@@ -13,6 +13,7 @@ import { api } from "@/trpc/react";
 import { ShareIcon } from "./icons";
 import { UrlCopy } from "./url-copy/url-copy";
 import { useSearchParams } from "next/navigation";
+import { useWindowSize } from "../_hooks/use-window-size";
 
 export const GraphExtraction = () => {
   const { data: session } = useSession();
@@ -71,6 +72,10 @@ export const GraphExtraction = () => {
     setGraphDocument(isUseExample ? EXAMPLE_DATA : null);
   }, [isUseExample]);
 
+  const [innerWidth, innerHeight] = useWindowSize();
+  const graphAreaWidth = (innerWidth ?? 100) - 18;
+  const graphAreaHeight = (innerHeight ?? 300) - 130;
+
   return graphDocument ? (
     <div>
       <div className="h-full w-full p-2">
@@ -110,6 +115,8 @@ export const GraphExtraction = () => {
             }
           />
           <D3ForceGraph
+            width={graphAreaWidth}
+            height={graphAreaHeight}
             graphDocument={graphDocument}
             isLinkFiltered={isLinkFiltered}
           />
@@ -146,6 +153,9 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
   });
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [innerWidth, innerHeight] = useWindowSize();
+  const graphAreaWidth = (innerWidth ?? 100) - 18;
+  const graphAreaHeight = (innerHeight ?? 300) - 130;
   if (!graphDocument) return null;
   return (
     <div>
@@ -182,11 +192,15 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
           />
           {isEditing ? (
             <D3ForceGraph
+              width={graphAreaWidth}
+              height={graphAreaHeight}
               graphDocument={graphDocument.dataJson as GraphDocument}
               isLinkFiltered={isLinkFiltered}
             />
           ) : (
             <D3ForceGraph
+              width={graphAreaWidth}
+              height={graphAreaHeight}
               graphDocument={graphDocument.dataJson as GraphDocument}
               isLinkFiltered={isLinkFiltered}
             />

@@ -1,0 +1,61 @@
+"use client";
+import type { DocumentResponse } from "@/app/const/types";
+import { Button } from "../button/button";
+import { FileTextIcon, GraphIcon, ShareIcon } from "../icons";
+import { useRouter } from "next/navigation";
+import { UrlCopy } from "../url-copy/url-copy";
+import { env } from "@/env";
+import { D3ForceGraph } from "../d3/force/graph";
+import type { GraphDocument } from "@/server/api/routers/kg";
+import { useWindowSize } from "@/app/_hooks/use-window-size";
+export const DocumentDetail = ({
+  document,
+}: {
+  document: DocumentResponse;
+}) => {
+  const router = useRouter();
+  const [innerWidth, innerHeight] = useWindowSize();
+  const graphAreaWidth = (innerWidth ?? 100) / 2 - 36;
+  const graphAreaHeight = (innerHeight ?? 300) - 216;
+  return (
+    <div className="flex w-full flex-col items-start">
+      <div className="flex w-full flex-row items-start justify-between">
+        <div className="text-lg">{document.name}</div>
+        <div className="flex flex-row items-center">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            className="z-10 truncate no-underline hover:underline"
+            href={document.url}
+          >
+            <Button className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10">
+              <FileTextIcon height={16} width={16} color="white" />
+            </Button>
+          </a>
+          <Button
+            className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10"
+            onClick={() => {
+              router.push(`/graph/${document.graph?.id}`);
+            }}
+          >
+            <GraphIcon height={16} width={16} color="white" />
+          </Button>
+          <UrlCopy
+            messagePosition="inButton"
+            className="z-10 flex !h-8 !w-8 flex-row items-center justify-center bg-transparent px-0 py-0 hover:bg-slate-50/10"
+            url={`${env.NEXT_PUBLIC_BASE_URL}/graph/${document.graph?.id}`}
+          >
+            <div className="h-4 w-4">
+              <ShareIcon height={16} width={16} color="white" />
+            </div>
+          </UrlCopy>
+        </div>
+      </div>
+      <D3ForceGraph
+        width={graphAreaWidth}
+        height={graphAreaHeight}
+        graphDocument={document.graph?.dataJson as GraphDocument}
+      />
+    </div>
+  );
+};

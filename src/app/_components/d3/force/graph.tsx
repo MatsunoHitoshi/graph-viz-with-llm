@@ -1,4 +1,3 @@
-import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type {
   NodeType,
   RelationshipType,
@@ -38,15 +37,16 @@ const linkFilter = (nodes: CustomNodeType[], links: CustomLinkType[]) => {
 };
 
 export const D3ForceGraph = ({
+  height,
+  width,
   graphDocument,
   isLinkFiltered = false,
 }: {
+  height: number;
+  width: number;
   graphDocument: GraphDocument;
   isLinkFiltered?: boolean;
 }) => {
-  const [innerWidth, innerHeight] = useWindowSize();
-  const width = (innerWidth ?? 100) - 18;
-  const height = (innerHeight ?? 100) - 130;
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
   const initNodes = isLinkFiltered
@@ -121,6 +121,7 @@ export const D3ForceGraph = ({
             onClick={() => {
               setIsPanelOpen(!isPanelOpen);
             }}
+            className="!h-8 !w-8 !p-2"
           >
             {isPanelOpen ? (
               <ChevronRightIcon width={16} height={16} color="white" />
