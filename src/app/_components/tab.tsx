@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { FileTextIcon, GearIcon, PlusIcon, StackIcon } from "./icons";
 import { Button } from "./button/button";
 import { useRouter } from "next/navigation";
+import { TopicSpaceCreateModal } from "./topic-space/topic-space-create-modal";
 
 const Tab = ({
   label,
@@ -55,6 +56,51 @@ export const Tabs = () => {
 
 export const TabsContainer = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
+  const [topicSpaceCreateModalOpen, setTopicSpaceCreateModalOpen] =
+    useState<boolean>(false);
+
+  const NewContentButton = () => {
+    switch (location.pathname) {
+      case "/dashboard":
+        return (
+          <Button
+            className="flex flex-row items-center gap-1"
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            <PlusIcon width={16} height={16} color="white" />
+            <div className="text-sm">新規ドキュメント</div>
+          </Button>
+        );
+      case "/documents":
+        return (
+          <Button
+            className="flex flex-row items-center gap-1"
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            <PlusIcon width={16} height={16} color="white" />
+            <div className="text-sm">新規ドキュメント</div>
+          </Button>
+        );
+      case "/topic-spaces":
+        return (
+          <Button
+            className="flex flex-row items-center gap-1"
+            onClick={() => {
+              setTopicSpaceCreateModalOpen(true);
+            }}
+          >
+            <PlusIcon width={16} height={16} color="white" />
+            <div className="text-sm">新規トピックスペース</div>
+          </Button>
+        );
+      default:
+        return <></>;
+    }
+  };
   return (
     <div className="h-full w-full p-2">
       <div className="flex h-full w-full flex-col divide-y divide-slate-400 overflow-hidden rounded-md border border-slate-400 text-slate-50">
@@ -71,20 +117,16 @@ export const TabsContainer = ({ children }: { children: React.ReactNode }) => {
             <Tabs />
           </div>
           <div className="px-4">
-            <Button
-              className="flex flex-row items-center gap-1"
-              onClick={() => {
-                router.push("/");
-              }}
-            >
-              <PlusIcon width={16} height={16} color="white" />
-              <div className="text-sm">新規ドキュメント</div>
-            </Button>
+            <NewContentButton />
           </div>
         </div>
 
         <div className="w-full overflow-y-scroll">{children}</div>
       </div>
+      <TopicSpaceCreateModal
+        isOpen={topicSpaceCreateModalOpen}
+        setIsOpen={setTopicSpaceCreateModalOpen}
+      />
     </div>
   );
 };

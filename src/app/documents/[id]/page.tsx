@@ -1,12 +1,15 @@
 import type { NextPage } from "next";
-import { Documents } from "../_components/document/documents";
+import { Documents } from "@/app/_components/document/documents";
 
-const Page: NextPage = async () => {
-  // const session = await getServerAuthSession();
+type PageParams = { params: { id: string } };
+
+const Page: NextPage<PageParams> = async ({ params }: PageParams) => {
+  const documentId = params.id;
+  if (!documentId) return null;
   return (
     <main className="z-0 flex min-h-screen flex-col items-center justify-center bg-slate-800">
       <div className="flex h-screen w-full flex-col items-center  justify-center pt-16">
-        <Documents />
+        <Documents id={documentId} />
       </div>
     </main>
   );

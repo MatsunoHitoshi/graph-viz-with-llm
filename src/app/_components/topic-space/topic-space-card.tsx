@@ -8,14 +8,22 @@ import {
   StarIcon,
 } from "../icons";
 import type { TopicSpaceResponse } from "@/app/const/types";
+import { useRouter } from "next/navigation";
 
 type TopicSpaceCardProps = {
   topicSpace: TopicSpaceResponse;
 };
 
 export const TopicSpaceCard = ({ topicSpace }: TopicSpaceCardProps) => {
+  const router = useRouter();
   return (
-    <div className="flex w-full flex-col gap-4 rounded-md border border-slate-400 p-4">
+    <div className="relative flex w-full flex-col gap-4 rounded-md border border-slate-400 p-4">
+      <button
+        className="absolute inset-0 hover:bg-slate-50/10"
+        onClick={() => {
+          router.push(`/topic-spaces/${topicSpace.id}`);
+        }}
+      ></button>
       <div className="flex flex-row items-start justify-between">
         <div className="flex flex-row items-center gap-3">
           {topicSpace.image ? (
@@ -48,7 +56,7 @@ export const TopicSpaceCard = ({ topicSpace }: TopicSpaceCardProps) => {
             </div>
           </div>
         </div>
-        <Button className="!h-8 !w-8 bg-transparent !p-2 hover:bg-slate-50/10">
+        <Button className="z-10 !h-8 !w-8 bg-transparent !p-2 hover:bg-slate-50/10">
           <DotHorizontalIcon height={16} width={16} color="white" />
         </Button>
       </div>
@@ -73,7 +81,7 @@ export const TopicSpaceCard = ({ topicSpace }: TopicSpaceCardProps) => {
         <div className="flex flex-col items-center">
           <div className="flex flex-row items-center gap-2">
             <FileTextIcon height={20} width={20} color="white" />
-            <div className="">{topicSpace.documents?.length ?? 0}</div>
+            <div className="">{topicSpace.sourceDocuments?.length ?? 0}</div>
           </div>
           <div className="text-sm">ドキュメント数</div>
         </div>
