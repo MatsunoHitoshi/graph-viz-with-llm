@@ -7,6 +7,7 @@ import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import {
   FileTextIcon,
+  GraphIcon,
   PersonIcon,
   PlusIcon,
   StarIcon,
@@ -17,6 +18,7 @@ import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
+import { useRouter } from "next/navigation";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
   const { data: session } = useSession();
@@ -25,11 +27,12 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
   });
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth = (innerWidth ?? 100) / 2 - 36;
-  const graphAreaHeight = (innerHeight ?? 300) - 216;
+  const graphAreaHeight = (innerHeight ?? 300) - 160;
   const detachDocument = api.topicSpaces.detachDocument.useMutation();
 
   const [documentAttachModalOpen, setDocumentAttachModalOpen] =
     useState<boolean>(false);
+  const router = useRouter();
 
   if (!session || !topicSpace) return null;
   return (
@@ -54,32 +57,49 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
               })}
             </div>
 
-            <div className="flex flex-row items-center justify-start gap-4">
-              <div className="flex flex-col items-center">
-                <div className="flex flex-row items-center gap-2">
-                  <PersonIcon height={20} width={20} color="white" />
-                  <div className="">{topicSpace.admins?.length ?? "-"}</div>
-                </div>
-                <div className="text-sm">メンバー数</div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <div className="flex flex-row items-center gap-2">
-                  <StarIcon height={20} width={20} color="white" />
-                  <div className="">{topicSpace.star}</div>
-                </div>
-                <div className="text-sm">お気に入り数</div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <div className="flex flex-row items-center gap-2">
-                  <FileTextIcon height={20} width={20} color="white" />
-                  <div className="">
-                    {topicSpace.sourceDocuments?.length ?? 0}
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex flex-row items-center justify-start gap-4 py-2">
+                <div className="flex flex-col items-center">
+                  <div className="flex flex-row items-center gap-2">
+                    <PersonIcon height={20} width={20} color="white" />
+                    <div className="">{topicSpace.admins?.length ?? "-"}</div>
                   </div>
+                  <div className="text-sm">メンバー数</div>
                 </div>
-                <div className="text-sm">ドキュメント数</div>
+
+                <div className="flex flex-col items-center">
+                  <div className="flex flex-row items-center gap-2">
+                    <StarIcon height={20} width={20} color="white" />
+                    <div className="">{topicSpace.star}</div>
+                  </div>
+                  <div className="text-sm">お気に入り数</div>
+                </div>
+
+                <div className="flex flex-col items-center">
+                  <div className="flex flex-row items-center gap-2">
+                    <FileTextIcon height={20} width={20} color="white" />
+                    <div className="">
+                      {topicSpace.sourceDocuments?.length ?? 0}
+                    </div>
+                  </div>
+                  <div className="text-sm">ドキュメント数</div>
+                </div>
               </div>
+
+              <Button
+                className=""
+                onClick={() => {
+                  console.log("ok");
+                  router.push(`/topic-spaces/${id}/graph`);
+                }}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex flex-row items-center gap-2">
+                    <GraphIcon height={20} width={20} color="white" />
+                  </div>
+                  <div className="text-sm">グラフの詳細を見る</div>
+                </div>
+              </Button>
             </div>
           </div>
 

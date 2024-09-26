@@ -20,10 +20,15 @@ import type {
   Node,
   Relationship,
 } from "node_modules/@langchain/community/dist/graphs/graph_document";
-import { dataDisambiguation } from "@/app/_utils/kg/data-disambiguation";
+import {
+  dataDisambiguation,
+  fuseGraphs,
+} from "@/app/_utils/kg/data-disambiguation";
 import { env } from "@/env";
+import type { Prisma } from "@prisma/client";
+import { GraphDataStatus } from "@prisma/client";
 
-const pdfSchema = z.object({
+const PdfSchema = z.object({
   fileUrl: z.string().url(),
   mode: z.string().optional(),
 });
@@ -74,7 +79,7 @@ Relationships: ["alice", "roommate", "bob", {"start": 2021}], ["alice", "owns", 
 };
 
 const graphExtractionWithLangChain = async (localFilePath: string) => {
-  const llm = new ChatOpenAI({ temperature: 0.01, model: "gpt-4o-mini" });
+  const llm = new ChatOpenAI({ temperature: 0.0, model: "gpt-4o" });
   const llmTransformer = new LLMGraphTransformer({ llm });
 
   const loader = new PDFLoader(localFilePath);
@@ -166,7 +171,7 @@ const graphExtractionWithAssistantsAPI = async (
       "You are a top-tier algorithm designed for extracting information in structured formats to build a knowledge graph. Your task is to identify the Nodes and Relations requested with the user prompt from a given file.",
     model: "gpt-4o-mini",
     tools: [{ type: "file_search" }],
-    temperature: 0.01,
+    temperature: 0.0,
   });
 
   const inputFile = await openai.files.create({
@@ -215,7 +220,7 @@ const graphExtractionWithAssistantsAPI = async (
 };
 
 export const kgRouter = createTRPCRouter({
-  extractKG: publicProcedure.input(pdfSchema).mutation(async ({ input }) => {
+  extractKG: publicProcedure.input(PdfSchema).mutation(async ({ input }) => {
     const { fileUrl, mode } = input;
 
     const fileResponse = await fetch(fileUrl);
@@ -261,5 +266,85 @@ export const kgRouter = createTRPCRouter({
         data: { graph: null, error: "グラフ抽出エラー" },
       };
     }
+  }),
+
+  graphFusion: publicProcedure.mutation(async ({ ctx }) => {
+    const updateFusionStatus = async (id: string, status: GraphDataStatus) => {
+      await ctx.db.graphFusionQueue.update({
+        where: { id: id },
+        data: { status: status },
+      });
+    };
+    const updateTopicGraph = async (
+      id: string,
+      graphData: Prisma.JsonObject,
+    ) => {
+      await ctx.db.topicSpace.update({
+        where: { id: id },
+        data: { graphData: graphData },
+      });
+    };
+    const createCompleteCheck = async (topicId: string) => {
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: { id: topicId },
+        include: { graphFusionQueue: true },
+      });
+      if (
+        !topicSpace?.graphFusionQueue.some((fusion) => {
+          return (
+            fusion.status ===
+            (GraphDataStatus.QUEUED || GraphDataStatus.PROCESSING)
+          );
+        })
+      ) {
+        await ctx.db.topicSpace.update({
+          where: { id: topicId },
+          data: { graphDataStatus: GraphDataStatus.CREATED },
+        });
+      }
+    };
+    const fetchTopicSpace = async (id: string) => {
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: { id: id },
+        include: { graphFusionQueue: true },
+      });
+      return topicSpace;
+    };
+
+    const graphFusionQueue = await ctx.db.graphFusionQueue.findMany({
+      where: { status: GraphDataStatus.QUEUED },
+      include: { topicSpace: true, additionalGraph: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    for (const fusion of graphFusionQueue) {
+      await updateFusionStatus(fusion.id, GraphDataStatus.PROCESSING);
+      const topicSpace = await fetchTopicSpace(fusion.topicSpace.id);
+      if (!topicSpace?.graphData) {
+        await updateTopicGraph(
+          fusion.topicSpace.id,
+          fusion.additionalGraph.dataJson as GraphDocument,
+        );
+        await updateFusionStatus(fusion.id, GraphDataStatus.CREATED);
+      } else {
+        const graphData = await fuseGraphs(
+          topicSpace.graphData as GraphDocument,
+          fusion.additionalGraph.dataJson as GraphDocument,
+        );
+        if (!graphData) {
+          await updateFusionStatus(fusion.id, GraphDataStatus.CREATION_FAILED);
+        } else {
+          await updateTopicGraph(fusion.topicSpace.id, graphData);
+          await updateFusionStatus(fusion.id, GraphDataStatus.CREATED);
+        }
+      }
+
+      await createCompleteCheck(fusion.topicSpace.id);
+    }
+
+    return {
+      message: "complete",
+      numberOfRecords: graphFusionQueue.length,
+    };
   }),
 });

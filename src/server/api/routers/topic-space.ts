@@ -5,6 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
+import { GraphDataStatus } from "@prisma/client";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
@@ -29,7 +30,7 @@ export const TopicSpaceRouter = createTRPCRouter({
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: { id: input.id },
         include: {
-          sourceDocuments: true,
+          sourceDocuments: { include: { graph: true } },
           admins: true,
           tags: true,
         },
@@ -52,7 +53,7 @@ export const TopicSpaceRouter = createTRPCRouter({
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: { id: input.id },
         include: {
-          sourceDocuments: true,
+          sourceDocuments: { include: { graph: true } },
           admins: true,
           tags: true,
         },
@@ -78,16 +79,21 @@ export const TopicSpaceRouter = createTRPCRouter({
   create: protectedProcedure
     .input(TopicSpaceCreateSchema)
     .mutation(async ({ ctx, input }) => {
-      const document = ctx.db.topicSpace.create({
+      const document = await ctx.db.sourceDocument.findFirst({
+        where: { id: input.documentId },
+        include: { graph: true },
+      });
+      const topicSpace = ctx.db.topicSpace.create({
         data: {
           name: input.name,
           image: input.image,
           description: input.description,
           sourceDocuments: { connect: { id: input.documentId } },
           admins: { connect: { id: ctx.session.user.id } },
+          graphData: document?.graph?.dataJson ?? {},
         },
       });
-      return document;
+      return topicSpace;
     }),
 
   attachDocuments: protectedProcedure
@@ -104,15 +110,46 @@ export const TopicSpaceRouter = createTRPCRouter({
       ) {
         throw new Error("Can't Attach");
       }
-      const document = ctx.db.topicSpace.update({
+
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: { id: input.id },
+        include: { sourceDocuments: true },
+      });
+      const updatedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
           sourceDocuments: {
             connect: input.documents.map((docId) => ({ id: docId })),
           },
         },
+        include: { sourceDocuments: { include: { graph: true } } },
       });
-      return document;
+
+      const newDocuments = input.documents.filter((documentId) => {
+        return !topicSpace?.sourceDocuments.some((document) => {
+          return document.id === documentId;
+        });
+      });
+      for (const documentId of newDocuments) {
+        await ctx.db.graphFusionQueue.create({
+          data: {
+            topicSpace: { connect: { id: input.id } },
+            additionalGraph: {
+              connect: {
+                id: updatedTopicSpace.sourceDocuments.find((document) => {
+                  return document.id === documentId;
+                })?.graph?.id,
+              },
+            },
+          },
+        });
+      }
+      await ctx.db.topicSpace.update({
+        where: { id: input.id },
+        data: { graphDataStatus: GraphDataStatus.QUEUED },
+      });
+
+      return updatedTopicSpace;
     }),
 
   detachDocument: protectedProcedure

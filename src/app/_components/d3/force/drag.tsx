@@ -13,10 +13,13 @@ export const dragExtension = (
     event: D3DragEvent<SVGCircleElement, CustomNodeType, CustomNodeType>,
   ) {
     console.log("dragStarted");
+    // if (!event.active) simulation.alphaTarget(0.3).restart();
+    // d.fx = d.x;
+    // d.fy = d.y;
     if (!event.active) simulation.alphaTarget(0.3).restart();
-    console.log(event);
     event.subject.fx = event.subject.x;
     event.subject.fy = event.subject.y;
+
     // const draggedNode = event.subject;
     // console.log(event);
     // const newNodes = graphNodes.map((node) => {
@@ -32,8 +35,11 @@ export const dragExtension = (
     event: D3DragEvent<SVGCircleElement, CustomNodeType, CustomNodeType>,
   ) {
     console.log("dragged");
+    // d.fx = event.x;
+    // d.fy = event.y;
     event.subject.fx = event.x;
     event.subject.fy = event.y;
+
     // const draggedNode = event.subject;
     // const newNodes = graphNodes.map((node) => {
     //   if (node.id == draggedNode.id) {
@@ -50,9 +56,13 @@ export const dragExtension = (
     event: D3DragEvent<SVGCircleElement, CustomNodeType, CustomNodeType>,
   ) {
     console.log("dragEnded");
+    // if (!event.active) simulation.alphaTarget(0);
+    // d.fx = null;
+    // d.fy = null;
     if (!event.active) simulation.alphaTarget(0);
     event.subject.fx = null;
     event.subject.fy = null;
+
     // const draggedNode = event.subject;
     // const newNodes = graphNodes.map((node) => {
     //   if (node.id == draggedNode.id) {
@@ -61,6 +71,7 @@ export const dragExtension = (
     // });
     // setGraphNodes(newNodes);
   }
+
   d3.selectAll<Element, unknown>(".node").call(
     drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded),
   );

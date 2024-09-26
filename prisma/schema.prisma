@@ -89,13 +89,17 @@ model DocumentGraph {
 
   sourceDocument   SourceDocument @relation(fields: [sourceDocumentId], references: [id])
   sourceDocumentId String         @unique
+
+
+  additionalGraphFusionQueues GraphFusionQueue[] @relation("AdditionalGraph")
+  // targetGraphFusionQueues GraphFusionQueue[] @relation("TargetGraph")
 }
 
 model TopicSpace {
   id              String          @id @default(cuid())
   name            String
   graphData       Json?
-  graphDataStatus GraphDataStatus @default(PROCESSING)
+  graphDataStatus GraphDataStatus @default(QUEUED)
   description     String?
   image           String?
   star            Int             @default(0)
@@ -107,9 +111,11 @@ model TopicSpace {
   admins          User[]
   tags            Tag[]
   activities      Activity[]
+  graphFusionQueue GraphFusionQueue[]
 }
 
 enum GraphDataStatus {
+  QUEUED
   PROCESSING
   CREATED
   CREATION_FAILED
@@ -149,4 +155,21 @@ enum ActivityType {
 
   APPROVED_NEW_DOCUMENT
   APPROVED_SUGGESTION
+}
+
+
+model GraphFusionQueue {
+  id String       @id @default(cuid())
+  status GraphDataStatus @default(QUEUED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topicSpace   TopicSpace @relation(fields: [topicSpaceId], references: [id])
+  topicSpaceId String
+  
+  additionalGraph DocumentGraph @relation("AdditionalGraph", fields: [additionalGraphId], references: [id])
+  additionalGraphId String
+  // targetGraph DocumentGraph @relation("TargetGraph", fields: [targetGraphId], references: [id])
+  // targetGraphId String
 }
