@@ -10,7 +10,11 @@ import {
   forceCenter,
   forceX,
   forceY,
+  forceCollide,
+  select,
+  zoom,
 } from "d3";
+import type { ZoomBehavior } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "../../icons";
@@ -40,11 +44,13 @@ export const D3ForceGraph = ({
   height,
   width,
   graphDocument,
+  selectedGraphData,
   isLinkFiltered = false,
 }: {
   height: number;
   width: number;
   graphDocument: GraphDocument;
+  selectedGraphData?: GraphDocument | null;
   isLinkFiltered?: boolean;
 }) => {
   const { nodes, relationships } = graphDocument;
@@ -81,13 +87,14 @@ export const D3ForceGraph = ({
         "link",
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
-          .distance(40),
+          .distance(35)
+          .strength(0.3),
       )
       .force("center", forceCenter(centerX, centerY))
       .force("charge", forceManyBody())
       .force("x", forceX())
-      .force("y", forceY());
-    // .force("collision", forceCollide(8 * 1.5))
+      .force("y", forceY())
+      .force("collision", forceCollide(0.2));
 
     simulation.on("tick", () => {
       setGraphNodes([
@@ -104,12 +111,28 @@ export const D3ForceGraph = ({
       setGraphLinks([...newLinks]);
     });
 
+    // dragExtension(simulation);
     // dragExtension(simulation, setGraphNodes, graphNodes);
 
     return () => {
       simulation.stop();
     };
   }, [graphNodes, newLinks, initNodes, width, height, initLinks]);
+
+  useEffect(() => {
+    const zoomScreen = select<Element, unknown>("#zoom");
+    const zoomBehavior: ZoomBehavior<Element, unknown> = zoom()
+      .scaleExtent([0.1, 10])
+      .on("zoom", (event: d3.D3ZoomEvent<Element, unknown>) => {
+        zoomScreen.attr("transform", event.transform.toString());
+      });
+
+    zoomScreen.call(zoomBehavior);
+
+    return () => {
+      zoomScreen.on(".zoom", null);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -171,52 +194,71 @@ export const D3ForceGraph = ({
           height={height}
           viewBox={`0 0 ${String(width)} ${String(height)}`}
         >
-          <rect width={width} height={height} rx={8} fill={"#1e293b"} />
-          {graphLinks.map((graphLink) => {
-            const { source, target, type } = graphLink;
-            const modSource = source as CustomNodeType;
-            const modTarget = target as CustomNodeType;
-            const isFocused = graphLink.id === focusedLink?.id;
-            return (
-              <line
-                key={`${modSource.id}-${type}-${modTarget.id}`}
-                stroke={isFocused ? "#ef7234" : "white"}
-                className="link cursor-pointer"
-                strokeWidth={isFocused ? 6 : 4}
-                strokeOpacity={isFocused ? 1 : 0.5}
-                x1={modSource.x}
-                y1={modSource.y}
-                x2={modTarget.x}
-                y2={modTarget.y}
-                onClick={() => {
-                  setFocusedLink(graphLink);
-                }}
-              />
-            );
-          })}
-          {graphNodes.map((graphNode) => {
-            // if (graphNode.id === 1) {
-            //   console.log(graphNode.x);
-            //   console.log(graphNode.y);
-            // }
+          <g id="zoom">
+            <rect width={width} height={height} rx={8} fill={"#1e293b"} />
+            {graphLinks.map((graphLink) => {
+              const { source, target, type } = graphLink;
+              const modSource = source as CustomNodeType;
+              const modTarget = target as CustomNodeType;
+              const isFocused = graphLink.id === focusedLink?.id;
+              return (
+                <line
+                  key={`${modSource.id}-${type}-${modTarget.id}`}
+                  stroke={isFocused ? "#ef7234" : "white"}
+                  className="link cursor-pointer"
+                  strokeWidth={isFocused ? 6 : 4}
+                  strokeOpacity={isFocused ? 1 : 0.5}
+                  x1={modSource.x}
+                  y1={modSource.y}
+                  x2={modTarget.x}
+                  y2={modTarget.y}
+                  onClick={() => {
+                    if (graphLink.id === focusedLink?.id) {
+                      setFocusedLink(undefined);
+                    } else {
+                      setFocusedLink(graphLink);
+                    }
+                  }}
+                />
+              );
+            })}
+            {graphNodes.map((graphNode) => {
+              // if (graphNode.id === 1) {
+              //   console.log(graphNode.x);
+              //   console.log(graphNode.y);
+              // }
 
-            const isFocused = graphNode.id === focusedNode?.id;
-            return (
-              <circle
-                key={graphNode.id}
-                r={6 * ((graphNode.neighborLinkCount ?? 0) * 0.25 + 1)}
-                className="node cursor-pointer"
-                // stroke="black"
-                // strokeWidth={1}
-                fill={isFocused ? "#ef7234" : "white"}
-                cx={graphNode.x}
-                cy={graphNode.y}
-                onClick={() => {
-                  setFocusedNode(graphNode);
-                }}
-              />
-            );
-          })}
+              const isFocused = graphNode.id === focusedNode?.id;
+              const graphUnselected = selectedGraphData
+                ? !selectedGraphData.nodes.some((node) => {
+                    return node.name === graphNode.name;
+                  })
+                : false;
+              return (
+                <circle
+                  key={graphNode.id}
+                  r={6 * ((graphNode.neighborLinkCount ?? 0) * 0.25 + 1)}
+                  className="node cursor-pointer"
+                  fill={
+                    isFocused
+                      ? "#ef7234"
+                      : graphUnselected
+                        ? "#324557"
+                        : "white"
+                  }
+                  cx={graphNode.x}
+                  cy={graphNode.y}
+                  onClick={() => {
+                    if (graphNode.id === focusedNode?.id) {
+                      setFocusedNode(undefined);
+                    } else {
+                      setFocusedNode(graphNode);
+                    }
+                  }}
+                />
+              );
+            })}
+          </g>
         </svg>
       </div>
     </div>

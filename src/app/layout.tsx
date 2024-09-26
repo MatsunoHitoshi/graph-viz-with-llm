@@ -6,6 +6,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { UrlCopy } from "./_components/url-copy/url-copy";
 import NextAuthProvider from "@/providers/next-auth";
 import { Header } from "./_components/header/header";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "Graph Visualization with LLM",
@@ -20,6 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
+      <Analytics />
       <body>
         <TRPCReactProvider>
           <NextAuthProvider>

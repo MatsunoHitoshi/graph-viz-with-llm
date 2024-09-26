@@ -5,6 +5,10 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
+import type {
+  NodeType,
+  RelationshipType,
+} from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 
 const SourceDocumentSchema = z.object({
   name: z.string(),
@@ -79,9 +83,13 @@ export const sourceDocumentRouter = createTRPCRouter({
           user: { connect: { id: ctx.session.user.id } },
         },
       });
+      const sanitizedGraphData = {
+        nodes: input.dataJson.nodes as NodeType[],
+        relationships: input.dataJson.relationships as RelationshipType[],
+      };
       const graph = await ctx.db.documentGraph.create({
         data: {
-          dataJson: input.dataJson,
+          dataJson: sanitizedGraphData,
           user: { connect: { id: ctx.session.user.id } },
           sourceDocument: { connect: { id: document.id } },
         },

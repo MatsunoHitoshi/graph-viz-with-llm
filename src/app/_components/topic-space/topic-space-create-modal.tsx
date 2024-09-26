@@ -45,7 +45,7 @@ export const TopicSpaceCreateModal = ({
   const { data: session } = useSession();
   const { data: documents } = api.sourceDocument.getListBySession.useQuery();
   const [selectedDocument, setSelectedDocument] =
-    useState<DocumentResponse | null>(documents?.[0] ?? null);
+    useState<DocumentResponse | null>(null);
   const createTopicSpace = api.topicSpaces.create.useMutation();
   const [query, setQuery] = useState("");
   const router = useRouter();
