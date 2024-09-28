@@ -13,7 +13,7 @@ export const env = createEnv({
       .default("development"),
     OPENAI_API_KEY: z.string(),
     TMP_DIRECTORY: z.string(),
-    NEXTAUTH_SECRET:
+    NEXT_AUTH_SECRET:
       process.env.NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
@@ -51,7 +51,7 @@ export const env = createEnv({
     TMP_DIRECTORY: process.env.TMP_DIRECTORY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXT_AUTH_SECRET: process.env.NEXT_AUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,

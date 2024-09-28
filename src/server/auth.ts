@@ -39,9 +39,6 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   debug: true,
-  pages: {
-    signIn: "/",
-  },
   callbacks: {
     session: ({ session, user }) => ({
       ...session,
@@ -81,7 +78,7 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  secret: env.NEXTAUTH_SECRET,
+  secret: env.NEXT_AUTH_SECRET,
   events: {
     signIn: async ({ user, account, profile }) => {
       console.log("User signed in:", user);
