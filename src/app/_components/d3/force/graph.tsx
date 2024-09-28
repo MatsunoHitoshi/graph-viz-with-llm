@@ -88,13 +88,13 @@ export const D3ForceGraph = ({
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
           .distance(35)
-          .strength(0.3),
+          .strength(0.2),
       )
       .force("center", forceCenter(centerX, centerY))
       .force("charge", forceManyBody())
       .force("x", forceX())
       .force("y", forceY())
-      .force("collision", forceCollide(0.2));
+      .force("collision", forceCollide(0.8));
 
     simulation.on("tick", () => {
       setGraphNodes([
@@ -206,8 +206,8 @@ export const D3ForceGraph = ({
                   key={`${modSource.id}-${type}-${modTarget.id}`}
                   stroke={isFocused ? "#ef7234" : "white"}
                   className="link cursor-pointer"
-                  strokeWidth={isFocused ? 6 : 4}
-                  strokeOpacity={isFocused ? 1 : 0.5}
+                  strokeWidth={isFocused ? 4 : 3}
+                  strokeOpacity={isFocused ? 1 : 0.4}
                   x1={modSource.x}
                   y1={modSource.y}
                   x2={modTarget.x}
@@ -237,7 +237,7 @@ export const D3ForceGraph = ({
               return (
                 <circle
                   key={graphNode.id}
-                  r={6 * ((graphNode.neighborLinkCount ?? 0) * 0.25 + 1)}
+                  r={5 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
                   className="node cursor-pointer"
                   fill={
                     isFocused
