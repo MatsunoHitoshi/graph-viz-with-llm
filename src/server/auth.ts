@@ -77,7 +77,14 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  secret: env.NEXTAUTH_SECRET,
+  // secret: env.NEXTAUTH_SECRET,
+  events: {
+    signIn: async ({ user, account, profile }) => {
+      console.log("User signed in:", user);
+      console.log("Account:", account);
+      console.log("Profile:", profile);
+    },
+  },
 };
 
 /**
