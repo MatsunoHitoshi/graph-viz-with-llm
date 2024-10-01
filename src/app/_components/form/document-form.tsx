@@ -100,7 +100,7 @@ export const DocumentForm = ({
       {file && (
         <div className="flex flex-row justify-end">
           <Button type="submit" isLoading={isExtracting}>
-            関係性を抽出する
+            概念グラフを抽出する
           </Button>
         </div>
       )}
