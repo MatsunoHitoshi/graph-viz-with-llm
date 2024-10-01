@@ -1,7 +1,7 @@
 "use client";
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
-import { TabsContainer } from "../tab";
+import { TabsContainer } from "../tab/tab";
 import type { TopicSpaceResponse } from "@/app/const/types";
 import { TopicSpaceList } from "../list/topic-space-list";
 import { useState } from "react";

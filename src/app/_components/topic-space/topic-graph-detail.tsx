@@ -1,7 +1,6 @@
 "use client";
 import { api } from "@/trpc/react";
-import { useSession } from "next-auth/react";
-import { TabsContainer } from "../tab";
+import { TabsContainer } from "../tab/tab";
 import { D3ForceGraph } from "../d3/force/graph";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
@@ -12,8 +11,7 @@ import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 
 export const TopicGraphDetail = ({ id }: { id: string }) => {
-  const { data: session } = useSession();
-  const { data: topicSpace, refetch } = api.topicSpaces.getById.useQuery({
+  const { data: topicSpace, refetch } = api.topicSpaces.getByIdPublic.useQuery({
     id: id,
   });
   const [innerWidth, innerHeight] = useWindowSize();
@@ -34,7 +32,7 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
     );
   }, [selectedDocumentId, topicSpace]);
 
-  if (!session || !topicSpace) return null;
+  if (!topicSpace) return null;
   console.log("graphData: ", selectedGraphData);
   return (
     <TabsContainer>

@@ -59,7 +59,7 @@ export const TopicSpaceRouter = createTRPCRouter({
         },
       });
       if (!topicSpace) throw new Error("TopicSpace not found");
-      return;
+      return topicSpace;
     }),
 
   getListBySession: protectedProcedure.query(({ ctx }) => {

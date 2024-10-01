@@ -1,7 +1,7 @@
 "use client";
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
-import { TabsContainer } from "../tab";
+import { TabsContainer } from "../tab/tab";
 import { DocumentList } from "../list/document-list";
 import { DocumentDetail } from "./document-detail";
 import { Button } from "../button/button";

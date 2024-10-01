@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { FileTextIcon, GearIcon, PlusIcon, StackIcon } from "./icons";
-import { Button } from "./button/button";
+import { FileTextIcon, GearIcon, PlusIcon, StackIcon } from "../icons";
+import { Button } from "../button/button";
 import { useRouter } from "next/navigation";
-import { TopicSpaceCreateModal } from "./topic-space/topic-space-create-modal";
+import { TopicSpaceCreateModal } from "../topic-space/topic-space-create-modal";
+import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 
 const Tab = ({
   label,
@@ -32,30 +34,46 @@ const Tab = ({
   );
 };
 
-export const Tabs = () => {
-  return (
-    <div className="flex flex-row items-end text-sm">
-      <Tab
-        label="ドキュメント"
-        icon={<FileTextIcon width={16} height={16} color="white" />}
-        path={"/documents"}
-      />
-      <Tab
-        label="トピックスペース"
-        icon={<StackIcon width={16} height={16} color="white" />}
-        path={"/topic-spaces"}
-      />
-      <Tab
-        label="アカウント設定"
-        icon={<GearIcon width={16} height={16} color="white" />}
-        path={"/account"}
-      />
-    </div>
-  );
+export const Tabs = ({ session }: { session: Session | null }) => {
+  const router = useRouter();
+  if (!!session) {
+    return (
+      <div className="flex flex-row items-end gap-4">
+        <Button
+          className={`rounded-none border-b-2 border-transparent bg-transparent !px-4 py-2 text-xl font-semibold ${location.pathname === "/dashboard" && "!border-slate-50"}`}
+          onClick={() => {
+            router.push("/dashboard");
+          }}
+        >
+          Dashboard
+        </Button>
+        <div className="flex flex-row items-end text-sm">
+          <Tab
+            label="ドキュメント"
+            icon={<FileTextIcon width={16} height={16} color="white" />}
+            path={"/documents"}
+          />
+          <Tab
+            label="トピックスペース"
+            icon={<StackIcon width={16} height={16} color="white" />}
+            path={"/topic-spaces"}
+          />
+          <Tab
+            label="アカウント設定"
+            icon={<GearIcon width={16} height={16} color="white" />}
+            path={"/account"}
+          />
+        </div>
+      </div>
+    );
+  } else {
+    <></>;
+  }
 };
 
 export const TabsContainer = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
+  const { data: session } = useSession();
   const [topicSpaceCreateModalOpen, setTopicSpaceCreateModalOpen] =
     useState<boolean>(false);
 
@@ -105,17 +123,8 @@ export const TabsContainer = ({ children }: { children: React.ReactNode }) => {
     <div className="h-full w-full p-2">
       <div className="flex h-full w-full flex-col divide-y divide-slate-400 overflow-hidden rounded-md border border-slate-400 text-slate-50">
         <div className="flex flex-row items-center justify-between">
-          <div className="flex flex-row items-end gap-4">
-            <Button
-              className={`rounded-none border-b-2 border-transparent bg-transparent !px-4 py-2 text-xl font-semibold ${location.pathname === "/dashboard" && "!border-slate-50"}`}
-              onClick={() => {
-                router.push("/dashboard");
-              }}
-            >
-              Dashboard
-            </Button>
-            <Tabs />
-          </div>
+          <Tabs session={session} />
+
           <div className="px-4">
             <NewContentButton />
           </div>

@@ -8,7 +8,6 @@ import { type Adapter } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 // import DiscordProvider from "next-auth/providers/discord";
 
-import { env } from "@/env";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -79,7 +78,7 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   events: {
     signIn: async ({ user, account, profile }) => {
       console.log("User signed in:", user);

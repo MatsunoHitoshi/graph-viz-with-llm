@@ -2,7 +2,7 @@
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
 import { DocumentList } from "../list/document-list";
-import { TabsContainer } from "../tab";
+import { TabsContainer } from "../tab/tab";
 import { Button } from "../button/button";
 import { PlusIcon } from "../icons";
 import { useRouter } from "next/navigation";
