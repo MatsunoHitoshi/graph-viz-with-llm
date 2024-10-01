@@ -9,6 +9,7 @@ import GoogleProvider from "next-auth/providers/google";
 // import DiscordProvider from "next-auth/providers/discord";
 
 import { PrismaClient } from "@prisma/client";
+import { env } from "process";
 const prisma = new PrismaClient();
 
 /**
@@ -26,10 +27,11 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    // role: UserRole;
+    id: string;
+  }
 }
 
 /**
@@ -53,7 +55,7 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-      allowDangerousEmailAccountLinking: true,
+      // allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
           scope:
@@ -78,7 +80,7 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: env.NEXTAUTH_SECRET,
   events: {
     signIn: async ({ user, account, profile }) => {
       console.log("User signed in:", user);
