@@ -24,6 +24,7 @@ export const GraphExtraction = () => {
     isUseExample ? EXAMPLE_DATA : null,
   );
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
+  const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
   const submitSourceDocumentWithGraph =
     api.sourceDocument.createWithGraphData.useMutation({});
   const router = useRouter();
@@ -85,6 +86,7 @@ export const GraphExtraction = () => {
             setIsLinkFiltered={setIsLinkFiltered}
             isUseExample={isUseExample}
             setIsUseExample={setIsUseExample}
+            setNodeSearchQuery={setNodeSearchQuery}
             rightArea={
               <div className="flex flex-row items-center gap-2">
                 {file && documentUrl && (
@@ -119,6 +121,7 @@ export const GraphExtraction = () => {
             height={graphAreaHeight}
             graphDocument={graphDocument}
             isLinkFiltered={isLinkFiltered}
+            nodeSearchQuery={nodeSearchQuery}
           />
         </div>
       </div>
@@ -153,6 +156,7 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
   });
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth = (innerWidth ?? 100) - 18;
   const graphAreaHeight = (innerHeight ?? 300) - 130;
@@ -166,8 +170,9 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
             setIsLinkFiltered={setIsLinkFiltered}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            setNodeSearchQuery={setNodeSearchQuery}
             rightArea={
-              <div className="flex flex-row items-center gap-4">
+              <div className="flex w-full max-w-[300px] flex-row items-center gap-4">
                 <UrlCopy
                   messagePosition="inButton"
                   className="flex !h-8 !w-8 flex-row items-center justify-center px-0 py-0"
@@ -176,12 +181,12 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
                     <ShareIcon height={16} width={16} color="white" />
                   </div>
                 </UrlCopy>
-                <div>
+                <div className="w-full truncate">
                   参照：
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline hover:no-underline"
+                    className="w-full underline hover:no-underline"
                     href={graphDocument.sourceDocument.url}
                   >
                     {graphDocument.sourceDocument.name}
@@ -196,6 +201,7 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
               height={graphAreaHeight}
               graphDocument={graphDocument.dataJson as GraphDocument}
               isLinkFiltered={isLinkFiltered}
+              nodeSearchQuery={nodeSearchQuery}
             />
           ) : (
             <D3ForceGraph
@@ -203,6 +209,7 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
               height={graphAreaHeight}
               graphDocument={graphDocument.dataJson as GraphDocument}
               isLinkFiltered={isLinkFiltered}
+              nodeSearchQuery={nodeSearchQuery}
             />
           )}
         </div>

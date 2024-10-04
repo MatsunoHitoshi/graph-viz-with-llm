@@ -3,11 +3,5 @@
     "app/api/**/*": {
       "maxDuration": 60
     }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/graph-fusion",
-      "schedule": "*/1 * * * *"
-    }
-  ]
+  }
 }

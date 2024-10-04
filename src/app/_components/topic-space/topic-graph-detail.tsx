@@ -23,6 +23,7 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
   const [documentAttachModalOpen, setDocumentAttachModalOpen] =
     useState<boolean>(false);
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
+  const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
 
   useEffect(() => {
     setSelectedGraphData(
@@ -59,6 +60,7 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
           <Toolbar
             isLinkFiltered={isLinkFiltered}
             setIsLinkFiltered={setIsLinkFiltered}
+            setNodeSearchQuery={setNodeSearchQuery}
           />
 
           <div className="flex flex-col gap-1">
@@ -81,6 +83,7 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
               graphDocument={topicSpace.graphData as GraphDocument}
               selectedGraphData={selectedGraphData}
               isLinkFiltered={isLinkFiltered}
+              nodeSearchQuery={nodeSearchQuery}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

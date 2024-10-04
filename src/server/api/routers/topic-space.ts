@@ -5,7 +5,9 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { GraphDataStatus } from "@prisma/client";
+import type { GraphDocument } from "./kg";
+import { fuseGraphs } from "@/app/_utils/kg/data-disambiguation";
+import type { TopicSpaceResponse } from "@/app/const/types";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
@@ -22,6 +24,26 @@ const DetachDocumentSchema = z.object({
   documentId: z.string(),
   id: z.string(),
 });
+const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
+  let newGraph: GraphDocument = { nodes: [], relationships: [] };
+  if (updatedTopicSpace.sourceDocuments) {
+    for (const [
+      index,
+      document,
+    ] of updatedTopicSpace.sourceDocuments.entries()) {
+      if (index === 0) {
+        newGraph = document.graph?.dataJson as GraphDocument;
+      } else {
+        newGraph = await fuseGraphs(
+          newGraph,
+          document.graph?.dataJson as GraphDocument,
+        );
+      }
+    }
+  }
+
+  return newGraph;
+};
 
 export const TopicSpaceRouter = createTRPCRouter({
   getById: protectedProcedure
@@ -111,10 +133,10 @@ export const TopicSpaceRouter = createTRPCRouter({
         throw new Error("Can't Attach");
       }
 
-      const topicSpace = await ctx.db.topicSpace.findFirst({
-        where: { id: input.id },
-        include: { sourceDocuments: true },
-      });
+      // const topicSpace = await ctx.db.topicSpace.findFirst({
+      //   where: { id: input.id },
+      //   include: { sourceDocuments: true },
+      // });
       const updatedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
@@ -125,29 +147,36 @@ export const TopicSpaceRouter = createTRPCRouter({
         include: { sourceDocuments: { include: { graph: true } } },
       });
 
-      const newDocuments = input.documents.filter((documentId) => {
-        return !topicSpace?.sourceDocuments.some((document) => {
-          return document.id === documentId;
-        });
-      });
-      for (const documentId of newDocuments) {
-        await ctx.db.graphFusionQueue.create({
-          data: {
-            topicSpace: { connect: { id: input.id } },
-            additionalGraph: {
-              connect: {
-                id: updatedTopicSpace.sourceDocuments.find((document) => {
-                  return document.id === documentId;
-                })?.graph?.id,
-              },
-            },
-          },
-        });
-      }
+      // 単純な単語一致でグラフ統合処理を行う場合はキューを使う必要がない。
       await ctx.db.topicSpace.update({
-        where: { id: input.id },
-        data: { graphDataStatus: GraphDataStatus.QUEUED },
+        where: { id: updatedTopicSpace.id },
+        data: { graphData: await updateGraphData(updatedTopicSpace) },
       });
+
+      // グラフ統合の処理を工夫する際に統合処理のためのキューを使ったアップデートを行う場合に使用する。
+      // const newDocuments = input.documents.filter((documentId) => {
+      //   return !topicSpace?.sourceDocuments.some((document) => {
+      //     return document.id === documentId;
+      //   });
+      // });
+      // for (const documentId of newDocuments) {
+      //   await ctx.db.graphFusionQueue.create({
+      //     data: {
+      //       topicSpace: { connect: { id: input.id } },
+      //       additionalGraph: {
+      //         connect: {
+      //           id: updatedTopicSpace.sourceDocuments.find((document) => {
+      //             return document.id === documentId;
+      //           })?.graph?.id,
+      //         },
+      //       },
+      //     },
+      //   });
+      // }
+      // await ctx.db.topicSpace.update({
+      //   where: { id: input.id },
+      //   data: { graphDataStatus: GraphDataStatus.QUEUED },
+      // });
 
       return updatedTopicSpace;
     }),
@@ -166,14 +195,22 @@ export const TopicSpaceRouter = createTRPCRouter({
       ) {
         throw new Error("Can't Detach");
       }
-      const document = ctx.db.topicSpace.update({
+      const updatedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
           sourceDocuments: {
             disconnect: { id: input.documentId },
           },
         },
+        include: { sourceDocuments: { include: { graph: true } } },
       });
-      return document;
+
+      // 削除時のグラフアップデート
+      await ctx.db.topicSpace.update({
+        where: { id: updatedTopicSpace.id },
+        data: { graphData: await updateGraphData(updatedTopicSpace) },
+      });
+
+      return updatedTopicSpace;
     }),
 });

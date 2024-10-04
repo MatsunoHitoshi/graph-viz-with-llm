@@ -46,12 +46,14 @@ export const D3ForceGraph = ({
   graphDocument,
   selectedGraphData,
   isLinkFiltered = false,
+  nodeSearchQuery,
 }: {
   height: number;
   width: number;
   graphDocument: GraphDocument;
   selectedGraphData?: GraphDocument | null;
   isLinkFiltered?: boolean;
+  nodeSearchQuery?: string;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
@@ -234,6 +236,12 @@ export const D3ForceGraph = ({
                     return node.name === graphNode.name;
                   })
                 : false;
+              const queryFiltered =
+                !!nodeSearchQuery &&
+                nodeSearchQuery !== "" &&
+                graphNode.name
+                  .toLowerCase()
+                  .includes(nodeSearchQuery.toLowerCase());
               return (
                 <circle
                   key={graphNode.id}
@@ -244,10 +252,12 @@ export const D3ForceGraph = ({
                       ? "#ef7234"
                       : graphUnselected
                         ? "#324557"
-                        : "white"
+                        : "whitesmoke"
                   }
                   cx={graphNode.x}
                   cy={graphNode.y}
+                  stroke="#a1511a"
+                  strokeWidth={queryFiltered ? 2 : 0}
                   onClick={() => {
                     if (graphNode.id === focusedNode?.id) {
                       setFocusedNode(undefined);

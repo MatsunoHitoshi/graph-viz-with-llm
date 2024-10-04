@@ -1,4 +1,5 @@
-import { Switch } from "@headlessui/react";
+import { Input, Switch } from "@headlessui/react";
+import clsx from "clsx";
 import React from "react";
 type ToolbarProps = {
   isLinkFiltered?: boolean;
@@ -7,6 +8,7 @@ type ToolbarProps = {
   setIsUseExample?: React.Dispatch<React.SetStateAction<boolean>>;
   isEditing?: boolean;
   setIsEditing?: React.Dispatch<React.SetStateAction<boolean>>;
+  setNodeSearchQuery?: React.Dispatch<React.SetStateAction<string>>;
   rightArea?: React.ReactNode;
 };
 export const Toolbar = ({
@@ -16,11 +18,12 @@ export const Toolbar = ({
   setIsUseExample,
   isEditing,
   setIsEditing,
+  setNodeSearchQuery,
   rightArea,
 }: ToolbarProps) => {
   return (
     <div className="flex h-[46px] w-full flex-row items-center justify-between px-4">
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex w-full flex-row items-center gap-4">
         {!!setIsEditing && (
           <div className="flex flex-row items-center gap-2">
             <div className="text-sm">編集モード</div>
@@ -63,6 +66,19 @@ export const Toolbar = ({
               </Switch>
             </div>
           </div>
+        )}
+        {!!setNodeSearchQuery && (
+          <Input
+            type="text"
+            placeholder="ノードを検索"
+            className={clsx(
+              "block w-full max-w-[300px] rounded-lg border-none bg-white/5 px-3 py-1.5 text-sm/6",
+              "focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400",
+            )}
+            onChange={(e) => {
+              setNodeSearchQuery(e.target.value);
+            }}
+          />
         )}
       </div>
 

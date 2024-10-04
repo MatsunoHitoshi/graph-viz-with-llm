@@ -8,7 +8,6 @@ import {
   ComboboxOptions,
   ComboboxOption,
 } from "@headlessui/react";
-import clsx from "clsx";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -18,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "../button/button";
+import clsx from "clsx";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
