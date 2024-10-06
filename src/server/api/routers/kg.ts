@@ -286,7 +286,7 @@ export const kgRouter = createTRPCRouter({
     };
     const createCompleteCheck = async (topicId: string) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
-        where: { id: topicId },
+        where: { id: topicId, isDeleted: false },
         include: { graphFusionQueue: true },
       });
       if (
@@ -305,7 +305,7 @@ export const kgRouter = createTRPCRouter({
     };
     const fetchTopicSpace = async (id: string) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
-        where: { id: id },
+        where: { id: id, isDeleted: false },
         include: { graphFusionQueue: true },
       });
       return topicSpace;

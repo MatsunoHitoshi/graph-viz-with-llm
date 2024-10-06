@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Button } from "../button/button";
 import {
   DotHorizontalIcon,
   FileTextIcon,
@@ -9,21 +8,45 @@ import {
 } from "../icons";
 import type { TopicSpaceResponse } from "@/app/const/types";
 import { useRouter } from "next/navigation";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 
 type TopicSpaceCardProps = {
   topicSpace: TopicSpaceResponse;
+  menu?: (topicSpace: TopicSpaceResponse) => React.ReactNode;
 };
 
-export const TopicSpaceCard = ({ topicSpace }: TopicSpaceCardProps) => {
+export const TopicSpaceCard = ({ topicSpace, menu }: TopicSpaceCardProps) => {
   const router = useRouter();
+
+  const PopoverMenu = ({ topicSpace }: { topicSpace: TopicSpaceResponse }) => {
+    return (
+      <Popover className="hidden group-hover:block data-[open]:block">
+        <PopoverButton className="z-10 !h-8 !w-8 rounded-md bg-slate-600/90 !p-2">
+          <DotHorizontalIcon height={16} width={16} color="white" />
+        </PopoverButton>
+        <PopoverPanel
+          anchor="bottom"
+          className="flex flex-col rounded-md bg-black/20 py-2 text-slate-50 backdrop-blur-2xl"
+        >
+          {menu?.(topicSpace)}
+        </PopoverPanel>
+      </Popover>
+    );
+  };
+
   return (
-    <div className="relative flex w-full flex-col gap-4 rounded-md border border-slate-400 p-4">
+    <div className="group relative flex w-full flex-col gap-4 rounded-md border border-slate-400 p-4">
       <button
         className="absolute inset-0 hover:bg-slate-50/10"
         onClick={() => {
           router.push(`/topic-spaces/${topicSpace.id}`);
         }}
       ></button>
+      {menu && (
+        <div className="absolute right-4">
+          <PopoverMenu topicSpace={topicSpace} />
+        </div>
+      )}
       <div className="flex flex-row items-start justify-between">
         <div className="flex flex-row items-center gap-3">
           {topicSpace.image ? (
@@ -56,9 +79,6 @@ export const TopicSpaceCard = ({ topicSpace }: TopicSpaceCardProps) => {
             </div>
           </div>
         </div>
-        <Button className="z-10 !h-8 !w-8 bg-transparent !p-2 hover:bg-slate-50/10">
-          <DotHorizontalIcon height={16} width={16} color="white" />
-        </Button>
       </div>
 
       <div className="flex flex-row items-center justify-start gap-4">

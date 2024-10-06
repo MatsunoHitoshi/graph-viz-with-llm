@@ -256,8 +256,8 @@ export const D3ForceGraph = ({
                   }
                   cx={graphNode.x}
                   cy={graphNode.y}
-                  stroke="#a1511a"
-                  strokeWidth={queryFiltered ? 2 : 0}
+                  stroke="#eae80c"
+                  strokeWidth={queryFiltered ? 2.5 : 0}
                   onClick={() => {
                     if (graphNode.id === focusedNode?.id) {
                       setFocusedNode(undefined);

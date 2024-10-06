@@ -5,15 +5,21 @@ import { TabsContainer } from "../tab/tab";
 import { DocumentList } from "../list/document-list";
 import { DocumentDetail } from "./document-detail";
 import { Button } from "../button/button";
-import { PlusIcon } from "../icons";
+import { PlusIcon, TrashIcon } from "../icons";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { DeleteModal } from "../modal/delete-modal";
 export const Documents = ({ id }: { id?: string }) => {
   const { data: session } = useSession();
-  const { data: documents } = api.sourceDocument.getListBySession.useQuery();
+  const { data: documents, refetch } =
+    api.sourceDocument.getListBySession.useQuery();
   const document = documents?.find((document) => {
     return document.id === id;
   });
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [deleteIntentId, setDeleteIntentId] = useState<string>();
   const router = useRouter();
+
   if (!session) return null;
   return (
     <TabsContainer>
@@ -34,7 +40,32 @@ export const Documents = ({ id }: { id?: string }) => {
               </Button>
             </div>
 
-            {documents && <DocumentList documents={documents} id={id} />}
+            {documents && (
+              <DocumentList
+                documents={documents}
+                id={id}
+                menu={(document) => {
+                  return (
+                    <div className="flex min-w-[150px] flex-col">
+                      <button
+                        className="w-full px-2 py-1 hover:bg-slate-50/10"
+                        onClick={() => {
+                          setDeleteIntentId(document.id);
+                          setDeleteModalOpen(true);
+                        }}
+                      >
+                        <div className="flex flex-row items-center gap-1">
+                          <div className="h-4 w-4">
+                            <TrashIcon width={16} height={16} color="#ea1c0c" />
+                          </div>
+                          <div className="text-error-red">削除</div>
+                        </div>
+                      </button>
+                    </div>
+                  );
+                }}
+              />
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -47,6 +78,15 @@ export const Documents = ({ id }: { id?: string }) => {
           )}
         </div>
       </div>
+      {deleteIntentId && (
+        <DeleteModal
+          id={deleteIntentId}
+          type="sourceDocument"
+          isOpen={deleteModalOpen}
+          setIsOpen={setDeleteModalOpen}
+          refetch={refetch}
+        />
+      )}
     </TabsContainer>
   );
 };

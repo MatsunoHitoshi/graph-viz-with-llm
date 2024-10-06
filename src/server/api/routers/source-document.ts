@@ -29,7 +29,7 @@ export const sourceDocumentRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const document = await ctx.db.sourceDocument.findFirst({
-        where: { id: input.id },
+        where: { id: input.id, isDeleted: false },
         include: { user: true },
       });
       if (document?.user.id !== ctx.session?.user.id) {
@@ -42,7 +42,7 @@ export const sourceDocumentRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const document = await ctx.db.sourceDocument.findFirst({
-        where: { id: input.id },
+        where: { id: input.id, isDeleted: false },
         include: { user: true },
       });
       if (!document) {
@@ -54,7 +54,7 @@ export const sourceDocumentRouter = createTRPCRouter({
   getListBySession: protectedProcedure.query(({ ctx }) => {
     const userId = ctx.session.user.id;
     return ctx.db.sourceDocument.findMany({
-      where: { userId: userId },
+      where: { userId: userId, isDeleted: false },
       include: { graph: true },
       orderBy: { createdAt: "desc" },
     });
@@ -71,6 +71,17 @@ export const sourceDocumentRouter = createTRPCRouter({
         },
       });
       return document;
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const topicSpace = ctx.db.sourceDocument.update({
+        where: { id: input.id },
+        data: { isDeleted: true },
+      });
+
+      return topicSpace;
     }),
 
   createWithGraphData: protectedProcedure

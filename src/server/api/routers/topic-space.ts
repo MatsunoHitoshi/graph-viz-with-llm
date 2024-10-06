@@ -50,9 +50,15 @@ export const TopicSpaceRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
-        where: { id: input.id },
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
         include: {
-          sourceDocuments: { include: { graph: true } },
+          sourceDocuments: {
+            where: { isDeleted: false },
+            include: { graph: true },
+          },
           admins: true,
           tags: true,
         },
@@ -73,9 +79,15 @@ export const TopicSpaceRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
-        where: { id: input.id },
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
         include: {
-          sourceDocuments: { include: { graph: true } },
+          sourceDocuments: {
+            where: { isDeleted: false },
+            include: { graph: true },
+          },
           admins: true,
           tags: true,
         },
@@ -87,9 +99,9 @@ export const TopicSpaceRouter = createTRPCRouter({
   getListBySession: protectedProcedure.query(({ ctx }) => {
     const userId = ctx.session.user.id;
     return ctx.db.topicSpace.findMany({
-      where: { admins: { some: { id: userId } } },
+      where: { admins: { some: { id: userId } }, isDeleted: false },
       include: {
-        sourceDocuments: true,
+        sourceDocuments: { where: { isDeleted: false } },
         admins: true,
         tags: true,
         activities: true,
@@ -102,7 +114,7 @@ export const TopicSpaceRouter = createTRPCRouter({
     .input(TopicSpaceCreateSchema)
     .mutation(async ({ ctx, input }) => {
       const document = await ctx.db.sourceDocument.findFirst({
-        where: { id: input.documentId },
+        where: { id: input.documentId, isDeleted: false },
         include: { graph: true },
       });
       const topicSpace = ctx.db.topicSpace.create({
@@ -115,6 +127,17 @@ export const TopicSpaceRouter = createTRPCRouter({
           graphData: document?.graph?.dataJson ?? {},
         },
       });
+      return topicSpace;
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const topicSpace = ctx.db.topicSpace.update({
+        where: { id: input.id },
+        data: { isDeleted: true },
+      });
+
       return topicSpace;
     }),
 

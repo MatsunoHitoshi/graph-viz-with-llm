@@ -8,11 +8,13 @@ export const TopicSpaceList = ({
   start = 0,
   end = topicSpaces.length,
   setTopicSpaceCreateModalOpen,
+  menu,
 }: {
   topicSpaces: TopicSpaceResponse[];
   start?: number;
   end?: number;
   setTopicSpaceCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  menu?: (topicSpace: TopicSpaceResponse) => React.ReactNode;
 }) => {
   return (
     <div className="flex flex-col gap-3">
@@ -34,7 +36,7 @@ export const TopicSpaceList = ({
           {topicSpaces.slice(start, end).map((topicSpace) => {
             return (
               <div key={topicSpace.id}>
-                <TopicSpaceCard topicSpace={topicSpace} />
+                <TopicSpaceCard topicSpace={topicSpace} menu={menu} />
               </div>
             );
           })}

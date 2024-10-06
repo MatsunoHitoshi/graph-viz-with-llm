@@ -24,7 +24,7 @@ export const documentGraphRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       console.log(input.id);
       return ctx.db.documentGraph.findFirst({
-        where: { id: input.id },
+        where: { id: input.id, sourceDocument: { isDeleted: false } },
         include: { sourceDocument: true },
       });
     }),

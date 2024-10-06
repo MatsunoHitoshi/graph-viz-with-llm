@@ -145,9 +145,11 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
                     >
                       <div className="flex flex-row items-center gap-1">
                         <div className="h-4 w-4">
-                          <TrashIcon width={16} height={16} color="white" />
+                          <TrashIcon width={16} height={16} color="#ea1c0c" />
                         </div>
-                        <div>トピックスペースから削除</div>
+                        <div className="text-error-red">
+                          トピックスペースから削除
+                        </div>
                       </div>
                     </button>
                   </div>

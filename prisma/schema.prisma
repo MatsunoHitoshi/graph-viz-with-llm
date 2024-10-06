@@ -79,6 +79,7 @@ model SourceDocument {
   url       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -93,6 +94,7 @@ model DocumentGraph {
   dataJson  Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -112,9 +114,9 @@ model TopicSpace {
   description     String?
   image           String?
   star            Int             @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  isDeleted       Boolean         @default(false)
 
   sourceDocuments  SourceDocument[]
   admins           User[]

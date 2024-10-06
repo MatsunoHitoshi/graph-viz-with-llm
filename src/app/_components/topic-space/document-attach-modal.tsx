@@ -40,6 +40,7 @@ const emptyDocument: DocumentResponse = {
   graph: null,
   createdAt: new Date(),
   updatedAt: new Date(),
+  isDeleted: false,
 };
 
 export const DocumentAttachModal = ({

@@ -41,6 +41,7 @@ export const DocumentList = ({
       </Popover>
     );
   };
+
   return (
     <div className="flex flex-col divide-y divide-slate-600 rounded-md border border-slate-400">
       {documents.length === 0 ? (
