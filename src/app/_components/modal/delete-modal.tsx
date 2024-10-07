@@ -53,10 +53,12 @@ export const DeleteModal = ({
           { id: id },
           {
             onSuccess: (_res) => {
+              refetch();
               setIsOpen(false);
             },
             onError: (e) => {
               console.log(e);
+              refetch();
               setIsOpen(false);
             },
           },
