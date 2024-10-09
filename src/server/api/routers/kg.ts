@@ -108,6 +108,8 @@ const graphExtractionWithLangChain = async (localFilePath: string) => {
     }),
   );
 
+  console.log("documents: ", documents);
+
   const llmGraphDocuments =
     await llmTransformer.convertToGraphDocuments(documents);
 
@@ -238,6 +240,7 @@ export const kgRouter = createTRPCRouter({
     const schema = "";
 
     try {
+      console.log("type: ", mode);
       const nodesAndRelationships =
         mode === "langChain"
           ? await graphExtractionWithLangChain(localFilePath)

@@ -41,7 +41,7 @@ export const Toolbar = ({
         )}
         {!!setIsLinkFiltered && (
           <div className="flex flex-row items-center gap-2">
-            <div className="text-sm">Linkフィルタ</div>
+            <div className="truncate text-sm">Linkフィルタ</div>
             <div>
               <Switch
                 checked={isLinkFiltered}

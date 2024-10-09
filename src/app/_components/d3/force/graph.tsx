@@ -57,9 +57,7 @@ export const D3ForceGraph = ({
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
-  const initNodes = isLinkFiltered
-    ? linkFilter(nodes as CustomNodeType[], initLinks)
-    : (nodes as CustomNodeType[]);
+  const initNodes = isLinkFiltered ? linkFilter(nodes, initLinks) : nodes;
 
   const newLinks = useMemo(() => {
     return initLinks.map((d) => {
@@ -73,6 +71,7 @@ export const D3ForceGraph = ({
     });
   }, [initLinks, initNodes]);
 
+  const [currentScale, setCurrentScale] = useState<number>(1);
   const [graphNodes, setGraphNodes] = useState<CustomNodeType[]>(initNodes);
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
   const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
@@ -96,7 +95,7 @@ export const D3ForceGraph = ({
       .force("charge", forceManyBody())
       .force("x", forceX())
       .force("y", forceY())
-      .force("collision", forceCollide(0.8));
+      .force("collision", forceCollide(0.6));
 
     simulation.on("tick", () => {
       setGraphNodes([
@@ -104,9 +103,26 @@ export const D3ForceGraph = ({
           const neighborLinkCount = initLinks.filter((link) => {
             return link.sourceId === d.id || link.targetId === d.id;
           }).length;
+          const visibleByScaling =
+            currentScale > 4
+              ? 0
+              : currentScale > 3
+                ? 0
+                : currentScale > 2
+                  ? 3
+                  : currentScale > 1
+                    ? 5
+                    : currentScale > 0.9
+                      ? 7
+                      : 9;
+          const nodeVisible = !(
+            nodes.length > 600 && (neighborLinkCount ?? 0) <= visibleByScaling
+          );
+
           return {
             ...d,
             neighborLinkCount: neighborLinkCount,
+            visible: nodeVisible,
           };
         }),
       ]);
@@ -127,6 +143,8 @@ export const D3ForceGraph = ({
       .scaleExtent([0.1, 10])
       .on("zoom", (event: d3.D3ZoomEvent<Element, unknown>) => {
         zoomScreen.attr("transform", event.transform.toString());
+        const currentScale = event.transform.k;
+        setCurrentScale(currentScale);
       });
 
     zoomScreen.call(zoomBehavior);
@@ -135,7 +153,6 @@ export const D3ForceGraph = ({
       zoomScreen.on(".zoom", null);
     };
   }, []);
-
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
@@ -203,33 +220,55 @@ export const D3ForceGraph = ({
               const modSource = source as CustomNodeType;
               const modTarget = target as CustomNodeType;
               const isFocused = graphLink.id === focusedLink?.id;
-              return (
-                <line
-                  key={`${modSource.id}-${type}-${modTarget.id}`}
-                  stroke={isFocused ? "#ef7234" : "white"}
-                  className="link cursor-pointer"
-                  strokeWidth={isFocused ? 4 : 3}
-                  strokeOpacity={isFocused ? 1 : 0.4}
-                  x1={modSource.x}
-                  y1={modSource.y}
-                  x2={modTarget.x}
-                  y2={modTarget.y}
-                  onClick={() => {
-                    if (graphLink.id === focusedLink?.id) {
-                      setFocusedLink(undefined);
-                    } else {
-                      setFocusedLink(graphLink);
-                    }
-                  }}
-                />
-              );
+
+              const sourceNode = getNodeById(modSource.id, graphNodes);
+              const targetNode = getNodeById(modTarget.id, graphNodes);
+
+              if (
+                ((sourceNode?.visible ?? false) ||
+                  (targetNode?.visible ?? false)) &&
+                modSource.x !== undefined &&
+                modTarget.x !== undefined &&
+                modSource.y !== undefined &&
+                modTarget.y !== undefined
+              ) {
+                return (
+                  <g
+                    className="link cursor-pointer"
+                    key={`${modSource.id}-${type}-${modTarget.id}`}
+                    onClick={() => {
+                      if (graphLink.id === focusedLink?.id) {
+                        setFocusedLink(undefined);
+                      } else {
+                        setFocusedLink(graphLink);
+                      }
+                    }}
+                  >
+                    <line
+                      stroke={isFocused ? "#ef7234" : "white"}
+                      strokeWidth={isFocused ? 4 : 3}
+                      strokeOpacity={isFocused ? 1 : 0.4}
+                      x1={modSource.x}
+                      y1={modSource.y}
+                      x2={modTarget.x}
+                      y2={modTarget.y}
+                    />
+                    {currentScale > 3.5 && (
+                      <text
+                        x={(modSource.x + modTarget.x) / 2}
+                        y={(modSource.y + modTarget.y) / 2}
+                        textAnchor="middle"
+                        fill={"darkgray"}
+                        fontSize={3}
+                      >
+                        {graphLink.type}
+                      </text>
+                    )}
+                  </g>
+                );
+              }
             })}
             {graphNodes.map((graphNode) => {
-              // if (graphNode.id === 1) {
-              //   console.log(graphNode.x);
-              //   console.log(graphNode.y);
-              // }
-
               const isFocused = graphNode.id === focusedNode?.id;
               const graphUnselected = selectedGraphData
                 ? !selectedGraphData.nodes.some((node) => {
@@ -242,31 +281,52 @@ export const D3ForceGraph = ({
                 graphNode.name
                   .toLowerCase()
                   .includes(nodeSearchQuery.toLowerCase());
-              return (
-                <circle
-                  key={graphNode.id}
-                  r={5 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
-                  className="node cursor-pointer"
-                  fill={
-                    isFocused
-                      ? "#ef7234"
-                      : graphUnselected
-                        ? "#324557"
-                        : "whitesmoke"
-                  }
-                  cx={graphNode.x}
-                  cy={graphNode.y}
-                  stroke="#eae80c"
-                  strokeWidth={queryFiltered ? 2.5 : 0}
-                  onClick={() => {
-                    if (graphNode.id === focusedNode?.id) {
-                      setFocusedNode(undefined);
-                    } else {
-                      setFocusedNode(graphNode);
-                    }
-                  }}
-                />
-              );
+
+              if ((graphNode.visible ?? false) || queryFiltered) {
+                return (
+                  <g
+                    key={graphNode.id}
+                    className="node cursor-pointer"
+                    onClick={() => {
+                      if (graphNode.id === focusedNode?.id) {
+                        setFocusedNode(undefined);
+                      } else {
+                        setFocusedNode(graphNode);
+                      }
+                    }}
+                  >
+                    <circle
+                      r={5 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
+                      fill={
+                        isFocused
+                          ? "#ef7234"
+                          : graphUnselected
+                            ? "#324557"
+                            : "whitesmoke"
+                      }
+                      cx={graphNode.x}
+                      cy={graphNode.y}
+                      stroke="#eae80c"
+                      strokeWidth={queryFiltered ? 2.5 : 0}
+                    />
+                    {currentScale > 0.7 && (
+                      <text
+                        x={graphNode.x}
+                        y={graphNode.y} // テキストをノードの上に配置
+                        textAnchor="middle"
+                        fill={queryFiltered ? "#eab000" : "dimgray"}
+                        fontSize={
+                          currentScale > 4 ? 3 : currentScale > 3 ? 5 : 8
+                        }
+                      >
+                        {graphNode.name}
+                      </text>
+                    )}
+                  </g>
+                );
+              } else {
+                return;
+              }
             })}
           </g>
         </svg>
