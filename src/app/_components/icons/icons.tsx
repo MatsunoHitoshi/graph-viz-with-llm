@@ -359,3 +359,47 @@ export const TrashIcon = ({
     </svg>
   );
 };
+
+export const TriangleRightIcon = ({
+  width,
+  height,
+  color = "currentColor",
+}: IconProps) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 15 15"
+      fill={color}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 11L6 4L10.5 7.5L6 11Z"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      ></path>
+    </svg>
+  );
+};
+
+export const TriangleDownIcon = ({
+  width,
+  height,
+  color = "currentColor",
+}: IconProps) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 15 15"
+      fill={color}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M4 6H11L7.5 10.5L4 6Z"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      ></path>
+    </svg>
+  );
+};

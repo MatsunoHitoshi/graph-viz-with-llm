@@ -17,8 +17,7 @@ import {
 import type { ZoomBehavior } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "../../icons";
-import { Button } from "../../button/button";
+import { GraphInfoPanel } from "./graph-info-panel";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -76,7 +75,6 @@ export const D3ForceGraph = ({
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
   const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
   const [focusedLink, setFocusedLink] = useState<CustomLinkType>();
-  const [isPanelOpen, setIsPanelOpen] = useState<boolean>(true);
 
   useEffect(() => {
     const centerX = (width ?? 10) / 2;
@@ -156,57 +154,14 @@ export const D3ForceGraph = ({
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
-        <div
-          className={`absolute flex flex-row items-start gap-2 rounded-[10px] p-4 backdrop-blur-sm ${isPanelOpen ? "right-5 w-[320px]" : "right-14 w-0"}`}
-        >
-          <Button
-            onClick={() => {
-              setIsPanelOpen(!isPanelOpen);
-            }}
-            className="!h-8 !w-8 !p-2"
-          >
-            {isPanelOpen ? (
-              <ChevronRightIcon width={16} height={16} color="white" />
-            ) : (
-              <ChevronLeftIcon width={16} height={16} color="white" />
-            )}
-          </Button>
-
-          {isPanelOpen && (
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <div className="font-semibold text-slate-50">
-                  選択しているNode
-                </div>
-                {focusedNode && (
-                  <div className=" flex  flex-col text-orange-500">
-                    <div className="font-semibold">{focusedNode.name}</div>
-                    <div>ラベル：{focusedNode.label}</div>
-                    {/* <div>{JSON.stringify(focusedNode.properties)}</div> */}
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="font-semibold text-slate-50">
-                  選択しているLink
-                </div>
-                {focusedLink && (
-                  <div className="flex max-w-[300px] flex-col text-orange-500">
-                    <div className="font-semibold">
-                      {focusedLink.sourceName}
-                      {"-["}
-                      {focusedLink.type}
-                      {"]->"}
-                      {focusedLink.targetName}
-                    </div>
-                    {/* <div>{JSON.stringify(focusedLink.properties)}</div> */}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
+        <GraphInfoPanel
+          focusedNode={focusedNode}
+          focusedLink={focusedLink}
+          graphNodes={graphNodes}
+          graphLinks={graphLinks}
+          // maxHeight={height}
+          setFocusNode={setFocusedNode}
+        />
         <svg
           id="container"
           width={width}
@@ -246,7 +201,7 @@ export const D3ForceGraph = ({
                   >
                     <line
                       stroke={isFocused ? "#ef7234" : "white"}
-                      strokeWidth={isFocused ? 4 : 3}
+                      strokeWidth={isFocused ? 3 : 2}
                       strokeOpacity={isFocused ? 1 : 0.4}
                       x1={modSource.x}
                       y1={modSource.y}
@@ -312,7 +267,7 @@ export const D3ForceGraph = ({
                     {currentScale > 0.7 && (
                       <text
                         x={graphNode.x}
-                        y={graphNode.y} // テキストをノードの上に配置
+                        y={graphNode.y}
                         textAnchor="middle"
                         fill={queryFiltered ? "#eab000" : "dimgray"}
                         fontSize={
