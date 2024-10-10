@@ -1,6 +1,5 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { type RelationshipType } from "./get-nodes-and-relationships-from-result";
-import type { Prisma } from "@prisma/client";
 
 const generateSystemMessageForNodes = () => {
   return `
