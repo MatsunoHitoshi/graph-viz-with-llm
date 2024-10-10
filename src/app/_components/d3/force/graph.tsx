@@ -17,7 +17,7 @@ import {
 import type { ZoomBehavior } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { useEffect, useMemo, useState } from "react";
-// import { GraphInfoPanel } from "./graph-info-panel";
+import { GraphInfoPanel } from "./graph-info-panel";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -154,14 +154,14 @@ export const D3ForceGraph = ({
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
-        {/* <GraphInfoPanel
+        <GraphInfoPanel
           focusedNode={focusedNode}
           focusedLink={focusedLink}
           graphNodes={graphNodes}
           graphLinks={graphLinks}
           // maxHeight={height}
           setFocusNode={setFocusedNode}
-        /> */}
+        />
         <svg
           id="container"
           width={width}
