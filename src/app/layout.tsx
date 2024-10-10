@@ -9,8 +9,8 @@ import { Header } from "./_components/header/header";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
-  title: "Graph Visualization with LLM",
-  description: "Graph Visualization with LLM",
+  title: "Document Semantic Connector",
+  description: "Document Semantic Connector",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 

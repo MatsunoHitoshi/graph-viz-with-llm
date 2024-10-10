@@ -1,4 +1,4 @@
-# Graph Visualization with LLM
+# Graph Visualization with LLM (Document Semantic Connector)
 
 ## Visualizing Conceptual Relationships from your Document
 
@@ -15,5 +15,3 @@ This is a tool to visualize the relationships between concepts from pdf document
 3. Run `npm install` to install package dependencies.
 4. Run `npm run dev` to launch your local development environment.
 5. Access http://localhost:3000/.
-
-

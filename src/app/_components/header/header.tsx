@@ -21,7 +21,7 @@ export const Header = () => {
               }
             }}
           >
-            Graph Visualization with LLM
+            Document Semantic Connector
           </Button>
         </div>
         {!session ? (
