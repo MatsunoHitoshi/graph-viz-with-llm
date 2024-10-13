@@ -189,11 +189,11 @@ export const D3ForceGraph = ({
                 modSource.y !== undefined &&
                 modTarget.y !== undefined
               ) {
-                const gradientTo: number | undefined = !sourceNode?.visible
-                  ? sourceNode?.id
-                  : !targetNode?.visible
-                    ? targetNode?.id
-                    : undefined;
+                // const gradientTo: number | undefined = !sourceNode?.visible
+                //   ? sourceNode?.id
+                //   : !targetNode?.visible
+                //     ? targetNode?.id
+                //     : undefined;
 
                 return (
                   <g
@@ -264,7 +264,7 @@ export const D3ForceGraph = ({
                   .toLowerCase()
                   .includes(nodeSearchQuery.toLowerCase());
 
-              if ((graphNode.visible ?? false) || queryFiltered) {
+              if ((graphNode.visible ?? false) || queryFiltered || isFocused) {
                 return (
                   <g
                     key={graphNode.id}
