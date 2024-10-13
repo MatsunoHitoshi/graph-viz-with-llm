@@ -109,12 +109,12 @@ export const D3ForceGraph = ({
               : currentScale > 3
                 ? 0
                 : currentScale > 2
-                  ? 3
+                  ? 4
                   : currentScale > 1
-                    ? 5
+                    ? 6
                     : currentScale > 0.9
-                      ? 7
-                      : 9;
+                      ? 8
+                      : 10;
           const nodeVisible = !(
             nodes.length > 600 && (neighborLinkCount ?? 0) <= visibleByScaling
           );
@@ -189,11 +189,29 @@ export const D3ForceGraph = ({
                 modSource.y !== undefined &&
                 modTarget.y !== undefined
               ) {
-                // const gradientTo: number | undefined = !sourceNode?.visible
-                //   ? sourceNode?.id
-                //   : !targetNode?.visible
+                const gradientTo: number | undefined = !sourceNode?.visible
+                  ? sourceNode?.id
+                  : !targetNode?.visible
+                    ? targetNode?.id
+                    : undefined;
+
+                // const gradientFrom: number | undefined =
+                //   gradientTo === sourceNode?.id
                 //     ? targetNode?.id
-                //     : undefined;
+                //     : sourceNode?.id;
+
+                // console.log("-----");
+                // console.log(
+                //   "sourceNode: ",
+                //   sourceNode?.id,
+                //   sourceNode?.visible,
+                // );
+                // console.log(
+                //   "targetNode: ",
+                //   targetNode?.id,
+                //   targetNode?.visible,
+                // );
+                // console.log(gradientFrom, " -> ", gradientTo);
 
                 return (
                   <g
@@ -213,11 +231,11 @@ export const D3ForceGraph = ({
                       //   isFocused
                       //     ? "#ef7234"
                       //     : !!gradientTo
-                      //       ? `url(#gradient-${gradientTo})`
+                      //       ? `url(#gradient-${graphLink.id})`
                       //       : "white"
                       // }
                       strokeWidth={isFocused ? 3 : 2}
-                      strokeOpacity={isFocused ? 1 : 0.3}
+                      strokeOpacity={isFocused ? 1 : !!gradientTo ? 0.04 : 0.4}
                       x1={modSource.x}
                       y1={modSource.y}
                       x2={modTarget.x}
@@ -225,14 +243,18 @@ export const D3ForceGraph = ({
                     />
                     {/* <defs>
                       <linearGradient
-                        id={`gradient-${gradientTo}`}
+                        id={`gradient-${graphLink.id}`}
                         x1={gradientTo === modSource.id ? "0%" : "100%"}
                         y1={gradientTo === modSource.id ? "0%" : "100%"}
-                        x2={gradientTo === modTarget.id ? "0%" : "100%"}
-                        y2={gradientTo === modTarget.id ? "0%" : "100%"}
+                        x2={gradientFrom === modTarget.id ? "100%" : "0%"}
+                        y2={gradientFrom === modTarget.id ? "100%" : "0%"}
                       >
                         <stop offset="0%" stopColor="white" stopOpacity={0} />
-                        <stop offset="100%" stopColor="white" stopOpacity={1} />
+                        <stop
+                          offset="100%"
+                          stopColor="white"
+                          stopOpacity={0.3}
+                        />
                       </linearGradient>
                     </defs> */}
                     {currentScale > 3.5 && (
