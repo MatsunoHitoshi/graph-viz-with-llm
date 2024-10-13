@@ -71,6 +71,8 @@ export const D3ForceGraph = ({
   }, [initLinks, initNodes]);
 
   const [currentScale, setCurrentScale] = useState<number>(1);
+  const [currentTransformX, setCurrentTransformX] = useState<number>(0);
+  const [currentTransformY, setCurrentTransformY] = useState<number>(0);
   const [graphNodes, setGraphNodes] = useState<CustomNodeType[]>(initNodes);
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
   const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
@@ -136,20 +138,19 @@ export const D3ForceGraph = ({
   }, [graphNodes, newLinks, initNodes, width, height, initLinks]);
 
   useEffect(() => {
-    const zoomScreen = select<Element, unknown>("#zoom");
+    const zoomScreen = select<Element, unknown>("#container");
     const zoomBehavior: ZoomBehavior<Element, unknown> = zoom()
       .scaleExtent([0.1, 10])
       .on("zoom", (event: d3.D3ZoomEvent<Element, unknown>) => {
-        zoomScreen.attr("transform", event.transform.toString());
-        const currentScale = event.transform.k;
-        setCurrentScale(currentScale);
+        const k = event.transform.k;
+        const x = event.transform.x;
+        const y = event.transform.y;
+        setCurrentScale(k);
+        setCurrentTransformX(x);
+        setCurrentTransformY(y);
       });
 
     zoomScreen.call(zoomBehavior);
-
-    return () => {
-      zoomScreen.on(".zoom", null);
-    };
   }, []);
   return (
     <div className="flex flex-col">
@@ -168,8 +169,9 @@ export const D3ForceGraph = ({
           height={height}
           viewBox={`0 0 ${String(width)} ${String(height)}`}
         >
-          <g id="zoom">
-            <rect width={width} height={height} rx={8} fill={"#1e293b"} />
+          <g
+            transform={`translate(${currentTransformX},${currentTransformY})scale(${currentScale})`}
+          >
             {graphLinks.map((graphLink) => {
               const { source, target, type } = graphLink;
               const modSource = source as CustomNodeType;
@@ -187,6 +189,12 @@ export const D3ForceGraph = ({
                 modSource.y !== undefined &&
                 modTarget.y !== undefined
               ) {
+                const gradientTo: number | undefined = !sourceNode?.visible
+                  ? sourceNode?.id
+                  : !targetNode?.visible
+                    ? targetNode?.id
+                    : undefined;
+
                 return (
                   <g
                     className="link cursor-pointer"
@@ -201,13 +209,32 @@ export const D3ForceGraph = ({
                   >
                     <line
                       stroke={isFocused ? "#ef7234" : "white"}
+                      // stroke={
+                      //   isFocused
+                      //     ? "#ef7234"
+                      //     : !!gradientTo
+                      //       ? `url(#gradient-${gradientTo})`
+                      //       : "white"
+                      // }
                       strokeWidth={isFocused ? 3 : 2}
-                      strokeOpacity={isFocused ? 1 : 0.4}
+                      strokeOpacity={isFocused ? 1 : 0.3}
                       x1={modSource.x}
                       y1={modSource.y}
                       x2={modTarget.x}
                       y2={modTarget.y}
                     />
+                    {/* <defs>
+                      <linearGradient
+                        id={`gradient-${gradientTo}`}
+                        x1={gradientTo === modSource.id ? "0%" : "100%"}
+                        y1={gradientTo === modSource.id ? "0%" : "100%"}
+                        x2={gradientTo === modTarget.id ? "0%" : "100%"}
+                        y2={gradientTo === modTarget.id ? "0%" : "100%"}
+                      >
+                        <stop offset="0%" stopColor="white" stopOpacity={0} />
+                        <stop offset="100%" stopColor="white" stopOpacity={1} />
+                      </linearGradient>
+                    </defs> */}
                     {currentScale > 3.5 && (
                       <text
                         x={(modSource.x + modTarget.x) / 2}
