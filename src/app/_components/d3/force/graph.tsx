@@ -89,13 +89,13 @@ export const D3ForceGraph = ({
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
           .distance(35)
-          .strength(0.2),
+          .strength(0.1),
       )
       .force("center", forceCenter(centerX, centerY))
       .force("charge", forceManyBody())
       .force("x", forceX())
       .force("y", forceY())
-      .force("collision", forceCollide(0.6));
+      .force("collision", forceCollide(0.5));
 
     simulation.on("tick", () => {
       setGraphNodes([
@@ -116,7 +116,7 @@ export const D3ForceGraph = ({
                       ? 8
                       : 10;
           const nodeVisible = !(
-            nodes.length > 600 && (neighborLinkCount ?? 0) <= visibleByScaling
+            nodes.length > 800 && (neighborLinkCount ?? 0) <= visibleByScaling
           );
 
           return {
@@ -300,7 +300,7 @@ export const D3ForceGraph = ({
                     }}
                   >
                     <circle
-                      r={5 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
+                      r={4 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
                       fill={
                         isFocused
                           ? "#ef7234"
