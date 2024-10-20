@@ -95,7 +95,7 @@ export const D3ForceGraph = ({
       .force("charge", forceManyBody())
       .force("x", forceX())
       .force("y", forceY())
-      .force("collision", forceCollide(0.5));
+      .force("collision", forceCollide(0.7));
 
     simulation.on("tick", () => {
       setGraphNodes([
@@ -263,7 +263,7 @@ export const D3ForceGraph = ({
                         y={(modSource.y + modTarget.y) / 2}
                         textAnchor="middle"
                         fill={"darkgray"}
-                        fontSize={3}
+                        fontSize={2.5}
                       >
                         {graphLink.type}
                       </text>
@@ -300,7 +300,7 @@ export const D3ForceGraph = ({
                     }}
                   >
                     <circle
-                      r={4 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
+                      r={3.6 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
                       fill={
                         isFocused
                           ? "#ef7234"
@@ -320,7 +320,7 @@ export const D3ForceGraph = ({
                         textAnchor="middle"
                         fill={queryFiltered ? "#eab000" : "dimgray"}
                         fontSize={
-                          currentScale > 4 ? 3 : currentScale > 3 ? 5 : 8
+                          currentScale > 4 ? 3 : currentScale > 3 ? 4 : 6
                         }
                       >
                         {graphNode.name}

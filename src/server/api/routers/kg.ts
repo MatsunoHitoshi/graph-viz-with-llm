@@ -79,7 +79,7 @@ Relationships: ["alice", "roommate", "bob", {"start": 2021}], ["alice", "owns", 
 };
 
 const graphExtractionWithLangChain = async (localFilePath: string) => {
-  const llm = new ChatOpenAI({ temperature: 0.0, model: "gpt-4o" });
+  const llm = new ChatOpenAI({ temperature: 0.0, model: "gpt-4o-mini" });
   const llmTransformer = new LLMGraphTransformer({ llm });
 
   const loader = new PDFLoader(localFilePath);
