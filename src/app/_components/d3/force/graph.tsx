@@ -11,13 +11,11 @@ import {
   forceX,
   forceY,
   forceCollide,
-  select,
-  zoom,
 } from "d3";
-import type { ZoomBehavior } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { useEffect, useMemo, useState } from "react";
 import { GraphInfoPanel } from "./graph-info-panel";
+import { D3ZoomProvider } from "../zoom";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -46,6 +44,7 @@ export const D3ForceGraph = ({
   selectedGraphData,
   isLinkFiltered = false,
   nodeSearchQuery,
+  topicSpaceId,
 }: {
   height: number;
   width: number;
@@ -53,6 +52,7 @@ export const D3ForceGraph = ({
   selectedGraphData?: GraphDocument | null;
   isLinkFiltered?: boolean;
   nodeSearchQuery?: string;
+  topicSpaceId?: string;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
@@ -135,23 +135,17 @@ export const D3ForceGraph = ({
     return () => {
       simulation.stop();
     };
-  }, [graphNodes, newLinks, initNodes, width, height, initLinks]);
+  }, [
+    graphNodes,
+    newLinks,
+    initNodes,
+    width,
+    height,
+    initLinks,
+    currentScale,
+    nodes.length,
+  ]);
 
-  useEffect(() => {
-    const zoomScreen = select<Element, unknown>("#container");
-    const zoomBehavior: ZoomBehavior<Element, unknown> = zoom()
-      .scaleExtent([0.1, 10])
-      .on("zoom", (event: d3.D3ZoomEvent<Element, unknown>) => {
-        const k = event.transform.k;
-        const x = event.transform.x;
-        const y = event.transform.y;
-        setCurrentScale(k);
-        setCurrentTransformX(x);
-        setCurrentTransformY(y);
-      });
-
-    zoomScreen.call(zoomBehavior);
-  }, []);
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
@@ -160,6 +154,7 @@ export const D3ForceGraph = ({
           focusedLink={focusedLink}
           graphNodes={graphNodes}
           graphLinks={graphLinks}
+          topicSpaceId={topicSpaceId}
           // maxHeight={height}
           setFocusNode={setFocusedNode}
         />
@@ -169,8 +164,13 @@ export const D3ForceGraph = ({
           height={height}
           viewBox={`0 0 ${String(width)} ${String(height)}`}
         >
-          <g
-            transform={`translate(${currentTransformX},${currentTransformY})scale(${currentScale})`}
+          <D3ZoomProvider
+            setCurrentScale={setCurrentScale}
+            setCurrentTransformX={setCurrentTransformX}
+            setCurrentTransformY={setCurrentTransformY}
+            currentScale={currentScale}
+            currentTransformX={currentTransformX}
+            currentTransformY={currentTransformY}
           >
             {graphLinks.map((graphLink) => {
               const { source, target, type } = graphLink;
@@ -332,7 +332,7 @@ export const D3ForceGraph = ({
                 return;
               }
             })}
-          </g>
+          </D3ZoomProvider>
         </svg>
       </div>
     </div>

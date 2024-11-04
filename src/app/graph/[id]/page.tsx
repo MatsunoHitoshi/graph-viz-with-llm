@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { GraphEditor } from "@/app/_components/graph";
+import { GraphEditor } from "@/app/_components/view/graph";
 
 type PageParams = { params: { id: string } };
 

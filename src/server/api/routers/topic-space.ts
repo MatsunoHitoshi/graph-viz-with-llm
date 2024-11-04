@@ -45,7 +45,7 @@ const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
   return newGraph;
 };
 
-export const TopicSpaceRouter = createTRPCRouter({
+export const topicSpaceRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {

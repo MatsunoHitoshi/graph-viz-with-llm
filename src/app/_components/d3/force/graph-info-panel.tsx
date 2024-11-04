@@ -20,6 +20,7 @@ type GraphInfoPanelProps = {
   >;
   graphNodes: CustomNodeType[];
   graphLinks: CustomLinkType[];
+  topicSpaceId?: string;
   // maxHeight: number;
 };
 
@@ -29,6 +30,7 @@ export const GraphInfoPanel = ({
   setFocusNode,
   graphNodes,
   graphLinks,
+  topicSpaceId,
   // maxHeight,
 }: GraphInfoPanelProps) => {
   const [isPanelOpen, setIsPanelOpen] = useState<boolean>(true);
@@ -95,13 +97,20 @@ export const GraphInfoPanel = ({
                           {focusedNode.label}
                         </div>
                       </div>
-
-                      {/* <div>{JSON.stringify(focusedNode.properties)}</div> */}
                     </div>
                   )}
                 </>
               </DisclosureButton>
               <DisclosurePanel className="flex w-full flex-col gap-2 pl-5">
+                {!!topicSpaceId && (
+                  <a
+                    className="w-max cursor-pointer rounded-md bg-slate-500 p-2 text-sm text-white"
+                    href={`/topic-spaces/${topicSpaceId}/tree/${focusedNode?.id}`}
+                  >
+                    ツリー表示
+                  </a>
+                )}
+
                 <div className="text-sm">隣接しているノード</div>
                 <div className="flex w-full flex-col divide-y divide-slate-400">
                   {neighborNodes.map((node, index) => {
@@ -144,7 +153,6 @@ export const GraphInfoPanel = ({
                     </div>
                   </div>
                 </div>
-                {/* <div>{JSON.stringify(focusedLink.properties)}</div> */}
               </div>
             )}
           </div>

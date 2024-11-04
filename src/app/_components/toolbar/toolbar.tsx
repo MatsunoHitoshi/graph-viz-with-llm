@@ -10,6 +10,8 @@ type ToolbarProps = {
   setIsEditing?: React.Dispatch<React.SetStateAction<boolean>>;
   setNodeSearchQuery?: React.Dispatch<React.SetStateAction<string>>;
   rightArea?: React.ReactNode;
+  setSourceTargetSwitch?: React.Dispatch<React.SetStateAction<boolean>>;
+  sourceTargetSwitch?: boolean;
 };
 export const Toolbar = ({
   isLinkFiltered,
@@ -20,6 +22,8 @@ export const Toolbar = ({
   setIsEditing,
   setNodeSearchQuery,
   rightArea,
+  setSourceTargetSwitch,
+  sourceTargetSwitch,
 }: ToolbarProps) => {
   return (
     <div className="flex h-[46px] w-full flex-row items-center justify-between px-4">
@@ -46,6 +50,20 @@ export const Toolbar = ({
               <Switch
                 checked={isLinkFiltered}
                 onChange={setIsLinkFiltered}
+                className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
+              >
+                <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+              </Switch>
+            </div>
+          </div>
+        )}
+        {!!setSourceTargetSwitch && (
+          <div className="flex flex-row items-center gap-2">
+            <div className="truncate text-sm">外方向への繋がり</div>
+            <div>
+              <Switch
+                checked={sourceTargetSwitch}
+                onChange={setSourceTargetSwitch}
                 className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
               >
                 <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />

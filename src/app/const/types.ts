@@ -1,4 +1,11 @@
-import type { SourceDocument, User, DocumentGraph, TopicSpace, Tag, Activity } from "@prisma/client";
+import type {
+  SourceDocument,
+  User,
+  DocumentGraph,
+  TopicSpace,
+  Tag,
+  Activity,
+} from "@prisma/client";
 
 export interface TopicSpaceResponse extends TopicSpace {
   sourceDocuments: DocumentResponse[] | null;
@@ -9,6 +16,13 @@ export interface TopicSpaceResponse extends TopicSpace {
 
 export interface DocumentResponse extends SourceDocument {
   graph: DocumentGraph | null;
-  topicSpaces?: TopicSpaceResponse[]
-  tags?: Tag[]
+  topicSpaces?: TopicSpaceResponse[];
+  tags?: Tag[];
 }
+
+export type TreeNode = {
+  id: number;
+  name: string;
+  children?: TreeNode[];
+  label?: string;
+};

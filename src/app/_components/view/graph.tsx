@@ -1,19 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { DocumentForm } from "./form/document-form";
+import { DocumentForm } from "../form/document-form";
 import type { GraphDocument } from "@/server/api/routers/kg";
-import { D3ForceGraph } from "./d3/force/graph";
-import EXAMPLE_DATA from "../const/example-graph.json";
+import { D3ForceGraph } from "../d3/force/graph";
+import EXAMPLE_DATA from "../../const/example-graph.json";
 import { Switch } from "@headlessui/react";
-import { Toolbar } from "./toolbar/toolbar";
+import { Toolbar } from "../toolbar/toolbar";
 import { useRouter } from "next/navigation";
-import { Button } from "./button/button";
+import { Button } from "../button/button";
 import { api } from "@/trpc/react";
-import { ShareIcon } from "./icons";
-import { UrlCopy } from "./url-copy/url-copy";
+import { ShareIcon } from "../icons";
+import { UrlCopy } from "../url-copy/url-copy";
 import { useSearchParams } from "next/navigation";
-import { useWindowSize } from "../_hooks/use-window-size";
+import { useWindowSize } from "../../_hooks/use-window-size";
 
 export const GraphExtraction = () => {
   const { data: session } = useSession();

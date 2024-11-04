@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { GraphExtraction } from "./_components/graph";
+import { GraphExtraction } from "./_components/view/graph";
 import { Suspense } from "react";
 
 const Page: NextPage = async () => {

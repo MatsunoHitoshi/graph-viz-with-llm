@@ -164,6 +164,7 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
               width={graphAreaWidth}
               height={graphAreaHeight}
               graphDocument={topicSpace.graphData as GraphDocument}
+              topicSpaceId={id}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">
