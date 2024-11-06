@@ -12,6 +12,7 @@ import {
 import { D3ZoomProvider } from "../zoom";
 import type { TreeNode } from "@/app/const/types";
 import type { GraphDocument } from "@/server/api/routers/kg";
+import { useRouter } from "next/navigation";
 
 type D3RadialTreeProps = {
   width: number;
@@ -19,6 +20,7 @@ type D3RadialTreeProps = {
   data: TreeNode;
   nodeSearchQuery: string;
   selectedGraphData?: GraphDocument | null;
+  treeScale: number;
 };
 
 export const D3RadialTree = ({
@@ -27,24 +29,31 @@ export const D3RadialTree = ({
   data,
   nodeSearchQuery,
   selectedGraphData,
+  treeScale,
 }: D3RadialTreeProps) => {
   const [currentScale, setCurrentScale] = useState<number>(1);
   const [currentTransformX, setCurrentTransformX] = useState<number>(0);
   const [currentTransformY, setCurrentTransformY] = useState<number>(0);
   const [labelFontSize, setLabelFontSize] = useState<number>(15);
-  const [treeScale, setTreeScale] = useState<number>(120);
   const [focusedNode, setFocusedNode] = useState<TreeNode>();
+  const router = useRouter();
+  const rootPath = location.pathname
+    .split("/")
+    .filter((item) => item !== location.pathname.split("/").pop())
+    .join("/");
   // const [focusedLink, setFocusedLink] = useState<>();
 
   useEffect(() => {
     const radius = Math.min(width, height) / 2;
 
-    const selectedNodeIds: number[] | undefined = selectedGraphData?.nodes.map(
-      (node) => node.id,
-    );
+    const isSelected = (name: string) => {
+      return selectedGraphData?.nodes.some((node) => {
+        return node.name === name;
+      });
+    };
     const inSelected = (d: HierarchyPointNode<TreeNode>) =>
-      !!selectedNodeIds
-        ? selectedNodeIds.includes(d.data.id)
+      selectedGraphData
+        ? isSelected(d.data.name)
           ? "whitesmoke"
           : "#324557"
         : d.children
@@ -83,7 +92,7 @@ export const D3RadialTree = ({
           })
           .radius((d) => {
             const data = d as unknown as HierarchyPointNode<TreeNode>;
-            return data.y + treeScale;
+            return data.y + treeScale * data.depth + 1;
           }) as unknown as [number, number],
       );
 
@@ -107,18 +116,18 @@ export const D3RadialTree = ({
       .attr(
         "transform",
         (d) =>
-          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeScale},0)`,
+          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeScale * d.depth + 1},0)`,
       )
       .attr("fill", (d) => {
         const isFocused = focusedNode?.id === d.data.id;
         return isFocused ? "#ef7234" : inSelected(d);
       })
-      .attr("r", (d) => 16 - 4 * (d.depth + 1))
+      .attr("r", (d) => 16 - 3 * (d.depth + 1))
       .on("click", (e, d) => {
         console.log(focusedNode);
         if (d.data.id === focusedNode?.id) {
           setFocusedNode(undefined);
-          console.log("unselect");
+          router.push(`${rootPath}/${focusedNode.id}`);
         } else {
           setFocusedNode(d.data);
           console.log(d.data);
@@ -138,7 +147,7 @@ export const D3RadialTree = ({
       .attr(
         "transform",
         (d) =>
-          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeScale},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
+          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeScale * d.depth + 1},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
       )
       .attr("dy", "0.31em")
       .attr("x", (d) => (d.x < Math.PI === !d.children ? 15 : -15))
@@ -156,7 +165,7 @@ export const D3RadialTree = ({
       const svg = select("#radial-tree");
       svg.selectAll("*").remove();
     };
-  }, [nodeSearchQuery, focusedNode, selectedGraphData, data]);
+  }, [nodeSearchQuery, focusedNode, selectedGraphData, data, treeScale]);
 
   useEffect(() => {
     if (currentScale > 3) {

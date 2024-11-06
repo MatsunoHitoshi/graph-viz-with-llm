@@ -116,7 +116,7 @@ export const D3ForceGraph = ({
                       ? 8
                       : 10;
           const nodeVisible = !(
-            nodes.length > 800 && (neighborLinkCount ?? 0) <= visibleByScaling
+            nodes.length > 1000 && (neighborLinkCount ?? 0) <= visibleByScaling
           );
 
           return {

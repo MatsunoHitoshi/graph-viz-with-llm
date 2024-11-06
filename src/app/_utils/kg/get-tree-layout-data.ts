@@ -25,7 +25,7 @@ export const getTreeLayoutData = (
               if (grandchild) {
                 return {
                   ...grandchild,
-                  // children: neighborNodes(graphData, grandchild.id),
+                  children: neighborNodes(graphData, grandchild.id, isSource),
                 };
               }
             },

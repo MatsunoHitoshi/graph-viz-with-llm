@@ -132,10 +132,12 @@ export const TabsContainer = ({ children }: { children: React.ReactNode }) => {
 
         <div className="w-full overflow-y-scroll">{children}</div>
       </div>
-      <TopicSpaceCreateModal
-        isOpen={topicSpaceCreateModalOpen}
-        setIsOpen={setTopicSpaceCreateModalOpen}
-      />
+      {!!session && (
+        <TopicSpaceCreateModal
+          isOpen={topicSpaceCreateModalOpen}
+          setIsOpen={setTopicSpaceCreateModalOpen}
+        />
+      )}
     </div>
   );
 };

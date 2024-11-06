@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { D3RadialTree } from "../d3/tree/radial-tree";
+import Slider from "react-input-slider";
 
 export const TreeViewer = ({
   topicSpaceId,
@@ -32,6 +33,7 @@ export const TreeViewer = ({
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);
   const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
+  const [treeScale, setTreeScale] = useState<number>(80);
 
   useEffect(() => {
     refetch;
@@ -51,7 +53,6 @@ export const TreeViewer = ({
       <div className="grid  grid-flow-row grid-cols-3 gap-8 p-4">
         <div className="flex flex-col gap-6">
           <div className="text-lg font-semibold">{topicSpace.name}</div>
-
           <div className="flex flex-col gap-3">
             <div className="text-sm">{topicSpace.description}</div>
 
@@ -68,11 +69,34 @@ export const TreeViewer = ({
               })}
             </div>
           </div>
-          <Toolbar
-            setNodeSearchQuery={setNodeSearchQuery}
-            sourceTargetSwitch={sourceTargetSwitch}
-            setSourceTargetSwitch={setSourceTargetSwitch}
-          />
+          <div className="flex flex-col gap-4">
+            <Toolbar
+              setNodeSearchQuery={setNodeSearchQuery}
+              sourceTargetSwitch={sourceTargetSwitch}
+              setSourceTargetSwitch={setSourceTargetSwitch}
+            />
+            <div className="flex flex-row items-center gap-2 px-4">
+              <div className="text-sm">ツリーの広さ</div>
+              <Slider
+                styles={{
+                  active: {
+                    backgroundColor: "#fb923c",
+                  },
+                  track: {
+                    backgroundColor: "#555",
+                    height: 5,
+                  },
+                }}
+                axis="x"
+                x={treeScale}
+                onChange={(d) => {
+                  setTreeScale(d.x);
+                }}
+                xmin={10}
+                xmax={500}
+              />
+            </div>
+          </div>
 
           <div className="flex flex-col gap-1">
             <div className="flex w-full flex-row items-center justify-between">
@@ -94,6 +118,7 @@ export const TreeViewer = ({
               nodeSearchQuery={nodeSearchQuery}
               data={treeData}
               selectedGraphData={selectedGraphData}
+              treeScale={treeScale}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">
