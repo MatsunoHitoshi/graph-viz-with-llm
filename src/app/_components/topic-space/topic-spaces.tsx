@@ -55,10 +55,13 @@ export const TopicSpaces = () => {
         </div>
         <div className="flex flex-col gap-2"></div>
       </div>
-      <TopicSpaceCreateModal
-        isOpen={topicSpaceCreateModalOpen}
-        setIsOpen={setTopicSpaceCreateModalOpen}
-      />
+      {session && (
+        <TopicSpaceCreateModal
+          isOpen={topicSpaceCreateModalOpen}
+          setIsOpen={setTopicSpaceCreateModalOpen}
+        />
+      )}
+
       {deleteIntentId && (
         <DeleteModal
           id={deleteIntentId}

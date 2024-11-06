@@ -60,15 +60,17 @@ const neighborNodes = (
 ) => {
   if (isSource) {
     return sourceLinks(graphData.relationships, nodeId).map((link) => {
-      const neighborId =
-        link.targetId === nodeId ? link.sourceId : link.targetId;
-      return getNodeById(neighborId, graphData.nodes);
+      return getNodeById(link.targetId, graphData.nodes);
     });
   } else {
-    return targetLinks(graphData.relationships, nodeId).map((link) => {
-      const neighborId =
-        link.targetId === nodeId ? link.sourceId : link.targetId;
-      return getNodeById(neighborId, graphData.nodes);
-    });
+    return targetLinks(graphData.relationships, nodeId)
+      .map((link) => {
+        return getNodeById(link.sourceId, graphData.nodes);
+      })
+      .concat(
+        sourceLinks(graphData.relationships, nodeId).map((link) => {
+          return getNodeById(link.targetId, graphData.nodes);
+        }),
+      );
   }
 };
