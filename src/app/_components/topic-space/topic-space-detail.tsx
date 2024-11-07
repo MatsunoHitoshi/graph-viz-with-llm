@@ -39,7 +39,9 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
     <TabsContainer>
       <div className="grid  grid-flow-row grid-cols-2 gap-8 p-4">
         <div className="flex flex-col gap-8">
-          <div className="text-lg font-semibold">{topicSpace.name}</div>
+          <a href={`/topic-spaces/${id}`} className="w-max">
+            <div className="text-lg font-semibold">{topicSpace.name}</div>
+          </a>
 
           <div className="flex flex-col gap-3">
             <div className="text-sm">{topicSpace.description}</div>
