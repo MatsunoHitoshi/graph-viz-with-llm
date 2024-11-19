@@ -86,8 +86,8 @@ const graphExtractionWithLangChain = async (localFilePath: string) => {
   const rawDocs = await loader.load();
 
   const textSplitter = new TokenTextSplitter({
-    chunkSize: 512,
-    chunkOverlap: 24,
+    chunkSize: 1024,
+    chunkOverlap: 32,
   });
 
   const documents: Document[] = [];
