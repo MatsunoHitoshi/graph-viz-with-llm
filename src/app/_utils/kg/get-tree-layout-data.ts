@@ -59,11 +59,20 @@ const neighborNodes = (
   isSource: boolean,
 ) => {
   if (isSource) {
-    return sourceLinks(graphData.relationships, nodeId).map((link) => {
+    const nodes = sourceLinks(graphData.relationships, nodeId).map((link) => {
       return getNodeById(link.targetId, graphData.nodes);
     });
+    const filteredNodes = nodes.filter((node, index) => {
+      return (
+        index ===
+        nodes.findIndex((n) => {
+          return node?.id === n?.id;
+        })
+      );
+    });
+    return filteredNodes;
   } else {
-    return targetLinks(graphData.relationships, nodeId)
+    const nodes = targetLinks(graphData.relationships, nodeId)
       .map((link) => {
         return getNodeById(link.sourceId, graphData.nodes);
       })
@@ -72,5 +81,14 @@ const neighborNodes = (
           return getNodeById(link.targetId, graphData.nodes);
         }),
       );
+    const filteredNodes = nodes.filter((node, index) => {
+      return (
+        index ===
+        nodes.findIndex((n) => {
+          return node?.id === n?.id;
+        })
+      );
+    });
+    return filteredNodes;
   }
 };

@@ -35,7 +35,7 @@ const mergerGraphsWithDuplicatedNodeName = (
     });
   });
   console.log("duplicated: ", duplicatedSourceNodes);
-  const filteredSourceNodes = sourceGraph.nodes.filter((sourceNode) => {
+  const additionalNodes = sourceGraph.nodes.filter((sourceNode) => {
     return !targetGraph.nodes.some((targetNode) => {
       return targetNode.name === sourceNode.name;
     });
@@ -52,11 +52,11 @@ const mergerGraphsWithDuplicatedNodeName = (
     })?.id;
     nodeIdRecords.push({ prevId: prevId, newId: newId ?? 0 });
   });
-  filteredSourceNodes.map((fNode, index) => {
-    const prevId = fNode.id;
+  additionalNodes.map((additionalNode, index) => {
+    const prevId = additionalNode.id;
     const newId = newNodes.length + index;
     nodeIdRecords.push({ prevId: prevId, newId: newId });
-    newNodes.push({ ...fNode, id: newId });
+    newNodes.push({ ...additionalNode, id: newId });
   });
   sourceGraph.relationships.map((sRelationship, index) => {
     const newId = newRelationships.length + index;
