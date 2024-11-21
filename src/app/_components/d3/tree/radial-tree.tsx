@@ -79,8 +79,20 @@ export const D3RadialTree = ({
       .data(root.links())
       .join("path")
       .attr("fill", "none")
-      .attr("stroke", "#777")
-      .attr("stroke-opacity", 0.4)
+      .attr("stroke", (d) => {
+        if (isSelected(d.source.data.name) && isSelected(d.target.data.name)) {
+          return "whitesmoke";
+        } else {
+          return "#777";
+        }
+      })
+      .attr("stroke-opacity", (d) => {
+        if (isSelected(d.source.data.name) && isSelected(d.target.data.name)) {
+          return 0.7;
+        } else {
+          return 0.4;
+        }
+      })
       .attr("stroke-width", 2.5)
       .attr("class", "cursor-pointer")
       .attr(

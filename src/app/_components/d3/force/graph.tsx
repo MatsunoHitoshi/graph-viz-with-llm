@@ -95,7 +95,7 @@ export const D3ForceGraph = ({
       .force("charge", forceManyBody())
       .force("x", forceX())
       .force("y", forceY())
-      .force("collision", forceCollide(0.7));
+      .force("collision", forceCollide(1));
 
     simulation.on("tick", () => {
       setGraphNodes([
@@ -300,7 +300,7 @@ export const D3ForceGraph = ({
                     }}
                   >
                     <circle
-                      r={3.6 * ((graphNode.neighborLinkCount ?? 0) * 0.15 + 1)}
+                      r={1.6 * ((graphNode.neighborLinkCount ?? 0) * 0.1 + 2.4)}
                       fill={
                         isFocused
                           ? "#ef7234"
