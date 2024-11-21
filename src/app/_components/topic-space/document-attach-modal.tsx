@@ -156,7 +156,7 @@ export const DocumentAttachModal = ({
                     />
                     <ComboboxOptions
                       anchor="bottom start"
-                      className="z-50 max-w-[300px] divide-y divide-slate-400 rounded-md border bg-slate-800 empty:invisible"
+                      className="z-50 max-w-[300px] divide-y divide-slate-400 rounded-md border bg-slate-900 empty:invisible"
                     >
                       {filteredDocuments.map((document) => (
                         <ComboboxOption
