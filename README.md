@@ -1,4 +1,4 @@
-# Graph Visualization with LLM (Document Semantic Connector)
+# Graph Visualization with LLM (ArTraverse)
 
 ## Visualizing Conceptual Relationships from your Document
 

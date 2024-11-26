@@ -9,8 +9,8 @@ import { Header } from "./_components/header/header";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
-  title: "Document Semantic Connector",
-  description: "Document Semantic Connector",
+  title: "ArTraverse(DocumentSemanticConnector)",
+  description: "関係性の宇宙を横断する可視化ツール",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 

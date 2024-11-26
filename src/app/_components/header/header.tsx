@@ -13,6 +13,7 @@ export const Header = () => {
       <div className="flex h-14 w-full flex-row items-center justify-between rounded-2xl bg-slate-700 p-2 text-slate-50">
         <div className="text-lg font-semibold">
           <Button
+            className="!py-0"
             onClick={() => {
               if (session) {
                 router.push("/dashboard");
@@ -21,7 +22,10 @@ export const Header = () => {
               }
             }}
           >
-            Document Semantic Connector
+            <div>ArTraverse</div>
+            <div className="text-xs font-normal">
+              (DocumentSemanticConnector)
+            </div>
           </Button>
         </div>
         {!session ? (

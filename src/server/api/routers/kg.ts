@@ -15,6 +15,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { LLMGraphTransformer } from "@langchain/community/experimental/graph_transformers/llm";
 import { TokenTextSplitter } from "langchain/text_splitter";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { TextLoader } from "langchain/document_loaders/fs/text";
 import { Document } from "@langchain/core/documents";
 import type {
   Node,
@@ -28,9 +29,10 @@ import { env } from "@/env";
 import type { Prisma } from "@prisma/client";
 import { GraphDataStatus } from "@prisma/client";
 
-const PdfSchema = z.object({
+const ExtractInputSchema = z.object({
   fileUrl: z.string().url(),
-  mode: z.string().optional(),
+  extractMode: z.string().optional(),
+  isPlaneTextMode: z.boolean(),
 });
 
 export type GraphDocument = {
@@ -78,11 +80,16 @@ Relationships: ["alice", "roommate", "bob", {"start": 2021}], ["alice", "owns", 
     `;
 };
 
-const graphExtractionWithLangChain = async (localFilePath: string) => {
+const graphExtractionWithLangChain = async (
+  localFilePath: string,
+  isPlaneTextMode: boolean,
+) => {
   const llm = new ChatOpenAI({ temperature: 0.0, model: "gpt-4o-mini" });
   const llmTransformer = new LLMGraphTransformer({ llm });
 
-  const loader = new PDFLoader(localFilePath);
+  const loader = isPlaneTextMode
+    ? new TextLoader(localFilePath)
+    : new PDFLoader(localFilePath);
   const rawDocs = await loader.load();
 
   const textSplitter = new TokenTextSplitter({
@@ -222,54 +229,56 @@ const graphExtractionWithAssistantsAPI = async (
 };
 
 export const kgRouter = createTRPCRouter({
-  extractKG: publicProcedure.input(PdfSchema).mutation(async ({ input }) => {
-    const { fileUrl, mode } = input;
+  extractKG: publicProcedure
+    .input(ExtractInputSchema)
+    .mutation(async ({ input }) => {
+      const { fileUrl, extractMode, isPlaneTextMode } = input;
 
-    const fileResponse = await fetch(fileUrl);
-    const fileBuffer = await fileResponse.arrayBuffer();
-    const localFilePath = writeFile(
-      Buffer.from(fileBuffer).toString("base64"),
-      "input.pdf",
-    );
-
-    // SchemaExample: Nodes: [Person {age: integer, name: string}] Relationships: [Person, roommate, Person]
-    // const schema = `
-    // Nodes: [Artist {name: string, birthYear: integer}], [Museum {name: string, builtAt: integer}], [Curator {name: string, birthYear: integer}], [Exhibition {title: string, heldAt: integer}], [Critic {name: string, birthYear: integer}]
-    // Relationships: [Artist, join, Exhibition], [Curator, direction, Exhibition], [Museum, host, Exhibition], [Critic, mention ,Artist]
-    // `;
-    const schema = "";
-
-    try {
-      console.log("type: ", mode);
-      const nodesAndRelationships =
-        mode === "langChain"
-          ? await graphExtractionWithLangChain(localFilePath)
-          : await graphExtractionWithAssistantsAPI(localFilePath, schema);
-
-      const disambiguatedNodesAndRelationships = dataDisambiguation(
-        nodesAndRelationships,
+      const fileResponse = await fetch(fileUrl);
+      const fileBuffer = await fileResponse.arrayBuffer();
+      const localFilePath = writeFile(
+        Buffer.from(fileBuffer).toString("base64"),
+        `input.${isPlaneTextMode ? "txt" : "pdf"}`,
       );
 
-      if (env.NODE_ENV === "development") {
-        exportJson(
-          JSON.stringify(nodesAndRelationships),
-          "node-relationship.json",
-        );
-        exportJson(
-          JSON.stringify(disambiguatedNodesAndRelationships),
-          "disambiguated-node-relationship.json",
-        );
-      }
+      // SchemaExample: Nodes: [Person {age: integer, name: string}] Relationships: [Person, roommate, Person]
+      // const schema = `
+      // Nodes: [Artist {name: string, birthYear: integer}], [Museum {name: string, builtAt: integer}], [Curator {name: string, birthYear: integer}], [Exhibition {title: string, heldAt: integer}], [Critic {name: string, birthYear: integer}]
+      // Relationships: [Artist, join, Exhibition], [Curator, direction, Exhibition], [Museum, host, Exhibition], [Critic, mention ,Artist]
+      // `;
+      const schema = "";
 
-      return {
-        data: { graph: disambiguatedNodesAndRelationships },
-      };
-    } catch (error) {
-      return {
-        data: { graph: null, error: "グラフ抽出エラー" },
-      };
-    }
-  }),
+      try {
+        console.log("type: ", extractMode);
+        const nodesAndRelationships =
+          extractMode === "langChain"
+            ? await graphExtractionWithLangChain(localFilePath, isPlaneTextMode)
+            : await graphExtractionWithAssistantsAPI(localFilePath, schema);
+
+        const disambiguatedNodesAndRelationships = dataDisambiguation(
+          nodesAndRelationships,
+        );
+
+        if (env.NODE_ENV === "development") {
+          exportJson(
+            JSON.stringify(nodesAndRelationships),
+            "node-relationship.json",
+          );
+          exportJson(
+            JSON.stringify(disambiguatedNodesAndRelationships),
+            "disambiguated-node-relationship.json",
+          );
+        }
+
+        return {
+          data: { graph: disambiguatedNodesAndRelationships },
+        };
+      } catch (error) {
+        return {
+          data: { graph: null, error: "グラフ抽出エラー" },
+        };
+      }
+    }),
 
   graphFusion: publicProcedure.mutation(async ({ ctx }) => {
     const updateFusionStatus = async (id: string, status: GraphDataStatus) => {

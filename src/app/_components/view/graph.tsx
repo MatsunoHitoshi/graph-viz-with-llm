@@ -127,7 +127,7 @@ export const GraphExtraction = () => {
       </div>
     </div>
   ) : (
-    <div className="flex flex-col items-center gap-4 text-slate-50">
+    <div className="flex flex-col items-center gap-12 text-slate-50">
       <DocumentForm
         file={file}
         setFile={setFile}
