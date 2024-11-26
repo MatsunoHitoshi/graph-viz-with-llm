@@ -22,7 +22,7 @@ export const Header = () => {
               }
             }}
           >
-            <div>ArTraverse</div>
+            <div>ArsTraverse</div>
             <div className="text-xs font-normal">
               (DocumentSemanticConnector)
             </div>

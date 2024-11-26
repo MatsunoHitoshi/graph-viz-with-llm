@@ -1,4 +1,4 @@
-# Graph Visualization with LLM (ArTraverse)
+# Graph Visualization with LLM (ArsTraverse)
 
 ## Visualizing Conceptual Relationships from your Document
 
