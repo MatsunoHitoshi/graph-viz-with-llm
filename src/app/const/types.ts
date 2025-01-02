@@ -8,14 +8,19 @@ import type {
 } from "@prisma/client";
 
 export interface TopicSpaceResponse extends TopicSpace {
-  sourceDocuments: DocumentResponse[] | null;
+  sourceDocuments: DocumentResponseWithGraphData[] | null;
   admins?: User[];
   activities?: Activity[];
   tags?: Tag[];
 }
 
-export interface DocumentResponse extends SourceDocument {
+export interface DocumentResponseWithGraphData extends SourceDocument {
   graph?: DocumentGraph | null;
+  topicSpaces?: TopicSpaceResponse[];
+  tags?: Tag[];
+}
+export interface DocumentResponse extends SourceDocument {
+  graph?: { id: string } | null;
   topicSpaces?: TopicSpaceResponse[];
   tags?: Tag[];
 }

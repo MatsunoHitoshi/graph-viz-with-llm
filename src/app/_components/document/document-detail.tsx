@@ -1,5 +1,4 @@
 "use client";
-import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { FileTextIcon, GraphIcon, ShareIcon } from "../icons";
 import { useRouter } from "next/navigation";
@@ -8,15 +7,17 @@ import { env } from "@/env";
 import { D3ForceGraph } from "../d3/force/graph";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
-export const DocumentDetail = ({
-  document,
-}: {
-  document: DocumentResponse;
-}) => {
+import { api } from "@/trpc/react";
+export const DocumentDetail = ({ documentId }: { documentId: string }) => {
   const router = useRouter();
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth = (innerWidth ?? 100) / 2 - 36;
   const graphAreaHeight = (innerHeight ?? 300) - 216;
+  const { data: document } = api.sourceDocument.getById.useQuery({
+    id: documentId,
+  });
+
+  if (!document) return null;
   return (
     <div className="flex w-full flex-col items-start">
       <div className="flex w-full flex-row items-start justify-between">

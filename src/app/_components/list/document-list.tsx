@@ -7,6 +7,7 @@ import { formatDate } from "@/app/_utils/date/format-date";
 import { useRouter } from "next/navigation";
 import { env } from "@/env";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
+import Link from "next/link";
 
 type DocumentListProps = {
   documents: DocumentResponse[];
@@ -48,15 +49,12 @@ export const DocumentList = ({
         <div className="flex flex-row items-center justify-between p-3">
           <div>ドキュメントがありません</div>
           {type === "document" && (
-            <Button
-              className="flex flex-row items-center gap-1"
-              onClick={() => {
-                router.push("/");
-              }}
-            >
-              <PlusIcon width={16} height={16} color="white" />
-              <div className="text-sm">新規ドキュメント</div>
-            </Button>
+            <Link href="/">
+              <Button className="flex flex-row items-center gap-1">
+                <PlusIcon width={16} height={16} color="white" />
+                <div className="text-sm">新規ドキュメント</div>
+              </Button>
+            </Link>
           )}
         </div>
       ) : (
@@ -92,6 +90,7 @@ export const DocumentList = ({
                 >
                   <GraphIcon height={16} width={16} color="white" />
                 </Button>
+
                 <UrlCopy
                   messagePosition="inButton"
                   className="z-10 flex !h-8 !w-8 flex-row items-center justify-center bg-transparent px-0 py-0 hover:bg-slate-50/10"

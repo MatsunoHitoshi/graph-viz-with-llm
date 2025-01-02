@@ -31,7 +31,7 @@ export const sourceDocumentRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const document = await ctx.db.sourceDocument.findFirst({
         where: { id: input.id, isDeleted: false },
-        include: { user: true },
+        include: { user: true, graph: true },
       });
       if (document?.user.id !== ctx.session?.user.id) {
         throw new Error("Document not found");
@@ -57,6 +57,7 @@ export const sourceDocumentRouter = createTRPCRouter({
     return ctx.db.sourceDocument.findMany({
       where: { userId: userId, isDeleted: false },
       orderBy: { createdAt: "desc" },
+      include: { graph: { select: { id: true } } },
     });
   }),
 

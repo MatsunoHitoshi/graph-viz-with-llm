@@ -70,7 +70,7 @@ export const Documents = ({ id }: { id?: string }) => {
         </div>
         <div className="flex flex-col gap-2">
           {id && document ? (
-            <DocumentDetail document={document} />
+            <DocumentDetail documentId={id} />
           ) : (
             <div className="rounded-md border border-slate-400 p-4">
               ドキュメントを選択してください

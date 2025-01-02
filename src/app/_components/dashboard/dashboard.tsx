@@ -5,12 +5,12 @@ import { DocumentList } from "../list/document-list";
 import { TabsContainer } from "../tab/tab";
 import { Button } from "../button/button";
 import { PlusIcon, TrashIcon } from "../icons";
-import { useRouter } from "next/navigation";
 import { TopicSpaceList } from "../list/topic-space-list";
 import type { TopicSpaceResponse } from "@/app/const/types";
 import { TopicSpaceCreateModal } from "../topic-space/topic-space-create-modal";
 import { useState } from "react";
 import { DeleteModal, type DeleteRecordType } from "../modal/delete-modal";
+import Link from "next/link";
 
 export const Dashboard = () => {
   const { data: session } = useSession();
@@ -25,7 +25,6 @@ export const Dashboard = () => {
     id: string;
     type: DeleteRecordType;
   }>();
-  const router = useRouter();
 
   if (!session) return null;
   return (
@@ -36,16 +35,13 @@ export const Dashboard = () => {
             <div className="flex flex-col gap-1">
               <div className="flex flex-row items-center justify-between">
                 <div className="text-lg font-semibold">最近のドキュメント</div>
-                <Button
-                  onClick={() => {
-                    router.push("/");
-                  }}
-                  className="!h-8 !w-8 !p-2"
-                >
-                  <div className="h-4 w-4">
-                    <PlusIcon width={16} height={16} color="white" />
-                  </div>
-                </Button>
+                <Link href="/">
+                  <Button className="!h-8 !w-8 !p-2">
+                    <div className="h-4 w-4">
+                      <PlusIcon width={16} height={16} color="white" />
+                    </div>
+                  </Button>
+                </Link>
               </div>
 
               {documents && (

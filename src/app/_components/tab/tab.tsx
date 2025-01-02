@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { TopicSpaceCreateModal } from "../topic-space/topic-space-create-modal";
 import { useSession } from "next-auth/react";
 import type { Session } from "next-auth";
+import Link from "next/link";
 
 const Tab = ({
   label,
@@ -15,38 +16,35 @@ const Tab = ({
   icon: React.ReactNode;
   path: string;
 }) => {
-  const router = useRouter();
   console.log("pathname", location.pathname, ",", path);
   return (
     <div
       className={`border-b-2 border-transparent ${location.pathname === path && "!border-slate-50 font-semibold"}`}
     >
-      <Button
-        onClick={() => {
-          router.push(path);
-        }}
-        className={`flex cursor-pointer flex-row items-center gap-1 bg-transparent py-2 hover:bg-slate-50/10`}
-      >
-        <div className="h-4 w-4">{icon}</div>
-        <div>{label}</div>
-      </Button>
+      <Link href={path}>
+        <Button
+          className={`flex cursor-pointer flex-row items-center gap-1 bg-transparent py-2 hover:bg-slate-50/10`}
+        >
+          <div className="h-4 w-4">{icon}</div>
+          <div>{label}</div>
+        </Button>
+      </Link>
     </div>
   );
 };
 
 export const Tabs = ({ session }: { session: Session | null }) => {
-  const router = useRouter();
   if (!!session) {
     return (
       <div className="flex flex-row items-end gap-4">
-        <Button
-          className={`rounded-none border-b-2 border-transparent bg-transparent !px-4 py-2 text-xl font-semibold ${location.pathname === "/dashboard" && "!border-slate-50"}`}
-          onClick={() => {
-            router.push("/dashboard");
-          }}
-        >
-          Dashboard
-        </Button>
+        <Link href="/dashboard">
+          <Button
+            className={`rounded-none border-b-2 border-transparent bg-transparent !px-4 py-2 text-xl font-semibold ${location.pathname === "/dashboard" && "!border-slate-50"}`}
+          >
+            Dashboard
+          </Button>
+        </Link>
+
         <div className="flex flex-row items-end text-sm">
           <Tab
             label="ドキュメント"
