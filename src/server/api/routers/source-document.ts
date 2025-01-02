@@ -9,6 +9,7 @@ import type {
   NodeType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
+import { stripGraphData } from "@/app/_utils/kg/data-strip";
 
 const SourceDocumentSchema = z.object({
   name: z.string(),
@@ -55,7 +56,6 @@ export const sourceDocumentRouter = createTRPCRouter({
     const userId = ctx.session.user.id;
     return ctx.db.sourceDocument.findMany({
       where: { userId: userId, isDeleted: false },
-      include: { graph: true },
       orderBy: { createdAt: "desc" },
     });
   }),
@@ -94,10 +94,10 @@ export const sourceDocumentRouter = createTRPCRouter({
           user: { connect: { id: ctx.session.user.id } },
         },
       });
-      const sanitizedGraphData = {
+      const sanitizedGraphData = stripGraphData({
         nodes: input.dataJson.nodes as NodeType[],
         relationships: input.dataJson.relationships as RelationshipType[],
-      };
+      });
       const graph = await ctx.db.documentGraph.create({
         data: {
           dataJson: sanitizedGraphData,

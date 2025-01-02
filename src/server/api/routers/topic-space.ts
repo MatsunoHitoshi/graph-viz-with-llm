@@ -8,6 +8,7 @@ import {
 import type { GraphDocument } from "./kg";
 import { fuseGraphs } from "@/app/_utils/kg/data-disambiguation";
 import type { TopicSpaceResponse } from "@/app/const/types";
+import { stripGraphData } from "@/app/_utils/kg/data-strip";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
@@ -42,7 +43,8 @@ const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
     }
   }
 
-  return newGraph;
+  const sanitizedGraphData = stripGraphData(newGraph);
+  return sanitizedGraphData;
 };
 
 export const topicSpaceRouter = createTRPCRouter({
@@ -57,7 +59,6 @@ export const topicSpaceRouter = createTRPCRouter({
         include: {
           sourceDocuments: {
             where: { isDeleted: false },
-            include: { graph: true },
           },
           admins: true,
           tags: true,
@@ -100,11 +101,18 @@ export const topicSpaceRouter = createTRPCRouter({
     const userId = ctx.session.user.id;
     return ctx.db.topicSpace.findMany({
       where: { admins: { some: { id: userId } }, isDeleted: false },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        description: true,
         sourceDocuments: { where: { isDeleted: false } },
         admins: true,
         tags: true,
         activities: true,
+        createdAt: true,
+        updatedAt: true,
+        isDeleted: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -124,7 +132,8 @@ export const topicSpaceRouter = createTRPCRouter({
           description: input.description,
           sourceDocuments: { connect: { id: input.documentId } },
           admins: { connect: { id: ctx.session.user.id } },
-          graphData: document?.graph?.dataJson ?? {},
+          graphData:
+            stripGraphData(document?.graph?.dataJson as GraphDocument) ?? {},
         },
       });
       return topicSpace;

@@ -15,7 +15,7 @@ export interface TopicSpaceResponse extends TopicSpace {
 }
 
 export interface DocumentResponse extends SourceDocument {
-  graph: DocumentGraph | null;
+  graph?: DocumentGraph | null;
   topicSpaces?: TopicSpaceResponse[];
   tags?: Tag[];
 }

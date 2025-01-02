@@ -28,6 +28,7 @@ import {
 import { env } from "@/env";
 import type { Prisma } from "@prisma/client";
 import { GraphDataStatus } from "@prisma/client";
+import { stripGraphData } from "@/app/_utils/kg/data-strip";
 
 const ExtractInputSchema = z.object({
   fileUrl: z.string().url(),
@@ -293,7 +294,7 @@ export const kgRouter = createTRPCRouter({
     ) => {
       await ctx.db.topicSpace.update({
         where: { id: id },
-        data: { graphData: graphData },
+        data: { graphData: stripGraphData(graphData as GraphDocument) },
       });
     };
     const createCompleteCheck = async (topicId: string) => {

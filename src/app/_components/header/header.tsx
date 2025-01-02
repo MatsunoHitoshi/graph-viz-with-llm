@@ -23,9 +23,6 @@ export const Header = () => {
             }}
           >
             <div>ArsTraverse</div>
-            <div className="text-xs font-normal">
-              (DocumentSemanticConnector)
-            </div>
           </Button>
         </div>
         {!session ? (
