@@ -1,5 +1,9 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
-import { type RelationshipType } from "./get-nodes-and-relationships-from-result";
+import {
+  NodeType,
+  type RelationshipType,
+} from "./get-nodes-and-relationships-from-result";
+import { neighborNodes } from "./get-tree-layout-data";
 
 const generateSystemMessageForNodes = () => {
   return `
@@ -34,7 +38,6 @@ const mergerGraphsWithDuplicatedNodeName = (
       return targetNode.name === sourceNode.name;
     });
   });
-  console.log("duplicated: ", duplicatedSourceNodes);
   const additionalNodes = sourceGraph.nodes.filter((sourceNode) => {
     return !targetGraph.nodes.some((targetNode) => {
       return targetNode.name === sourceNode.name;
@@ -90,14 +93,33 @@ export const dataDisambiguation = (graphDocument: GraphDocument | null) => {
   return disambiguatedGraph;
 };
 
+const deleteDuplicatedNode = (graphDocument: GraphDocument) => {
+  const newNodes = [] as NodeType[];
+  graphDocument.nodes.forEach((node) => {
+    const duplicatedNodeArray = graphDocument.nodes.filter((n) => {
+      return node.name === n.name;
+    });
+
+    if (
+      duplicatedNodeArray.length === 1 ||
+      (duplicatedNodeArray.length > 1 && duplicatedNodeArray[0]?.id === node.id)
+    ) {
+      newNodes.push(node);
+    }
+  });
+
+  return { nodes: newNodes, relationships: graphDocument.relationships };
+};
+
 export const fuseGraphs = async (
   sourceGraph: GraphDocument,
   targetGraph: GraphDocument,
 ) => {
   const graph = mergerGraphsWithDuplicatedNodeName(sourceGraph, targetGraph);
+  const stripedGraph = deleteDuplicatedNode(graph);
   const mergedRelationships = mergeRelationships(graph.relationships);
 
-  return { nodes: graph.nodes, relationships: mergedRelationships };
+  return { nodes: stripedGraph.nodes, relationships: mergedRelationships };
   // const openai = new OpenAI();
   // const assistant = await openai.beta.assistants.create({
   //   name: "Graph Database Assistant",

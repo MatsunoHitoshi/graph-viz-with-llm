@@ -26,7 +26,7 @@ export const Toolbar = ({
   sourceTargetSwitch,
 }: ToolbarProps) => {
   return (
-    <div className="flex h-[46px] w-full flex-row items-center justify-between px-4">
+    <div className="flex h-[46px] w-full flex-row items-center justify-between">
       <div className="flex w-full flex-row items-center gap-4">
         {!!setIsEditing && (
           <div className="flex flex-row items-center gap-2">

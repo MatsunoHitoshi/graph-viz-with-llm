@@ -53,7 +53,7 @@ const getNodeById = (id: number, nodes: NodeType[]) => {
     return node.id === id;
   });
 };
-const neighborNodes = (
+export const neighborNodes = (
   graphData: GraphDocument,
   nodeId: number,
   isSource: boolean,

@@ -81,41 +81,44 @@ export const GraphExtraction = () => {
     <div>
       <div className="h-full w-full p-2">
         <div className="flex h-full w-full flex-col divide-y divide-slate-400 overflow-hidden rounded-md border border-slate-400  text-slate-50">
-          <Toolbar
-            isLinkFiltered={isLinkFiltered}
-            setIsLinkFiltered={setIsLinkFiltered}
-            isUseExample={isUseExample}
-            setIsUseExample={setIsUseExample}
-            setNodeSearchQuery={setNodeSearchQuery}
-            rightArea={
-              <div className="flex flex-row items-center gap-2">
-                {file && documentUrl && (
-                  <Button
-                    onClick={async () => {
-                      if (session) {
-                        submit(graphDocument, file.name, documentUrl);
-                      } else {
-                        console.log("Not sign in");
-                        // save graph-data, file-url and file-name to local storage
-                        localStorage.setItem(
-                          "graphDocument",
-                          JSON.stringify(graphDocument),
-                        );
-                        localStorage.setItem("fileName", file.name);
-                        localStorage.setItem("fileUrl", documentUrl);
-                        // then signIn
-                        await signIn("google", {
-                          callbackUrl: "/?has-graph-data=true",
-                        });
-                      }
-                    }}
-                  >
-                    保存して共有する
-                  </Button>
-                )}
-              </div>
-            }
-          />
+          <div className="px-4">
+            <Toolbar
+              isLinkFiltered={isLinkFiltered}
+              setIsLinkFiltered={setIsLinkFiltered}
+              isUseExample={isUseExample}
+              setIsUseExample={setIsUseExample}
+              setNodeSearchQuery={setNodeSearchQuery}
+              rightArea={
+                <div className="flex flex-row items-center gap-2">
+                  {file && documentUrl && (
+                    <Button
+                      onClick={async () => {
+                        if (session) {
+                          submit(graphDocument, file.name, documentUrl);
+                        } else {
+                          console.log("Not sign in");
+                          // save graph-data, file-url and file-name to local storage
+                          localStorage.setItem(
+                            "graphDocument",
+                            JSON.stringify(graphDocument),
+                          );
+                          localStorage.setItem("fileName", file.name);
+                          localStorage.setItem("fileUrl", documentUrl);
+                          // then signIn
+                          await signIn("google", {
+                            callbackUrl: "/?has-graph-data=true",
+                          });
+                        }
+                      }}
+                    >
+                      保存して共有する
+                    </Button>
+                  )}
+                </div>
+              }
+            />
+          </div>
+
           <D3ForceGraph
             width={graphAreaWidth}
             height={graphAreaHeight}
@@ -165,36 +168,39 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
     <div>
       <div className="h-full w-full p-2">
         <div className="flex h-full w-full flex-col divide-y divide-slate-400 overflow-hidden rounded-md border border-slate-400  text-slate-50">
-          <Toolbar
-            isLinkFiltered={isLinkFiltered}
-            setIsLinkFiltered={setIsLinkFiltered}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            setNodeSearchQuery={setNodeSearchQuery}
-            rightArea={
-              <div className="flex w-full max-w-[300px] flex-row items-center gap-4">
-                <UrlCopy
-                  messagePosition="inButton"
-                  className="flex !h-8 !w-8 flex-row items-center justify-center px-0 py-0"
-                >
-                  <div className="h-4 w-4">
-                    <ShareIcon height={16} width={16} color="white" />
-                  </div>
-                </UrlCopy>
-                <div className="w-full truncate">
-                  参照：
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full underline hover:no-underline"
-                    href={graphDocument.sourceDocument.url}
+          <div className="px-4">
+            <Toolbar
+              isLinkFiltered={isLinkFiltered}
+              setIsLinkFiltered={setIsLinkFiltered}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+              setNodeSearchQuery={setNodeSearchQuery}
+              rightArea={
+                <div className="flex w-full max-w-[300px] flex-row items-center gap-4">
+                  <UrlCopy
+                    messagePosition="inButton"
+                    className="flex !h-8 !w-8 flex-row items-center justify-center px-0 py-0"
                   >
-                    {graphDocument.sourceDocument.name}
-                  </a>
+                    <div className="h-4 w-4">
+                      <ShareIcon height={16} width={16} color="white" />
+                    </div>
+                  </UrlCopy>
+                  <div className="w-full truncate">
+                    参照：
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full underline hover:no-underline"
+                      href={graphDocument.sourceDocument.url}
+                    >
+                      {graphDocument.sourceDocument.name}
+                    </a>
+                  </div>
                 </div>
-              </div>
-            }
-          />
+              }
+            />
+          </div>
+
           {isEditing ? (
             <D3ForceGraph
               width={graphAreaWidth}

@@ -42,6 +42,7 @@ export const D3ForceGraph = ({
   width,
   graphDocument,
   selectedGraphData,
+  selectedPathData,
   isLinkFiltered = false,
   nodeSearchQuery,
   topicSpaceId,
@@ -50,6 +51,7 @@ export const D3ForceGraph = ({
   width: number;
   graphDocument: GraphDocument;
   selectedGraphData?: GraphDocument | null;
+  selectedPathData?: GraphDocument | null;
   isLinkFiltered?: boolean;
   nodeSearchQuery?: string;
   topicSpaceId?: string;
@@ -177,28 +179,32 @@ export const D3ForceGraph = ({
               const modSource = source as CustomNodeType;
               const modTarget = target as CustomNodeType;
               const isFocused = graphLink.id === focusedLink?.id;
+              const isPathLink = selectedPathData?.relationships
+                .map((relationship) => relationship.id)
+                .includes(graphLink.id);
 
               const sourceNode = getNodeById(modSource.id, graphNodes);
               const targetNode = getNodeById(modTarget.id, graphNodes);
+              const sourceNodeVisible = sourceNode?.visible ?? false;
+              const targetNodeVisible = targetNode?.visible ?? false;
 
               if (
-                ((sourceNode?.visible ?? false) ||
-                  (targetNode?.visible ?? false)) &&
+                (sourceNodeVisible || targetNodeVisible) &&
                 modSource.x !== undefined &&
                 modTarget.x !== undefined &&
                 modSource.y !== undefined &&
                 modTarget.y !== undefined
               ) {
-                const gradientTo: number | undefined = !sourceNode?.visible
-                  ? sourceNode?.id
-                  : !targetNode?.visible
-                    ? targetNode?.id
-                    : undefined;
+                const isGradient = sourceNodeVisible !== targetNodeVisible;
+                const gradientTo: number | undefined =
+                  isGradient && targetNodeVisible
+                    ? sourceNode?.id
+                    : targetNode?.id;
 
-                // const gradientFrom: number | undefined =
-                //   gradientTo === sourceNode?.id
-                //     ? targetNode?.id
-                //     : sourceNode?.id;
+                const gradientFrom: number | undefined =
+                  gradientTo === sourceNode?.id
+                    ? targetNode?.id
+                    : sourceNode?.id;
 
                 // console.log("-----");
                 // console.log(
@@ -226,16 +232,21 @@ export const D3ForceGraph = ({
                     }}
                   >
                     <line
-                      stroke={isFocused ? "#ef7234" : "white"}
+                      stroke={
+                        isFocused ? "#ef7234" : isPathLink ? "#eae80c" : "white"
+                      }
                       // stroke={
                       //   isFocused
                       //     ? "#ef7234"
-                      //     : !!gradientTo
-                      //       ? `url(#gradient-${graphLink.id})`
-                      //       : "white"
+                      //     : isPathLink
+                      //       ? "#eae80c"
+                      //       : isGradient
+                      //         ? `url(#gradient-${graphLink.id})`
+                      //         : "white"
                       // }
                       strokeWidth={isFocused ? 3 : 2}
-                      strokeOpacity={isFocused ? 1 : !!gradientTo ? 0.04 : 0.4}
+                      strokeOpacity={isFocused ? 1 : isGradient ? 0.04 : 0.4}
+                      // strokeOpacity={isFocused ? 1 : isGradient ? 0.3 : 0.4}
                       x1={modSource.x}
                       y1={modSource.y}
                       x2={modTarget.x}
@@ -246,8 +257,8 @@ export const D3ForceGraph = ({
                         id={`gradient-${graphLink.id}`}
                         x1={gradientTo === modSource.id ? "0%" : "100%"}
                         y1={gradientTo === modSource.id ? "0%" : "100%"}
-                        x2={gradientFrom === modTarget.id ? "100%" : "0%"}
-                        y2={gradientFrom === modTarget.id ? "100%" : "0%"}
+                        x2={gradientTo === modTarget.id ? "0%" : "100%"}
+                        y2={gradientTo === modTarget.id ? "0%" : "100%"}
                       >
                         <stop offset="0%" stopColor="white" stopOpacity={0} />
                         <stop
@@ -274,6 +285,9 @@ export const D3ForceGraph = ({
             })}
             {graphNodes.map((graphNode) => {
               const isFocused = graphNode.id === focusedNode?.id;
+              const isPathNode = selectedPathData?.nodes
+                .map((node) => node.id)
+                .includes(graphNode.id);
               const graphUnselected = selectedGraphData
                 ? !selectedGraphData.nodes.some((node) => {
                     return node.name === graphNode.name;
@@ -286,7 +300,12 @@ export const D3ForceGraph = ({
                   .toLowerCase()
                   .includes(nodeSearchQuery.toLowerCase());
 
-              if ((graphNode.visible ?? false) || queryFiltered || isFocused) {
+              if (
+                (graphNode.visible ?? false) ||
+                queryFiltered ||
+                isFocused ||
+                isPathNode
+              ) {
                 return (
                   <g
                     key={graphNode.id}
@@ -304,9 +323,11 @@ export const D3ForceGraph = ({
                       fill={
                         isFocused
                           ? "#ef7234"
-                          : graphUnselected
-                            ? "#324557"
-                            : "whitesmoke"
+                          : isPathNode
+                            ? "#eae80c"
+                            : graphUnselected
+                              ? "#324557"
+                              : "whitesmoke"
                       }
                       cx={graphNode.x}
                       cy={graphNode.y}

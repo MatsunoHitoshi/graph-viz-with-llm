@@ -50,8 +50,8 @@ export const TreeViewer = ({
   if (!topicSpace) return null;
   return (
     <TabsContainer>
-      <div className="grid  grid-flow-row grid-cols-3 gap-8 p-4">
-        <div className="flex flex-col gap-6">
+      <div className="grid  h-full grid-flow-row grid-cols-3 gap-8 overflow-hidden ">
+        <div className="flex flex-col gap-6 overflow-scroll p-4">
           <a href={`/topic-spaces/${topicSpaceId}/graph`} className="w-max">
             <div className="text-lg font-semibold">{topicSpace.name}</div>
           </a>
@@ -113,7 +113,7 @@ export const TreeViewer = ({
             />
           </div>
         </div>
-        <div className="col-span-2">
+        <div className="col-span-2 py-4">
           {topicSpace.graphData && treeData ? (
             <D3RadialTree
               width={graphAreaWidth}
