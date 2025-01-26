@@ -9,6 +9,12 @@ import type { GraphDocument } from "./kg";
 import { fuseGraphs } from "@/app/_utils/kg/data-disambiguation";
 import type { TopicSpaceResponse } from "@/app/const/types";
 import { stripGraphData } from "@/app/_utils/kg/data-strip";
+import { nodePathSearch } from "@/app/_utils/kg/bfs";
+import { neighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
+import type {
+  NodeType,
+  RelationshipType,
+} from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
@@ -95,6 +101,69 @@ export const topicSpaceRouter = createTRPCRouter({
       });
       if (!topicSpace) throw new Error("TopicSpace not found");
       return topicSpace;
+    }),
+
+  getPath: publicProcedure
+    .input(z.object({ id: z.string(), startId: z.string(), endId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
+        include: {
+          sourceDocuments: {
+            where: { isDeleted: false },
+            include: { graph: true },
+          },
+          admins: true,
+          tags: true,
+        },
+      });
+      if (!topicSpace) throw new Error("TopicSpace not found");
+      const graphData = topicSpace.graphData as GraphDocument;
+      const links = graphData.relationships;
+
+      const pathData = nodePathSearch(
+        graphData,
+        Number(input.startId),
+        Number(input.endId),
+      );
+
+      const newLinks: RelationshipType[] = [];
+      const nodesWithNeighbors = pathData.nodes
+        .map((node) => {
+          const neighbors = neighborNodes(graphData, node.id, false).filter(
+            (n): n is NodeType => n !== undefined,
+          );
+
+          neighbors.forEach((neighbor) => {
+            const additionalLinks = links.filter((link) => {
+              return (
+                (link.targetId === node.id && link.sourceId === neighbor.id) ||
+                (link.targetId === neighbor.id && link.sourceId === node.id)
+              );
+            });
+            newLinks.push(...additionalLinks);
+          });
+
+          return [...neighbors, node];
+        })
+        .flat();
+      const uniqueNodes = [
+        ...new Set(nodesWithNeighbors.map((node) => node.id)),
+      ].map((id) => nodesWithNeighbors.find((node) => node.id === id));
+      const uniqueLinks = [...new Set(newLinks.map((link) => link.id))].map(
+        (id) => newLinks.find((link) => link.id === id),
+      );
+
+      return {
+        ...topicSpace,
+        graphData: {
+          nodes: uniqueNodes,
+          relationships: uniqueLinks,
+        },
+      };
     }),
 
   getListBySession: protectedProcedure.query(({ ctx }) => {

@@ -90,14 +90,17 @@ export const D3ForceGraph = ({
         "link",
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
-          .distance(35)
-          .strength(0.1),
+          .distance(28)
+          .strength(0.15),
       )
       .force("center", forceCenter(centerX, centerY))
       .force("charge", forceManyBody())
       .force("x", forceX())
       .force("y", forceY())
       .force("collision", forceCollide(1));
+
+    simulation.alpha(0.5);
+    simulation.alphaDecay(0.1);
 
     simulation.on("tick", () => {
       setGraphNodes([

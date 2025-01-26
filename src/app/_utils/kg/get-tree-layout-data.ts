@@ -38,12 +38,12 @@ export const getTreeLayoutData = (
   return treeData;
 };
 
-const sourceLinks = (links: RelationshipType[], nodeId: number) =>
+export const sourceLinks = (links: RelationshipType[], nodeId: number) =>
   links.filter((link) => {
     return link.sourceId === nodeId;
   });
 
-const targetLinks = (links: RelationshipType[], nodeId: number) =>
+export const targetLinks = (links: RelationshipType[], nodeId: number) =>
   links.filter((link) => {
     return link.targetId === nodeId;
   });

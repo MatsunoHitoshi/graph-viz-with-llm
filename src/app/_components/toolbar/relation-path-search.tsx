@@ -1,18 +1,22 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
 import React, { useEffect, useState } from "react";
 import { SelectInput } from "../input/select-input";
-import { directionalBfs, nonDirectionalBfs } from "@/app/_utils/kg/bfs";
+import { nodePathSearch } from "@/app/_utils/kg/bfs";
 import { ChevronRightIcon } from "../icons";
 
 type SelectBoxOption = { id: string; label: string };
 
 type RelationPathSearchProps = {
+  defaultStartNodeId?: number;
+  defaultEndNodeId?: number;
   graphData: GraphDocument;
   setPathData: React.Dispatch<React.SetStateAction<GraphDocument | undefined>>;
   pathData: GraphDocument | undefined;
 };
 
 export const RelationPathSearch = ({
+  defaultStartNodeId,
+  defaultEndNodeId,
   graphData,
   setPathData,
   pathData,
@@ -23,50 +27,23 @@ export const RelationPathSearch = ({
   console.log(pathData);
 
   useEffect(() => {
+    if (!!defaultEndNodeId && !!defaultStartNodeId) {
+      const path = nodePathSearch(
+        graphData,
+        Number(defaultStartNodeId),
+        Number(defaultEndNodeId),
+      );
+      setIsPathNotFound(path.nodes.length == 0 ? true : false);
+      setPathData(path);
+    }
     if (!!startNode && !!endNode) {
-      const isReached = (path: GraphDocument) => {
-        const firstNode = path.nodes[0];
-        const lastNode = path.nodes[path.nodes.length - 1];
-        return (
-          firstNode?.id === Number(startNode.id) &&
-          lastNode?.id === Number(endNode.id)
-        );
-      };
-      const directionalResult = directionalBfs(
+      const path = nodePathSearch(
         graphData,
-        Number(startNode.id),
-        Number(endNode.id),
+        Number(startNode.id || defaultStartNodeId),
+        Number(endNode.id || defaultEndNodeId),
       );
-      console.log("directional:", directionalResult);
-      const nonDirectionalResult = nonDirectionalBfs(
-        graphData,
-        Number(startNode.id),
-        Number(endNode.id),
-      );
-      console.log("nonDirectional:", nonDirectionalResult);
-
-      if (isReached(directionalResult) && isReached(nonDirectionalResult)) {
-        setIsPathNotFound(false);
-        setPathData(
-          directionalResult.nodes.length <= nonDirectionalResult.nodes.length
-            ? directionalResult
-            : nonDirectionalResult,
-        );
-      } else if (
-        !isReached(directionalResult) &&
-        !isReached(nonDirectionalResult)
-      ) {
-        setIsPathNotFound(true);
-        console.log("path not found");
-        setPathData({ nodes: [], relationships: [] });
-      } else {
-        setIsPathNotFound(false);
-        setPathData(
-          isReached(directionalResult)
-            ? directionalResult
-            : nonDirectionalResult,
-        );
-      }
+      setIsPathNotFound(path.nodes.length == 0 ? true : false);
+      setPathData(path);
     }
   }, [startNode, endNode]);
 
@@ -99,7 +76,7 @@ export const RelationPathSearch = ({
       <div className="flex flex-row items-center gap-2 text-xs">
         <div>距離: </div>
         <div>
-          {pathData?.relationships.length === 0
+          {pathData && pathData.relationships.length === 0
             ? "-"
             : pathData?.relationships.length}
         </div>

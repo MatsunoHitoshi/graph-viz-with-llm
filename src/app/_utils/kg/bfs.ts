@@ -5,7 +5,38 @@ import type {
 } from "./get-nodes-and-relationships-from-result";
 import { neighborNodes } from "./get-tree-layout-data";
 
-export const nonDirectionalBfs = (
+export const nodePathSearch = (
+  graphData: GraphDocument,
+  startId: number,
+  endId: number,
+) => {
+  const isReached = (path: GraphDocument) => {
+    const firstNode = path.nodes[0];
+    const lastNode = path.nodes[path.nodes.length - 1];
+    return firstNode?.id === startId && lastNode?.id === endId;
+  };
+  const directionalResult = directionalBfs(graphData, startId, endId);
+  console.log("directional:", directionalResult);
+  const nonDirectionalResult = nonDirectionalBfs(graphData, startId, endId);
+  console.log("nonDirectional:", nonDirectionalResult);
+
+  if (isReached(directionalResult) && isReached(nonDirectionalResult)) {
+    return directionalResult.nodes.length <= nonDirectionalResult.nodes.length
+      ? directionalResult
+      : nonDirectionalResult;
+  } else if (
+    !isReached(directionalResult) &&
+    !isReached(nonDirectionalResult)
+  ) {
+    return { nodes: [], relationships: [] };
+  } else {
+    return isReached(directionalResult)
+      ? directionalResult
+      : nonDirectionalResult;
+  }
+};
+
+const nonDirectionalBfs = (
   graphData: GraphDocument,
   startId: number,
   endId: number,
@@ -47,7 +78,7 @@ export const nonDirectionalBfs = (
   return getOptimalPath(graphData, nodes);
 };
 
-export const directionalBfs = (
+const directionalBfs = (
   graphData: GraphDocument,
   startId: number,
   endId: number,

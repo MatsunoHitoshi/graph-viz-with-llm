@@ -10,11 +10,20 @@ import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
-import Link from "next/link";
 
-export const TopicGraphDetail = ({ id }: { id: string }) => {
-  const { data: topicSpace, refetch } = api.topicSpaces.getByIdPublic.useQuery({
+export const TopicGraphPathDetail = ({
+  id,
+  startId,
+  endId,
+}: {
+  id: string;
+  startId: string;
+  endId: string;
+}) => {
+  const { data: topicSpace, refetch } = api.topicSpaces.getPath.useQuery({
     id: id,
+    startId: startId,
+    endId: endId,
   });
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth = (2 * (innerWidth ?? 100)) / 3 - 36;
@@ -68,25 +77,13 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
             setIsLinkFiltered={setIsLinkFiltered}
             setNodeSearchQuery={setNodeSearchQuery}
           />
-          <div>
-            <RelationPathSearch
-              graphData={topicSpace.graphData as GraphDocument}
-              setPathData={setPathData}
-              pathData={pathData}
-            />
-            {pathData && pathData.nodes.length !== 0 ? (
-              <div className="flex w-full flex-col items-end">
-                <Link
-                  className="text-sm underline hover:no-underline"
-                  href={`/topic-spaces/${id}/path/${pathData.nodes[0]?.id}/${pathData.nodes[pathData.nodes.length - 1]?.id}`}
-                >
-                  詳細
-                </Link>
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
+          <RelationPathSearch
+            defaultStartNodeId={Number(startId)}
+            defaultEndNodeId={Number(endId)}
+            graphData={topicSpace.graphData as GraphDocument}
+            setPathData={setPathData}
+            pathData={pathData}
+          />
 
           <div className="flex flex-col gap-1">
             <div className="flex w-full flex-row items-center justify-between">
