@@ -13,9 +13,10 @@ import {
   forceCollide,
 } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
-import { useEffect, useMemo, useState } from "react";
+import { SetStateAction, useEffect, useMemo, useState } from "react";
 import { GraphInfoPanel } from "./graph-info-panel";
 import { D3ZoomProvider } from "../zoom";
+import { EnterFullScreenIcon, ExitFullScreenIcon } from "../../icons";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -54,6 +55,8 @@ export const D3ForceGraph = ({
   nodeSearchQuery,
   topicSpaceId,
   isClustered = false,
+  graphFullScreen = false,
+  setGraphFullScreen,
 }: {
   height: number;
   width: number;
@@ -64,6 +67,8 @@ export const D3ForceGraph = ({
   nodeSearchQuery?: string;
   topicSpaceId?: string;
   isClustered?: boolean;
+  graphFullScreen?: boolean;
+  setGraphFullScreen?: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
@@ -149,9 +154,12 @@ export const D3ForceGraph = ({
                     : currentScale > 0.9
                       ? 8
                       : 10;
-          const nodeVisible = !(
-            nodes.length > 1000 && (neighborLinkCount ?? 0) <= visibleByScaling
-          );
+          const nodeVisible =
+            graphFullScreen ||
+            !(
+              nodes.length > 1000 &&
+              (neighborLinkCount ?? 0) <= visibleByScaling
+            );
 
           return {
             ...d,
@@ -184,6 +192,23 @@ export const D3ForceGraph = ({
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
+        {!!setGraphFullScreen ? (
+          <button
+            onClick={() => {
+              setGraphFullScreen(!graphFullScreen);
+            }}
+            className={`absolute flex max-h-[500px] flex-row items-start gap-2 overflow-y-scroll rounded-lg bg-black/20 p-2 backdrop-blur-sm`}
+          >
+            {graphFullScreen ? (
+              <ExitFullScreenIcon height={16} width={16} color="white" />
+            ) : (
+              <EnterFullScreenIcon height={16} width={16} color="white" />
+            )}
+          </button>
+        ) : (
+          <></>
+        )}
+
         <GraphInfoPanel
           focusedNode={focusedNode}
           focusedLink={focusedLink}
