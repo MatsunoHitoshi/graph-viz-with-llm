@@ -394,7 +394,7 @@ export const D3ForceGraph = ({
                       stroke="#eae80c"
                       strokeWidth={queryFiltered ? 2.5 : 0}
                     />
-                    {currentScale > 0.7 && (
+                    {(currentScale > 0.7 || graphFullScreen) && (
                       <text
                         x={graphNode.x}
                         y={graphNode.y}
