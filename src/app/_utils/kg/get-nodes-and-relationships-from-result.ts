@@ -29,6 +29,8 @@ export type NodeType = {
   properties: PropertyType;
   neighborLinkCount?: number;
   visible?: boolean;
+  clustered?: { x: number; y: number };
+  nodeColor?: string;
 };
 
 export type RelationshipType = {

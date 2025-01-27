@@ -37,6 +37,13 @@ const linkFilter = (nodes: CustomNodeType[], links: CustomLinkType[]) => {
   return filteredNodes;
 };
 
+// const circlePosition = (index: number, length: number, type: "sin" | "cos") => {
+//   const dig = index / length;
+//   const radius = 400;
+//   const angle = dig * Math.PI * 2;
+//   return type === "sin" ? radius * Math.sin(angle) : radius * Math.cos(angle);
+// };
+
 export const D3ForceGraph = ({
   height,
   width,
@@ -46,6 +53,7 @@ export const D3ForceGraph = ({
   isLinkFiltered = false,
   nodeSearchQuery,
   topicSpaceId,
+  isClustered = false,
 }: {
   height: number;
   width: number;
@@ -55,6 +63,7 @@ export const D3ForceGraph = ({
   isLinkFiltered?: boolean;
   nodeSearchQuery?: string;
   topicSpaceId?: string;
+  isClustered?: boolean;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
@@ -90,13 +99,33 @@ export const D3ForceGraph = ({
         "link",
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
-          .distance(28)
+          .distance(20)
           .strength(0.15),
       )
       .force("center", forceCenter(centerX, centerY))
-      .force("charge", forceManyBody())
-      .force("x", forceX())
-      .force("y", forceY())
+      .force("charge", forceManyBody().strength(-40))
+      .force(
+        "x",
+        forceX().x(function (d) {
+          return (
+            centerX +
+            (isClustered
+              ? graphNodes.find((n) => n.index === d.index)?.clustered?.x ?? 0
+              : 0)
+          );
+        }),
+      )
+      .force(
+        "y",
+        forceY().y(function (d) {
+          return (
+            centerY +
+            (isClustered
+              ? graphNodes.find((n) => n.index === d.index)?.clustered?.y ?? 0
+              : 0)
+          );
+        }),
+      )
       .force("collision", forceCollide(1));
 
     simulation.alpha(0.5);
@@ -149,6 +178,7 @@ export const D3ForceGraph = ({
     initLinks,
     currentScale,
     nodes.length,
+    isClustered,
   ]);
 
   return (
@@ -330,7 +360,9 @@ export const D3ForceGraph = ({
                             ? "#eae80c"
                             : graphUnselected
                               ? "#324557"
-                              : "whitesmoke"
+                              : isClustered && graphNode.nodeColor
+                                ? graphNode.nodeColor
+                                : "whitesmoke"
                       }
                       cx={graphNode.x}
                       cy={graphNode.y}

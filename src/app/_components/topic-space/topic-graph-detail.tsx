@@ -11,6 +11,15 @@ import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
 import Link from "next/link";
+import { Button } from "../button/button";
+import { interpolateRainbow } from "d3";
+
+const circlePosition = (index: number, length: number, type: "sin" | "cos") => {
+  const dig = index / length - 1;
+  const radius = 400;
+  const angle = dig * Math.PI * 2;
+  return type === "sin" ? radius * Math.sin(angle) : radius * Math.cos(angle);
+};
 
 export const TopicGraphDetail = ({ id }: { id: string }) => {
   const { data: topicSpace, refetch } = api.topicSpaces.getByIdPublic.useQuery({
@@ -27,6 +36,12 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
   const [pathData, setPathData] = useState<GraphDocument>();
+  const [isClustered, setIsClustered] = useState<boolean>(false);
+  const [graphData, setGraphData] = useState<GraphDocument>();
+
+  useEffect(() => {
+    setGraphData(topicSpace?.graphData as GraphDocument);
+  }, [topicSpace]);
 
   useEffect(() => {
     setSelectedGraphData(
@@ -35,6 +50,52 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
       })?.graph?.dataJson as GraphDocument) ?? null,
     );
   }, [selectedDocumentId, topicSpace]);
+
+  useEffect(() => {
+    const clusteredGraphData = {
+      ...(topicSpace?.graphData as GraphDocument),
+    };
+    if (isClustered) {
+      const documents = topicSpace!.sourceDocuments;
+      const documentIdArray = documents.map((d) => d.id);
+      documents.forEach((document, index) => {
+        const documentGraph = document.graph?.dataJson as GraphDocument;
+        clusteredGraphData.nodes.forEach((node) => {
+          if (documentGraph.nodes.map((n) => n.name).includes(node.name)) {
+            // node.clustered = node.clustered ?? [];
+            // node.clustered.push(document.id);
+            node.clustered = node.clustered ?? { x: 0, y: 0 };
+            node.clustered = {
+              x:
+                node.clustered.x +
+                circlePosition(index, documentIdArray?.length, "cos"),
+              y:
+                node.clustered.y +
+                circlePosition(index, documentIdArray?.length, "sin"),
+            };
+            if (!node.nodeColor) {
+              node.nodeColor = interpolateRainbow(
+                index / (documentIdArray?.length - 1),
+              );
+              console.log(
+                "color",
+                interpolateRainbow(index / (documentIdArray?.length - 1)),
+              );
+            } else {
+              node.nodeColor = "";
+            }
+          }
+        });
+      });
+      setGraphData(clusteredGraphData);
+    } else if (graphData?.nodes) {
+      clusteredGraphData.nodes.forEach((node) => {
+        node.clustered = { x: 0, y: 0 };
+        node.nodeColor = undefined;
+      });
+      setGraphData(clusteredGraphData);
+    }
+  }, [isClustered, topicSpace]);
 
   if (!topicSpace) return null;
   console.log("graphData: ", selectedGraphData);
@@ -69,20 +130,26 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
             setNodeSearchQuery={setNodeSearchQuery}
           />
           <div>
-            <RelationPathSearch
-              graphData={topicSpace.graphData as GraphDocument}
-              setPathData={setPathData}
-              pathData={pathData}
-            />
-            {pathData && pathData.nodes.length !== 0 ? (
-              <div className="flex w-full flex-col items-end">
-                <Link
-                  className="text-sm underline hover:no-underline"
-                  href={`/topic-spaces/${id}/path/${pathData.nodes[0]?.id}/${pathData.nodes[pathData.nodes.length - 1]?.id}`}
-                >
-                  詳細
-                </Link>
-              </div>
+            {!!graphData ? (
+              <>
+                <RelationPathSearch
+                  graphData={graphData}
+                  setPathData={setPathData}
+                  pathData={pathData}
+                />
+                {pathData && pathData.nodes.length !== 0 ? (
+                  <div className="flex w-full flex-col items-end">
+                    <Link
+                      className="text-sm underline hover:no-underline"
+                      href={`/topic-spaces/${id}/path/${pathData.nodes[0]?.id}/${pathData.nodes[pathData.nodes.length - 1]?.id}`}
+                    >
+                      詳細
+                    </Link>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </>
             ) : (
               <></>
             )}
@@ -91,6 +158,13 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
           <div className="flex flex-col gap-1">
             <div className="flex w-full flex-row items-center justify-between">
               <div className="font-semibold">ドキュメント</div>
+              <Button
+                onClick={() => {
+                  setIsClustered(!isClustered);
+                }}
+              >
+                クラスタリング
+              </Button>
             </div>
 
             <TopicGraphDocumentList
@@ -101,16 +175,17 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
           </div>
         </div>
         <div className="col-span-2 py-4">
-          {topicSpace.graphData ? (
+          {graphData ? (
             <D3ForceGraph
               width={graphAreaWidth}
               height={graphAreaHeight}
-              graphDocument={topicSpace.graphData as GraphDocument}
+              graphDocument={graphData}
               selectedGraphData={selectedGraphData}
               selectedPathData={pathData}
               isLinkFiltered={isLinkFiltered}
               nodeSearchQuery={nodeSearchQuery}
               topicSpaceId={id}
+              isClustered={isClustered}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">
