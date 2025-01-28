@@ -4,7 +4,10 @@ import { TabsContainer } from "../tab/tab";
 import { D3ForceGraph } from "../d3/force/graph";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
-import type { DocumentResponse } from "@/app/const/types";
+import type {
+  DocumentResponse,
+  DocumentResponseWithGraphData,
+} from "@/app/const/types";
 import { useEffect, useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
@@ -19,6 +22,48 @@ const circlePosition = (index: number, length: number, type: "sin" | "cos") => {
   const radius = 400;
   const angle = dig * Math.PI * 2;
   return type === "sin" ? radius * Math.sin(angle) : radius * Math.cos(angle);
+};
+
+const circleColor = (
+  clusteredGraphData: GraphDocument,
+  documents: DocumentResponseWithGraphData[],
+) => {
+  const documentIdArray = documents.map((d) => d.id);
+  documents.forEach((document, index) => {
+    const documentGraph = document.graph?.dataJson as GraphDocument;
+    clusteredGraphData.nodes.forEach((node) => {
+      if (documentGraph.nodes.map((n) => n.name).includes(node.name)) {
+        node.clustered = node.clustered ?? { x: 0, y: 0 };
+        node.clustered = {
+          x:
+            node.clustered.x +
+            circlePosition(index, documentIdArray?.length, "cos"),
+          y:
+            node.clustered.y +
+            circlePosition(index, documentIdArray?.length, "sin"),
+        };
+        if (!node.nodeColor && node.nodeColor !== "") {
+          node.nodeColor = interpolateRainbow(index / documentIdArray?.length);
+        } else {
+          const color = node.nodeColor?.split(",") ?? [];
+          const r = parseInt(color[0]?.split(`(`)[1] ?? "0", 10);
+          const g = parseInt(color[1] ?? "0", 10);
+          const b = parseInt(color[2]?.split(`)`)[0] ?? "0", 10);
+          const addColor =
+            interpolateRainbow(index / documentIdArray?.length).split(",") ??
+            [];
+          const addR = parseInt(addColor[0]?.split("(")[1] ?? "0", 10);
+          const addG = parseInt(addColor[1] ?? "0", 10);
+          const addB = parseInt(addColor[2]?.split(`)`)[0] ?? "0", 10);
+          const avgR = Math.floor((r + addR) / 2);
+          const avgG = Math.floor((g + addG) / 2);
+          const avgB = Math.floor((b + addB) / 2);
+          node.nodeColor = `rgb(${avgR}, ${avgG}, ${avgB})`;
+        }
+      }
+    });
+  });
+  return clusteredGraphData;
 };
 
 export const TopicGraphDetail = ({ id }: { id: string }) => {
@@ -59,37 +104,7 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
     };
     if (isClustered) {
       const documents = topicSpace!.sourceDocuments;
-      const documentIdArray = documents.map((d) => d.id);
-      documents.forEach((document, index) => {
-        const documentGraph = document.graph?.dataJson as GraphDocument;
-        clusteredGraphData.nodes.forEach((node) => {
-          if (documentGraph.nodes.map((n) => n.name).includes(node.name)) {
-            // node.clustered = node.clustered ?? [];
-            // node.clustered.push(document.id);
-            node.clustered = node.clustered ?? { x: 0, y: 0 };
-            node.clustered = {
-              x:
-                node.clustered.x +
-                circlePosition(index, documentIdArray?.length, "cos"),
-              y:
-                node.clustered.y +
-                circlePosition(index, documentIdArray?.length, "sin"),
-            };
-            if (!node.nodeColor) {
-              node.nodeColor = interpolateRainbow(
-                index / (documentIdArray?.length - 1),
-              );
-              console.log(
-                "color",
-                interpolateRainbow(index / (documentIdArray?.length - 1)),
-              );
-            } else {
-              node.nodeColor = "";
-            }
-          }
-        });
-      });
-      setGraphData(clusteredGraphData);
+      setGraphData(circleColor(clusteredGraphData, documents));
     } else if (graphData?.nodes) {
       clusteredGraphData.nodes.forEach((node) => {
         node.clustered = { x: 0, y: 0 };
@@ -175,11 +190,19 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
                 documents={topicSpace.sourceDocuments as DocumentResponse[]}
                 selectedDocumentId={selectedDocumentId}
                 setSelectedDocumentId={setSelectedDocumentId}
+                isClustered={isClustered}
               />
             </div>
           </div>
         ) : (
-          <></>
+          <div className="absolute bottom-3 w-40 rounded-lg bg-black/20 p-2 backdrop-blur-sm">
+            <TopicGraphDocumentList
+              documents={topicSpace.sourceDocuments as DocumentResponse[]}
+              selectedDocumentId={selectedDocumentId}
+              setSelectedDocumentId={setSelectedDocumentId}
+              isClustered={isClustered}
+            />
+          </div>
         )}
 
         <div className="col-span-2 py-4">

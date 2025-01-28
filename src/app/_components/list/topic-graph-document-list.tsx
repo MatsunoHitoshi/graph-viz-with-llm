@@ -3,6 +3,8 @@ import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { GraphIcon } from "../icons";
 import { useRouter } from "next/navigation";
+import { color, interpolateRainbow } from "d3";
+import clsx from "clsx";
 
 type TopicGraphDocumentListProps = {
   documents: DocumentResponse[];
@@ -10,6 +12,7 @@ type TopicGraphDocumentListProps = {
   end?: number;
   selectedDocumentId: string;
   setSelectedDocumentId: React.Dispatch<React.SetStateAction<string>>;
+  isClustered?: boolean;
 };
 export const TopicGraphDocumentList = ({
   documents,
@@ -17,6 +20,7 @@ export const TopicGraphDocumentList = ({
   end = documents.length,
   selectedDocumentId,
   setSelectedDocumentId,
+  isClustered = false,
 }: TopicGraphDocumentListProps) => {
   const router = useRouter();
   return (
@@ -26,7 +30,7 @@ export const TopicGraphDocumentList = ({
           <div>ドキュメントがありません</div>
         </div>
       ) : (
-        documents.slice(start, end).map((document) => {
+        documents.slice(start, end).map((document, index) => {
           return (
             <div
               key={document.id}
@@ -43,7 +47,17 @@ export const TopicGraphDocumentList = ({
                 }}
               ></button>
 
-              <div className="flex w-max flex-row items-center gap-4 overflow-hidden">
+              <div
+                style={{
+                  color: isClustered
+                    ? interpolateRainbow(index / documents.length).replaceAll(
+                        " ",
+                        "",
+                      )
+                    : "",
+                }}
+                className={`flex w-max flex-row items-center gap-4 overflow-hidden ${isClustered && "text-opacity-50"}`}
+              >
                 <div className="truncate">{document.name}</div>
               </div>
 

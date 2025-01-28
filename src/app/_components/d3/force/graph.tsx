@@ -13,10 +13,15 @@ import {
   forceCollide,
 } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
-import { SetStateAction, useEffect, useMemo, useState } from "react";
+import { SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import { GraphInfoPanel } from "./graph-info-panel";
 import { D3ZoomProvider } from "../zoom";
-import { EnterFullScreenIcon, ExitFullScreenIcon } from "../../icons";
+import {
+  EnterFullScreenIcon,
+  ExitFullScreenIcon,
+  ShareIcon,
+} from "../../icons";
+import { exportSvg } from "@/app/_utils/sys/svg";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -73,6 +78,7 @@ export const D3ForceGraph = ({
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
   const initNodes = isLinkFiltered ? linkFilter(nodes, initLinks) : nodes;
+  const svgRef = useRef<SVGSVGElement>(null);
 
   const newLinks = useMemo(() => {
     return initLinks.map((d) => {
@@ -192,22 +198,34 @@ export const D3ForceGraph = ({
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
-        {!!setGraphFullScreen ? (
+        <div className="absolute flex flex-row items-start gap-2">
+          {!!setGraphFullScreen ? (
+            <button
+              onClick={() => {
+                setGraphFullScreen(!graphFullScreen);
+              }}
+              className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
+            >
+              {graphFullScreen ? (
+                <ExitFullScreenIcon height={16} width={16} color="white" />
+              ) : (
+                <EnterFullScreenIcon height={16} width={16} color="white" />
+              )}
+            </button>
+          ) : (
+            <></>
+          )}
           <button
+            className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
             onClick={() => {
-              setGraphFullScreen(!graphFullScreen);
+              if (svgRef.current) {
+                exportSvg(svgRef.current, 4 / currentScale);
+              }
             }}
-            className={`absolute flex max-h-[500px] flex-row items-start gap-2 overflow-y-scroll rounded-lg bg-black/20 p-2 backdrop-blur-sm`}
           >
-            {graphFullScreen ? (
-              <ExitFullScreenIcon height={16} width={16} color="white" />
-            ) : (
-              <EnterFullScreenIcon height={16} width={16} color="white" />
-            )}
+            <ShareIcon height={16} width={16} color="white" />
           </button>
-        ) : (
-          <></>
-        )}
+        </div>
 
         <GraphInfoPanel
           focusedNode={focusedNode}
@@ -219,6 +237,7 @@ export const D3ForceGraph = ({
           setFocusNode={setFocusedNode}
         />
         <svg
+          ref={svgRef}
           id="container"
           width={width}
           height={height}
