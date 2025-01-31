@@ -26,7 +26,7 @@ export const DeleteModal = ({
       case "sourceDocument":
         return "ドキュメント";
       case "topicSpace":
-        return "トピックスペース";
+        return "ドキュメントマップ";
     }
   };
 

@@ -4,7 +4,7 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 
 type SelectBoxOption = { id: string; label: string };
@@ -33,6 +33,7 @@ export const SelectInput = ({
       : options.filter((option: SelectBoxOption) => {
           return option.label.toLowerCase().startsWith(query.toLowerCase());
         }) ?? [];
+
   return (
     <Combobox
       value={selected}

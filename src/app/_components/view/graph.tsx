@@ -10,7 +10,7 @@ import { Toolbar } from "../toolbar/toolbar";
 import { useRouter } from "next/navigation";
 import { Button } from "../button/button";
 import { api } from "@/trpc/react";
-import { ShareIcon } from "../icons";
+import { Link2Icon } from "../icons";
 import { UrlCopy } from "../url-copy/url-copy";
 import { useSearchParams } from "next/navigation";
 import { useWindowSize } from "../../_hooks/use-window-size";
@@ -182,7 +182,7 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
                     className="flex !h-8 !w-8 flex-row items-center justify-center px-0 py-0"
                   >
                     <div className="h-4 w-4">
-                      <ShareIcon height={16} width={16} color="white" />
+                      <Link2Icon height={16} width={16} color="white" />
                     </div>
                   </UrlCopy>
                   <div className="w-full truncate">

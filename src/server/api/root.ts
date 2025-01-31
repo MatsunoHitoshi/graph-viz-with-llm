@@ -5,6 +5,7 @@ import { documentGraphRouter } from "./routers/document-graph";
 import { sourceDocumentRouter } from "./routers/source-document";
 import { topicSpaceRouter } from "./routers/topic-space";
 import { treeGraphRouter } from "./routers/tree-graph";
+import { assistantRouter } from "./routers/assistant";
 
 /**
  * This is the primary router for your server.
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   sourceDocument: sourceDocumentRouter,
   topicSpaces: topicSpaceRouter,
   treeGraph: treeGraphRouter,
+  assistant: assistantRouter,
 });
 
 // export type definition of API

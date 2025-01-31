@@ -157,12 +157,12 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
                   />
                   {pathData && pathData.nodes.length !== 0 ? (
                     <div className="flex w-full flex-col items-end">
-                      <Link
+                      <a
                         className="text-sm underline hover:no-underline"
                         href={`/topic-spaces/${id}/path/${pathData.nodes[0]?.id}/${pathData.nodes[pathData.nodes.length - 1]?.id}`}
                       >
                         詳細
-                      </Link>
+                      </a>
                     </div>
                   ) : (
                     <></>
@@ -182,7 +182,7 @@ export const TopicGraphDetail = ({ id }: { id: string }) => {
                     setIsClustered(!isClustered);
                   }}
                 >
-                  クラスタリング
+                  ドキュメントごとに分割
                 </Button>
               </div>
 

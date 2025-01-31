@@ -99,7 +99,7 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
                   <div className="flex flex-row items-center gap-2">
                     <GraphIcon height={20} width={20} color="white" />
                   </div>
-                  <div className="text-sm">グラフの詳細を見る</div>
+                  <div className="text-sm">公開ページ</div>
                 </div>
               </Button>
             </div>
@@ -150,7 +150,7 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
                           <TrashIcon width={16} height={16} color="#ea1c0c" />
                         </div>
                         <div className="text-error-red">
-                          トピックスペースから削除
+                          ドキュメントマップから削除
                         </div>
                       </div>
                     </button>

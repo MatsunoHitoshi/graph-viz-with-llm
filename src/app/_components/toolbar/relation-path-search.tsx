@@ -50,6 +50,22 @@ export const RelationPathSearch = ({
   const options = graphData.nodes.map((node) => {
     return { id: String(node.id), label: node.name };
   });
+
+  useEffect(() => {
+    if (options && defaultStartNodeId && defaultEndNodeId) {
+      setStartNode(
+        options.find((o) => {
+          return o.id === String(defaultStartNodeId);
+        }),
+      );
+      setEndNode(
+        options.find((o) => {
+          return o.id === String(defaultEndNodeId);
+        }),
+      );
+    }
+  }, []);
+
   return (
     <div className="flex flex-col gap-1">
       <div className="text-xs">経路の検索</div>
@@ -76,9 +92,8 @@ export const RelationPathSearch = ({
       <div className="flex flex-row items-center gap-2 text-xs">
         <div>距離: </div>
         <div>
-          {pathData && pathData.relationships.length === 0
-            ? "-"
-            : pathData?.relationships.length}
+          {pathData &&
+            (pathData.nodes.length === 0 ? "-" : pathData.nodes.length - 1)}
         </div>
       </div>
     </div>

@@ -6,10 +6,10 @@ import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type { DocumentResponse } from "@/app/const/types";
 import { useEffect, useState } from "react";
-import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
+import { GraphSummaryGenerator } from "../summary-generator/graph-smmary-generator";
 
 export const TopicGraphPathDetail = ({
   id,
@@ -20,7 +20,7 @@ export const TopicGraphPathDetail = ({
   startId: string;
   endId: string;
 }) => {
-  const { data: topicSpace, refetch } = api.topicSpaces.getPath.useQuery({
+  const { data: topicSpace } = api.topicSpaces.getPath.useQuery({
     id: id,
     startId: startId,
     endId: endId,
@@ -31,9 +31,6 @@ export const TopicGraphPathDetail = ({
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);
-  const [documentAttachModalOpen, setDocumentAttachModalOpen] =
-    useState<boolean>(false);
-  const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
   const [pathData, setPathData] = useState<GraphDocument>();
 
@@ -46,7 +43,6 @@ export const TopicGraphPathDetail = ({
   }, [selectedDocumentId, topicSpace]);
 
   if (!topicSpace) return null;
-  console.log("graphData: ", selectedGraphData);
 
   return (
     <TabsContainer>
@@ -72,11 +68,7 @@ export const TopicGraphPathDetail = ({
               })}
             </div>
           </div>
-          <Toolbar
-            isLinkFiltered={isLinkFiltered}
-            setIsLinkFiltered={setIsLinkFiltered}
-            setNodeSearchQuery={setNodeSearchQuery}
-          />
+          <Toolbar setNodeSearchQuery={setNodeSearchQuery} />
           <RelationPathSearch
             defaultStartNodeId={Number(startId)}
             defaultEndNodeId={Number(endId)}
@@ -89,14 +81,20 @@ export const TopicGraphPathDetail = ({
             <div className="flex w-full flex-row items-center justify-between">
               <div className="font-semibold">ドキュメント</div>
             </div>
-
             <TopicGraphDocumentList
               documents={topicSpace.sourceDocuments as DocumentResponse[]}
               selectedDocumentId={selectedDocumentId}
               setSelectedDocumentId={setSelectedDocumentId}
             />
           </div>
+
+          <GraphSummaryGenerator
+            graphData={topicSpace.graphData as GraphDocument}
+            defaultStartNodeId={startId}
+            defaultEndNodeId={endId}
+          />
         </div>
+
         <div className="col-span-2 py-4">
           {topicSpace.graphData ? (
             <D3ForceGraph
@@ -105,7 +103,6 @@ export const TopicGraphPathDetail = ({
               graphDocument={topicSpace.graphData as GraphDocument}
               selectedGraphData={selectedGraphData}
               selectedPathData={pathData}
-              isLinkFiltered={isLinkFiltered}
               nodeSearchQuery={nodeSearchQuery}
               topicSpaceId={id}
             />
@@ -117,12 +114,6 @@ export const TopicGraphPathDetail = ({
           )}
         </div>
       </div>
-      <DocumentAttachModal
-        isOpen={documentAttachModalOpen}
-        setIsOpen={setDocumentAttachModalOpen}
-        topicSpaceId={id}
-        refetch={refetch}
-      />
     </TabsContainer>
   );
 };

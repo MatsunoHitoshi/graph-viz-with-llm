@@ -52,7 +52,7 @@ export const Tabs = ({ session }: { session: Session | null }) => {
             path={"/documents"}
           />
           <Tab
-            label="トピックスペース"
+            label="ドキュメントマップ"
             icon={<StackIcon width={16} height={16} color="white" />}
             path={"/topic-spaces"}
           />
@@ -110,7 +110,7 @@ export const TabsContainer = ({ children }: { children: React.ReactNode }) => {
             }}
           >
             <PlusIcon width={16} height={16} color="white" />
-            <div className="text-sm">新規トピックスペース</div>
+            <div className="text-sm">新規ドキュメントマップ</div>
           </Button>
         );
       default:

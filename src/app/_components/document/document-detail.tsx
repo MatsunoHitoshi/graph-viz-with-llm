@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "../button/button";
-import { FileTextIcon, GraphIcon, ShareIcon } from "../icons";
+import { FileTextIcon, GraphIcon, Link2Icon } from "../icons";
 import { useRouter } from "next/navigation";
 import { UrlCopy } from "../url-copy/url-copy";
 import { env } from "@/env";
@@ -47,7 +47,7 @@ export const DocumentDetail = ({ documentId }: { documentId: string }) => {
             url={`${env.NEXT_PUBLIC_BASE_URL}/graph/${document.graph?.id}`}
           >
             <div className="h-4 w-4">
-              <ShareIcon height={16} width={16} color="white" />
+              <Link2Icon height={16} width={16} color="white" />
             </div>
           </UrlCopy>
         </div>

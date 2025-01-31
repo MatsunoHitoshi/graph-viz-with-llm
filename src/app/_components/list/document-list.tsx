@@ -2,7 +2,7 @@
 import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { UrlCopy } from "../url-copy/url-copy";
-import { DotHorizontalIcon, GraphIcon, PlusIcon, ShareIcon } from "../icons";
+import { DotHorizontalIcon, GraphIcon, Link2Icon, PlusIcon } from "../icons";
 import { formatDate } from "@/app/_utils/date/format-date";
 import { useRouter } from "next/navigation";
 import { env } from "@/env";
@@ -97,7 +97,7 @@ export const DocumentList = ({
                   url={`${env.NEXT_PUBLIC_BASE_URL}/graph/${document.graph?.id}`}
                 >
                   <div className="h-4 w-4">
-                    <ShareIcon height={16} width={16} color="white" />
+                    <Link2Icon height={16} width={16} color="white" />
                   </div>
                 </UrlCopy>
                 <div className="w-[128px] text-right text-sm">

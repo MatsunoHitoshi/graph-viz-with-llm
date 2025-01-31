@@ -30,7 +30,7 @@ export const Header = () => {
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
             className="text-sm underline hover:no-underline"
           >
-            Sign In
+            SignUp/SignIn
           </Button>
         ) : (
           <div className="flex flex-row items-center gap-1">
@@ -64,7 +64,7 @@ export const Header = () => {
               onClick={() => signOut({ callbackUrl: "/" })}
               className="text-sm underline hover:no-underline"
             >
-              Sign Out
+              SignOut
             </Button>
           </div>
         )}
