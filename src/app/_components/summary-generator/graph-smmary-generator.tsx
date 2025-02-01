@@ -7,6 +7,7 @@ import { UrlCopy } from "../url-copy/url-copy";
 import { ClipboardIcon } from "../icons";
 import { signIn, useSession } from "next-auth/react";
 import Markdown from "react-markdown";
+import { TextToSpeech } from "./text-to-speech";
 
 type GraphSummaryGeneratorProps = {
   graphData: GraphDocument;
@@ -87,12 +88,22 @@ export const GraphSummaryGenerator = ({
         </div>
 
         {!isProcessing && (
-          <div className="flex w-full flex-col items-end">
+          <div className="flex w-full flex-row items-center justify-end gap-2">
+            {summary ? (
+              <div>
+                <TextToSpeech
+                  text={summary}
+                  className="z-10 flex !h-8 !w-8 flex-row items-center justify-center rounded-md bg-slate-800 px-0 py-0 hover:bg-slate-50/10"
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+
             <div>
               <UrlCopy
                 messagePosition="inButton"
-                className="z-10 flex !h-8 !w-8 flex-row items-center justify-center 
-                bg-slate-800 px-0 py-0 hover:bg-slate-50/10"
+                className="z-10 flex !h-8 !w-8 flex-row items-center justify-center bg-slate-800 px-0 py-0 hover:bg-slate-50/10"
                 url={summary}
               >
                 <div className="h-4 w-4">
