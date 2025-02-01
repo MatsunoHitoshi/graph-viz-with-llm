@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { SpeakerLoudIcon } from "../icons";
 
 type TextToSpeechProps = {
@@ -8,15 +9,26 @@ type TextToSpeechProps = {
 };
 export const TextToSpeech = ({ text, className }: TextToSpeechProps) => {
   const uttr = new SpeechSynthesisUtterance(text);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   return (
     <button
       className={className}
       onClick={() => {
-        window.speechSynthesis.speak(uttr);
+        if (isSpeaking) {
+          setIsSpeaking(false);
+          window.speechSynthesis.cancel();
+        } else {
+          setIsSpeaking(true);
+          window.speechSynthesis.speak(uttr);
+        }
       }}
     >
-      <SpeakerLoudIcon height={16} width={16} />
+      <SpeakerLoudIcon
+        height={16}
+        width={16}
+        color={isSpeaking ? "#f97316" : "white"}
+      />
     </button>
   );
 };
