@@ -21,4 +21,7 @@ export const storageUtils = {
     const blob = await fetch(dataURL).then((r) => r.blob());
     return storageUtils.upload(blob, bucket);
   },
+  uploadFromBlob: async (blob: Blob, bucket: string) => {
+    return storageUtils.upload(blob, bucket);
+  },
 };

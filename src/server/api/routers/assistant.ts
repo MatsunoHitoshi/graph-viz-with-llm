@@ -5,9 +5,8 @@ import type {
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 import OpenAI from "openai";
-import fs from "fs";
-import path from "path";
-import { env } from "@/env";
+import { storageUtils } from "@/app/_utils/supabase/supabase";
+import { BUCKETS } from "@/app/_utils/supabase/const";
 
 const GenerateGraphSummarySchema = z.object({
   graphData: z.object({
@@ -112,15 +111,17 @@ export const assistantRouter = createTRPCRouter({
       try {
         const mp3 = await openai.audio.speech.create({
           model: "tts-1",
-          voice: "fable",
+          voice: "nova",
           input: input.text,
         });
         const buffer = Buffer.from(await mp3.arrayBuffer());
-        const fileName = `${new Date().getTime()}.mp3`;
-        const speechFile = path.resolve(`${env.TMP_DIRECTORY}/${fileName}`);
-        await fs.promises.writeFile(speechFile, buffer);
+        const blob = new Blob([buffer], { type: "audio/mpeg" });
+        const fileUrl = await storageUtils.uploadFromBlob(
+          blob,
+          BUCKETS.PATH_TO_SPEECH_AUDIO_FILE,
+        );
         return {
-          url: `${env.NEXT_PUBLIC_BASE_URL}${env.TMP_DIRECTORY.replace("./public", "")}/${fileName}`,
+          url: fileUrl,
         };
       } catch (error) {
         console.log("error: ", error);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SpeakerLoudIcon } from "../icons";
 import { api } from "@/trpc/react";
 import { Loading } from "../loading/loading";
@@ -24,6 +24,18 @@ export const TextToSpeech = ({ text, className }: TextToSpeechProps) => {
     setIsCurrentAudio(audio);
     audio.play().catch((error) => console.error("Error:", error));
   };
+
+  useEffect(() => {
+    const onEnded = () => {
+      setIsSpeaking(false);
+      currentAudio?.pause();
+    };
+
+    currentAudio?.addEventListener("ended", onEnded);
+    return () => {
+      currentAudio?.removeEventListener("ended", onEnded);
+    };
+  }, [currentAudio, setIsSpeaking]);
 
   return (
     <button

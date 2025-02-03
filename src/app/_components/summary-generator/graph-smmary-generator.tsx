@@ -81,13 +81,40 @@ export const GraphSummaryGenerator = ({
       <div className="flex w-full flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           <div className="font-semibold">要約</div>
-          {isProcessing ? <Loading size={16} color="white" /> : <></>}
+          {isProcessing ? (
+            <Loading size={16} color="white" />
+          ) : (
+            <div className="flex flex-row items-center justify-end gap-2">
+              {summary ? (
+                <div>
+                  <TextToSpeech
+                    text={summary}
+                    className="z-10 flex !h-8 !w-8 flex-row items-center justify-center rounded-md bg-slate-800 px-0 py-0 hover:bg-slate-50/10"
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+
+              <div>
+                <UrlCopy
+                  messagePosition="inButton"
+                  className="z-10 flex !h-8 !w-8 flex-row items-center justify-center bg-slate-800 px-0 py-0 hover:bg-slate-50/10"
+                  url={summary}
+                >
+                  <div className="h-4 w-4">
+                    <ClipboardIcon height={16} width={16} color="white" />
+                  </div>
+                </UrlCopy>
+              </div>
+            </div>
+          )}
         </div>
         <div className="w-full whitespace-pre-wrap text-sm">
           <Markdown>{summary}</Markdown>
         </div>
 
-        {!isProcessing && (
+        {/* {!isProcessing && (
           <div className="flex w-full flex-row items-center justify-end gap-2">
             {summary ? (
               <div>
@@ -112,7 +139,7 @@ export const GraphSummaryGenerator = ({
               </UrlCopy>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     );
   }
