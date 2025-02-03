@@ -63,7 +63,7 @@ export const GraphSummaryGenerator = ({
     if (session) {
       return (
         <Button className="!w-full" onClick={() => submit()}>
-          <div className="text-sm">グラフの内容を要約する</div>
+          <div className="text-sm">グラフの内容を解説する</div>
         </Button>
       );
     } else {
@@ -72,7 +72,7 @@ export const GraphSummaryGenerator = ({
           className="!w-full"
           onClick={() => signIn("google", { callbackUrl: location.pathname })}
         >
-          <div className="text-sm">ログイン/サインインしてグラフを要約</div>
+          <div className="text-sm">ログイン/サインインして解説を作成</div>
         </Button>
       );
     }
@@ -80,7 +80,7 @@ export const GraphSummaryGenerator = ({
     return (
       <div className="flex w-full flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
-          <div className="font-semibold">要約</div>
+          <div className="font-semibold">解説</div>
           {isProcessing ? (
             <Loading size={16} color="white" />
           ) : (

@@ -98,7 +98,7 @@ export const assistantRouter = createTRPCRouter({
         console.log("error: ", error);
         return {
           summary: "",
-          error: "要約を作成できませんでした",
+          error: "解説を作成できませんでした",
         };
       }
     }),
