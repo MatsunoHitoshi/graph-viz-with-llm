@@ -22,7 +22,7 @@ export const TextToSpeech = ({ text, className }: TextToSpeechProps) => {
     setIsSpeaking(true);
     const audio = new Audio(url);
     setIsCurrentAudio(audio);
-    audio.play();
+    audio.play().catch((error) => console.error("Error:", error));
   };
 
   return (
