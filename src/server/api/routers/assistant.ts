@@ -5,6 +5,9 @@ import type {
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 import OpenAI from "openai";
+import fs from "fs";
+import path from "path";
+import { env } from "@/env";
 
 const GenerateGraphSummarySchema = z.object({
   graphData: z.object({
@@ -13,6 +16,10 @@ const GenerateGraphSummarySchema = z.object({
   }),
   startId: z.string(),
   endId: z.string(),
+});
+
+const TextToSpeechSchema = z.object({
+  text: z.string(),
 });
 
 export const assistantRouter = createTRPCRouter({
@@ -77,11 +84,48 @@ export const assistantRouter = createTRPCRouter({
             }
           }
         }
+
+        // const mp3 = await openai.audio.speech.create({
+        //   model: "tts-1",
+        //   voice: "alloy",
+        //   input: summary,
+        // });
+        // const buffer = Buffer.from(await mp3.arrayBuffer());
+        // yield {
+        //   summary: summary,
+        //   speechBuffer: buffer,
+        // };
       } catch (error) {
         console.log("error: ", error);
         return {
           summary: "",
           error: "要約を作成できませんでした",
+        };
+      }
+    }),
+
+  textToSpeech: protectedProcedure
+    .input(TextToSpeechSchema)
+    .mutation(async ({ ctx, input }) => {
+      const openai = new OpenAI();
+
+      try {
+        const mp3 = await openai.audio.speech.create({
+          model: "tts-1",
+          voice: "fable",
+          input: input.text,
+        });
+        const buffer = Buffer.from(await mp3.arrayBuffer());
+        const fileName = `${new Date().getTime()}.mp3`;
+        const speechFile = path.resolve(`${env.TMP_DIRECTORY}/${fileName}`);
+        await fs.promises.writeFile(speechFile, buffer);
+        return {
+          url: `${env.NEXT_PUBLIC_BASE_URL}${env.TMP_DIRECTORY.replace("./public", "")}/${fileName}`,
+        };
+      } catch (error) {
+        console.log("error: ", error);
+        return {
+          error: "音声を生成できませんでした",
         };
       }
     }),

@@ -49,3 +49,5 @@ yarn-error.log*
 # temporal document file
 /public/documents
 /public/json
+/public/speech
+/public/tmp
