@@ -52,6 +52,10 @@ export const assistantRouter = createTRPCRouter({
         return String(n.id) === input.endId;
       });
 
+      console.log("keyword1: ", startNode?.name);
+      console.log("keyword2: ", endNode?.name);
+      console.log("context: \n", context);
+
       const assistant = await openai.beta.assistants.create({
         name: "記事執筆アシスタント",
         instructions:
