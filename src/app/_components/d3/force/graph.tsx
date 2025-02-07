@@ -13,7 +13,7 @@ import {
   forceCollide,
 } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
-import { SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GraphInfoPanel } from "./graph-info-panel";
 import { D3ZoomProvider } from "../zoom";
 import {
@@ -73,12 +73,13 @@ export const D3ForceGraph = ({
   topicSpaceId?: string;
   isClustered?: boolean;
   graphFullScreen?: boolean;
-  setGraphFullScreen?: React.Dispatch<SetStateAction<boolean>>;
+  setGraphFullScreen?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
   const initNodes = isLinkFiltered ? linkFilter(nodes, initLinks) : nodes;
   const svgRef = useRef<SVGSVGElement>(null);
+  const isLargeGraph = nodes.length > 1300;
 
   const newLinks = useMemo(() => {
     return initLinks.map((d) => {
@@ -162,10 +163,7 @@ export const D3ForceGraph = ({
                       : 10;
           const nodeVisible =
             graphFullScreen ||
-            !(
-              nodes.length > 1000 &&
-              (neighborLinkCount ?? 0) <= visibleByScaling
-            );
+            !(isLargeGraph && (neighborLinkCount ?? 0) <= visibleByScaling);
 
           return {
             ...d,
@@ -198,7 +196,7 @@ export const D3ForceGraph = ({
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
-        <div className="absolute flex flex-row items-start gap-2">
+        <div className="absolute flex flex-row items-center gap-2">
           {!!setGraphFullScreen ? (
             <button
               onClick={() => {
@@ -226,6 +224,26 @@ export const D3ForceGraph = ({
             <ShareIcon height={16} width={16} color="white" />
           </button>
         </div>
+
+        {!!isLargeGraph && !graphFullScreen && (
+          <div className="absolute bottom-4 flex flex-row items-center gap-1 text-xs">
+            <div className="text-orange-500">
+              ノード数が多いため一部のみが表示されています
+            </div>
+            {!!setGraphFullScreen ? (
+              <button
+                onClick={() => {
+                  setGraphFullScreen(true);
+                }}
+                className="underline hover:no-underline"
+              >
+                全て表示
+              </button>
+            ) : (
+              <></>
+            )}
+          </div>
+        )}
 
         <GraphInfoPanel
           focusedNode={focusedNode}
