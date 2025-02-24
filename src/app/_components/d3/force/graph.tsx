@@ -414,7 +414,7 @@ export const D3ForceGraph = ({
                     }}
                   >
                     <circle
-                      r={1.6 * ((graphNode.neighborLinkCount ?? 0) * 0.1 + 2.4)}
+                      r={1.6 * ((graphNode.neighborLinkCount ?? 0) * 0.1 + 3.6)}
                       fill={
                         isFocused
                           ? "#ef7234"
