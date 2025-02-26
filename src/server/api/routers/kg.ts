@@ -29,6 +29,8 @@ import { env } from "@/env";
 import type { Prisma } from "@prisma/client";
 import { GraphDataStatus } from "@prisma/client";
 import { stripGraphData } from "@/app/_utils/kg/data-strip";
+import { TopicGraphFilterOption } from "@/app/const/types";
+import { nodePathSearch } from "@/app/_utils/kg/bfs";
 
 const ExtractInputSchema = z.object({
   fileUrl: z.string().url(),
@@ -363,3 +365,38 @@ export const kgRouter = createTRPCRouter({
     };
   }),
 });
+
+export const filterGraph = (
+  filterOption: TopicGraphFilterOption,
+  graphDocument: GraphDocument,
+) => {
+  const filteredNodes = graphDocument.nodes.filter((node) => {
+    return node.label.toLowerCase() === filterOption.value.toLowerCase();
+  });
+  let newRelationships: RelationshipType[] = [];
+  const nodeLength = filteredNodes.length;
+  filteredNodes.forEach((sourceNode, sIndex) => {
+    filteredNodes.forEach((targetNode, tIndex) => {
+      if (sIndex > tIndex) {
+        const nodesDistance =
+          nodePathSearch(graphDocument, sourceNode.id, targetNode.id).nodes
+            .length - 1;
+        if (nodesDistance > 0 && nodesDistance < 5) {
+          const r = {
+            id: sIndex * nodeLength + tIndex,
+            sourceName: sourceNode.name,
+            targetName: targetNode.name,
+            sourceId: sourceNode.id,
+            targetId: targetNode.id,
+            type: String(nodesDistance),
+            properties: {
+              distance: String(nodesDistance),
+            },
+          } as RelationshipType;
+          newRelationships = [...newRelationships, r];
+        }
+      }
+    });
+  });
+  return { nodes: filteredNodes, relationships: newRelationships };
+};

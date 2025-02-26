@@ -5,9 +5,12 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import type { GraphDocument } from "./kg";
+import { filterGraph, type GraphDocument } from "./kg";
 import { fuseGraphs } from "@/app/_utils/kg/data-disambiguation";
-import type { TopicSpaceResponse } from "@/app/const/types";
+import type {
+  TopicGraphFilterOption,
+  TopicSpaceResponse,
+} from "@/app/const/types";
 import { stripGraphData } from "@/app/_utils/kg/data-strip";
 import { nodePathSearch } from "@/app/_utils/kg/bfs";
 import { neighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
@@ -83,7 +86,14 @@ export const topicSpaceRouter = createTRPCRouter({
     }),
 
   getByIdPublic: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(
+      z.object({
+        id: z.string(),
+        filterOption: z
+          .object({ type: z.string(), value: z.string() })
+          .optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: {
@@ -100,7 +110,21 @@ export const topicSpaceRouter = createTRPCRouter({
         },
       });
       if (!topicSpace) throw new Error("TopicSpace not found");
-      return topicSpace;
+
+      if (!!input.filterOption) {
+        const filteredGraph = filterGraph(
+          input.filterOption as TopicGraphFilterOption,
+          topicSpace.graphData as GraphDocument,
+        );
+        console.log("filtered: ", JSON.stringify(filteredGraph));
+        const graphFilteredTopicSpace = {
+          ...topicSpace,
+          graphData: filteredGraph,
+        };
+        return graphFilteredTopicSpace;
+      } else {
+        return topicSpace;
+      }
     }),
 
   getPath: publicProcedure

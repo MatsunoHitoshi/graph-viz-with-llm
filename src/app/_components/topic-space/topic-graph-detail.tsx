@@ -7,13 +7,13 @@ import type { GraphDocument } from "@/server/api/routers/kg";
 import type {
   DocumentResponse,
   DocumentResponseWithGraphData,
+  TopicGraphFilterOption,
 } from "@/app/const/types";
 import { useEffect, useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
-import Link from "next/link";
 import { Button } from "../button/button";
 import { interpolateRainbow } from "d3";
 
@@ -66,10 +66,22 @@ const circleColor = (
   return clusteredGraphData;
 };
 
-export const TopicGraphDetail = ({ id }: { id: string }) => {
-  const { data: topicSpace, refetch } = api.topicSpaces.getByIdPublic.useQuery({
-    id: id,
-  });
+type TopicGraphDetailProps = {
+  id: string;
+  filterOption?: TopicGraphFilterOption;
+};
+
+export const TopicGraphDetail = ({
+  id,
+  filterOption,
+}: TopicGraphDetailProps) => {
+  const { data: topicSpace, refetch } = api.topicSpaces.getByIdPublic.useQuery(
+    filterOption
+      ? { id: id, filterOption: filterOption }
+      : {
+          id: id,
+        },
+  );
   const [innerWidth, innerHeight] = useWindowSize();
   const [graphFullScreen, setGraphFullScreen] = useState<boolean>(false);
   const graphAreaWidth =

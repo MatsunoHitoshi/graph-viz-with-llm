@@ -101,6 +101,10 @@ export const D3ForceGraph = ({
   const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
   const [focusedLink, setFocusedLink] = useState<CustomLinkType>();
 
+  const distance = (d: CustomLinkType) => {
+    return !!d.properties.distance ? Number(d.properties.distance) : 0;
+  };
+
   useEffect(() => {
     const centerX = (width ?? 10) / 2;
     const centerY = (height ?? 10) / 2;
@@ -111,8 +115,8 @@ export const D3ForceGraph = ({
         "link",
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
-          .distance(20)
-          .strength(0.15),
+          .distance((d) => 20 * (distance(d) * distance(d) || 1))
+          .strength((d) => 0.15 / (distance(d) * distance(d) || 1)),
       )
       .force("center", forceCenter(centerX, centerY))
       .force("charge", forceManyBody().strength(-40))
@@ -340,7 +344,14 @@ export const D3ForceGraph = ({
                       //         : "white"
                       // }
                       strokeWidth={isFocused ? 3 : 2}
-                      strokeOpacity={isFocused ? 1 : isGradient ? 0.04 : 0.4}
+                      strokeOpacity={
+                        isFocused
+                          ? 1
+                          : isGradient
+                            ? 0.04
+                            : 0.4 /
+                              (distance(graphLink) * distance(graphLink) || 1)
+                      }
                       // strokeOpacity={isFocused ? 1 : isGradient ? 0.3 : 0.4}
                       x1={modSource.x}
                       y1={modSource.y}
