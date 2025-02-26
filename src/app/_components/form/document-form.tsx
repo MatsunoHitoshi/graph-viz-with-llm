@@ -74,11 +74,10 @@ export const DocumentForm = ({
       reader.readAsDataURL(textFile);
       reader.onload = async () => {
         setIsExtracting(true);
-        const base64Text = reader.result?.toString();
-        console.log(base64Text);
-        if (base64Text) {
-          fileUrl = await storageUtils.uploadFromDataURL(
-            base64Text,
+        // const base64Text = reader.result?.toString();
+        if (textBlob) {
+          fileUrl = await storageUtils.uploadFromBlob(
+            textBlob,
             BUCKETS.PATH_TO_INPUT_TXT,
           );
           if (fileUrl) {
