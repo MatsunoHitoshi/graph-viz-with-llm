@@ -68,7 +68,11 @@ export const DocumentForm = ({
       }
       console.log("planeTextMode");
       const textBlob = new Blob([text], { type: "text/plain" });
-      reader.readAsDataURL(textBlob);
+      const textFile = new File([textBlob], `input_${Date.now()}.txt`, {
+        type: "text/plain",
+      });
+      setFile(textFile);
+      reader.readAsDataURL(textFile);
       reader.onload = async () => {
         setIsExtracting(true);
         const base64Text = reader.result?.toString();
