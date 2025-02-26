@@ -61,15 +61,14 @@ export const DocumentForm = ({
     };
 
     if (isPlaneTextMode) {
-      // planeTextMode
       if (!text) {
         alert("テキストが入力されていません。");
         return;
       }
       console.log("planeTextMode");
-      const textBlob = new Blob([text], { type: "text/plain" });
+      const textBlob = new Blob([text], { type: "text/plain; charset=utf-8" });
       const textFile = new File([textBlob], `input_${Date.now()}.txt`, {
-        type: "text/plain",
+        type: "text/plain; charset=utf-8",
       });
       setFile(textFile);
       reader.readAsDataURL(textFile);
@@ -91,7 +90,6 @@ export const DocumentForm = ({
         }
       };
     } else {
-      // pdfMode
       if (!file) {
         alert("ファイルが選択されていません。");
         return;
