@@ -381,7 +381,7 @@ export const filterGraph = (
         const nodesDistance =
           nodePathSearch(graphDocument, sourceNode.id, targetNode.id).nodes
             .length - 1;
-        if (nodesDistance > 0 && nodesDistance < 5) {
+        if (nodesDistance > 0 && nodesDistance < 4) {
           const r = {
             id: sIndex * nodeLength + tIndex,
             sourceName: sourceNode.name,

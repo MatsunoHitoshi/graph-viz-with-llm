@@ -349,8 +349,10 @@ export const D3ForceGraph = ({
                           ? 1
                           : isGradient
                             ? 0.04
-                            : 0.4 /
-                              (distance(graphLink) * distance(graphLink) || 1)
+                            : (distance(graphLink) ? 0.6 : 0.4) /
+                              (distance(graphLink) *
+                                distance(graphLink) *
+                                distance(graphLink) || 1)
                       }
                       // strokeOpacity={isFocused ? 1 : isGradient ? 0.3 : 0.4}
                       x1={modSource.x}
@@ -437,6 +439,7 @@ export const D3ForceGraph = ({
                                 ? graphNode.nodeColor
                                 : "whitesmoke"
                       }
+                      opacity={0.95}
                       cx={graphNode.x}
                       cy={graphNode.y}
                       stroke="#eae80c"
