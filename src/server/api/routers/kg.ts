@@ -370,33 +370,81 @@ export const filterGraph = (
   filterOption: TopicGraphFilterOption,
   graphDocument: GraphDocument,
 ) => {
-  const filteredNodes = graphDocument.nodes.filter((node) => {
-    return node.label.toLowerCase() === filterOption.value.toLowerCase();
-  });
-  let newRelationships: RelationshipType[] = [];
-  const nodeLength = filteredNodes.length;
-  filteredNodes.forEach((sourceNode, sIndex) => {
-    filteredNodes.forEach((targetNode, tIndex) => {
-      if (sIndex > tIndex) {
-        const nodesDistance =
-          nodePathSearch(graphDocument, sourceNode.id, targetNode.id).nodes
-            .length - 1;
-        if (nodesDistance > 0 && nodesDistance < 4) {
-          const r = {
-            id: sIndex * nodeLength + tIndex,
-            sourceName: sourceNode.name,
-            targetName: targetNode.name,
-            sourceId: sourceNode.id,
-            targetId: targetNode.id,
-            type: String(nodesDistance),
-            properties: {
-              distance: String(nodesDistance),
-            },
-          } as RelationshipType;
-          newRelationships = [...newRelationships, r];
+  switch (filterOption.type) {
+    case "tag":
+      const tagFilteredNodes = graphDocument.nodes.filter((node) => {
+        return (
+          node.properties.tags?.toLowerCase() ===
+          filterOption.value.toLowerCase()
+        );
+      });
+      let tagRelationships: RelationshipType[] = [];
+      const nodeLength = tagFilteredNodes.length;
+      tagFilteredNodes.forEach((sourceNode, sIndex) => {
+        tagFilteredNodes.forEach((targetNode, tIndex) => {
+          if (sIndex > tIndex) {
+            const nodesDistance =
+              nodePathSearch(graphDocument, sourceNode.id, targetNode.id).nodes
+                .length - 1;
+            if (nodesDistance > 0 && nodesDistance < 4) {
+              const r = {
+                id: sIndex * nodeLength + tIndex,
+                sourceName: sourceNode.name,
+                targetName: targetNode.name,
+                sourceId: sourceNode.id,
+                targetId: targetNode.id,
+                type: String(nodesDistance),
+                properties: {
+                  distance: String(nodesDistance),
+                },
+              } as RelationshipType;
+              tagRelationships = [...tagRelationships, r];
+            }
+          }
+        });
+      });
+      return { nodes: tagFilteredNodes, relationships: tagRelationships };
+
+    case "label":
+      const labelFilteredNodes = graphDocument.nodes.filter((node) => {
+        return node.label.toLowerCase() === filterOption.value.toLowerCase();
+      });
+
+      let labelRelationships: RelationshipType[] = [];
+      let additionalNodes: NodeType[] = [];
+
+      labelFilteredNodes.forEach((node, index) => {
+        if (!!labelFilteredNodes[index + 1]) {
+          const next = labelFilteredNodes[index + 1] as NodeType;
+          const { relationships, nodes } = nodePathSearch(
+            graphDocument,
+            node.id,
+            next.id,
+          );
+          labelRelationships = [
+            ...labelRelationships,
+            ...relationships.filter(
+              (r) => !labelRelationships.some((tr) => tr.id === r.id),
+            ),
+          ];
+          additionalNodes = [
+            ...additionalNodes,
+            ...nodes.filter(
+              (r) => !additionalNodes.some((tr) => tr.id === r.id),
+            ),
+          ];
         }
-      }
-    });
-  });
-  return { nodes: filteredNodes, relationships: newRelationships };
+      });
+      console.log(labelRelationships);
+
+      return {
+        nodes: [
+          ...labelFilteredNodes,
+          ...additionalNodes.filter(
+            (r) => !labelFilteredNodes.some((tr) => tr.id === r.id),
+          ),
+        ],
+        relationships: labelRelationships,
+      };
+  }
 };
