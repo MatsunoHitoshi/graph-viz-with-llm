@@ -414,8 +414,8 @@ export const filterGraph = (
       let additionalNodes: NodeType[] = [];
 
       labelFilteredNodes.forEach((node, index) => {
-        if (!!labelFilteredNodes[index + 1]) {
-          const next = labelFilteredNodes[index + 1] as NodeType;
+        const next = labelFilteredNodes[index + 1];
+        if (!!next) {
           const { relationships, nodes } = nodePathSearch(
             graphDocument,
             node.id,
