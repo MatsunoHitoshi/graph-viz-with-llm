@@ -231,6 +231,7 @@ export const TopicGraphDetail = ({
               isClustered={isClustered}
               graphFullScreen={graphFullScreen}
               setGraphFullScreen={setGraphFullScreen}
+              filterOption={filterOption}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

@@ -22,6 +22,8 @@ import {
   ShareIcon,
 } from "../../icons";
 import { exportSvg } from "@/app/_utils/sys/svg";
+import { TopicGraphFilterOption } from "@/app/const/types";
+import { TagOption, TagsInput } from "../../input/tags-input";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -43,6 +45,19 @@ const linkFilter = (nodes: CustomNodeType[], links: CustomLinkType[]) => {
   return filteredNodes;
 };
 
+const isNodeFiltered = (
+  node: CustomNodeType,
+  filterOption?: TopicGraphFilterOption,
+) => {
+  if (!filterOption) return true;
+  switch (filterOption.type) {
+    case "label":
+      return node.label.toLowerCase() === filterOption.value;
+    case "tag":
+      return node.properties.tags?.includes(filterOption.value);
+  }
+};
+
 // const circlePosition = (index: number, length: number, type: "sin" | "cos") => {
 //   const dig = index / length;
 //   const radius = 400;
@@ -57,6 +72,7 @@ export const D3ForceGraph = ({
   selectedGraphData,
   selectedPathData,
   isLinkFiltered = false,
+  filterOption,
   nodeSearchQuery,
   topicSpaceId,
   isClustered = false,
@@ -69,6 +85,7 @@ export const D3ForceGraph = ({
   selectedGraphData?: GraphDocument | null;
   selectedPathData?: GraphDocument | null;
   isLinkFiltered?: boolean;
+  filterOption?: TopicGraphFilterOption;
   nodeSearchQuery?: string;
   topicSpaceId?: string;
   isClustered?: boolean;
@@ -100,6 +117,11 @@ export const D3ForceGraph = ({
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
   const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
   const [focusedLink, setFocusedLink] = useState<CustomLinkType>();
+  const [tags, setTags] = useState<TagOption[]>();
+  const nodeLabels = Array.from(new Set(graphNodes.map((n) => n.label)));
+  const tagOptions = nodeLabels.map((l, i) => {
+    return { label: l, id: String(i), type: "label" };
+  }) as TagOption[];
 
   const distance = (d: CustomLinkType) => {
     return !!d.properties.distance ? Number(d.properties.distance) : 0;
@@ -227,6 +249,14 @@ export const D3ForceGraph = ({
           >
             <ShareIcon height={16} width={16} color="white" />
           </button>
+          <div className="rounded-lg bg-black/20 p-2 text-sm backdrop-blur-sm">
+            <TagsInput
+              selected={tags}
+              setSelected={setTags}
+              options={tagOptions}
+              placeholder="ラベル・タグで絞り込む"
+            />
+          </div>
         </div>
 
         {!!isLargeGraph && !graphFullScreen && (
@@ -427,7 +457,11 @@ export const D3ForceGraph = ({
                     }}
                   >
                     <circle
-                      r={1.6 * ((graphNode.neighborLinkCount ?? 0) * 0.1 + 3.6)}
+                      r={
+                        1.6 *
+                        ((graphNode.neighborLinkCount ?? 0) * 0.1 + 3.6) *
+                        (isNodeFiltered(graphNode, filterOption) ? 1 : 0.5)
+                      }
                       fill={
                         isFocused
                           ? "#ef7234"
@@ -439,7 +473,9 @@ export const D3ForceGraph = ({
                                 ? graphNode.nodeColor
                                 : "whitesmoke"
                       }
-                      opacity={0.95}
+                      opacity={
+                        isNodeFiltered(graphNode, filterOption) ? 0.95 : 0.6
+                      }
                       cx={graphNode.x}
                       cy={graphNode.y}
                       stroke="#eae80c"
