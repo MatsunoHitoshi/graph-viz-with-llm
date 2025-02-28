@@ -54,7 +54,7 @@ const isNodeFiltered = (
     case "label":
       return node.label.toLowerCase() === filterOption.value;
     case "tag":
-      return node.properties.tags?.includes(filterOption.value);
+      return node.properties.tag === filterOption.value;
   }
 };
 
@@ -143,7 +143,7 @@ export const D3ForceGraph = ({
         "link",
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
-          .distance((d) => 20 * (distance(d) * distance(d) || 1))
+          .distance((d) => 20 * (distance(d) * distance(d) * 2 || 1))
           .strength((d) => 0.15 / (distance(d) * distance(d) || 1)),
       )
       .force("center", forceCenter(centerX, centerY))
