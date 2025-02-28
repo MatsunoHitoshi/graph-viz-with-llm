@@ -32,4 +32,8 @@ export type TreeNode = {
   label?: string;
 };
 
-export type TopicGraphFilterOption = { type: "label" | "tag"; value: string };
+export type TopicGraphFilterOption = {
+  type: "label" | "tag";
+  value: string;
+  cutOff?: number;
+};

@@ -6,13 +6,14 @@ import {
 } from "@headlessui/react";
 import React, { useState } from "react";
 
-export type TagOption = { id: string; label: string; type: "label" | "type" };
+export type TagOption = { id: string; label: string; type: "label" | "tag" };
 type TagsInputProps = {
   options: TagOption[];
-  selected: TagOption[] | undefined;
-  setSelected: React.Dispatch<React.SetStateAction<TagOption[] | undefined>>;
+  selected: TagOption | undefined;
+  setSelected: React.Dispatch<React.SetStateAction<TagOption | undefined>>;
   borderRed?: boolean;
   placeholder?: string;
+  defaultOption?: TagOption;
 };
 
 export const TagsInput = ({
@@ -20,6 +21,7 @@ export const TagsInput = ({
   selected,
   setSelected,
   placeholder,
+  defaultOption,
 }: TagsInputProps) => {
   const [query, setQuery] = useState("");
 
@@ -33,7 +35,8 @@ export const TagsInput = ({
   return (
     <Combobox
       value={selected}
-      multiple
+      defaultValue={defaultOption}
+      // multiple
       onChange={(val) => {
         if (val) {
           setSelected(val);
@@ -45,7 +48,7 @@ export const TagsInput = ({
         displayValue={(option: TagOption) => (option ? option.label : "")}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={placeholder}
-        className="border-none bg-transparent text-sm focus:outline-none "
+        className="border-none bg-transparent text-sm focus:outline-none"
         // className={clsx(
         //   "w-full rounded-lg bg-white/5 py-1.5 pl-3 pr-8 text-sm/6 text-white",
         //   "border-none focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400",

@@ -1,6 +1,6 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
 
-type PropertyType = {
+export type PropertyType = {
   [K in string]: string;
 };
 

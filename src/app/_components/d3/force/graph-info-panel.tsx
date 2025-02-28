@@ -11,6 +11,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
+import { NodePropertiesForm } from "../../form/node-properties-form";
 
 type GraphInfoPanelProps = {
   focusedNode: CustomNodeType | undefined;
@@ -21,6 +22,8 @@ type GraphInfoPanelProps = {
   graphNodes: CustomNodeType[];
   graphLinks: CustomLinkType[];
   topicSpaceId?: string;
+  isEditor?: boolean;
+  refetch?: () => void;
   // maxHeight: number;
 };
 
@@ -31,9 +34,12 @@ export const GraphInfoPanel = ({
   graphNodes,
   graphLinks,
   topicSpaceId,
+  isEditor = false,
+  refetch,
   // maxHeight,
 }: GraphInfoPanelProps) => {
   const [isPanelOpen, setIsPanelOpen] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const neighborLinks = graphLinks.filter((link) => {
     return (
       link.sourceId === focusedNode?.id || link.targetId === focusedNode?.id
@@ -88,12 +94,12 @@ export const GraphInfoPanel = ({
                               color="white"
                             />
                           </div>
-                          <div className="flex w-max flex-col items-center justify-center truncate rounded-md bg-white p-1 text-sm font-semibold text-orange-500">
+                          <div className="flex w-max flex-col items-center justify-center truncate rounded-full bg-white px-2 py-1 text-sm font-semibold text-orange-500">
                             {focusedNode.name}
                           </div>
                         </div>
 
-                        <div className="flex w-max flex-row items-center justify-center rounded-full bg-white px-2 text-sm text-slate-900">
+                        <div className="flex w-max flex-row items-center justify-center rounded-md bg-white px-2 text-sm text-slate-900">
                           {focusedNode.label}
                         </div>
                       </div>
@@ -101,6 +107,40 @@ export const GraphInfoPanel = ({
                   )}
                 </>
               </DisclosureButton>
+              {isEditor && focusedNode && (
+                <div className="flex flex-col gap-2 text-sm">
+                  <div className="flex flex-row items-center gap-1">
+                    <div className="font-semibold">プロパティ</div>
+
+                    <Button
+                      className="!p-1 !text-sm"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
+                      {isEditing ? "キャンセル" : "編集"}
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    {isEditing && topicSpaceId && refetch ? (
+                      <NodePropertiesForm
+                        focusedNode={focusedNode}
+                        topicSpaceId={topicSpaceId}
+                        refetch={refetch}
+                      />
+                    ) : (
+                      <>
+                        {Object.entries(focusedNode.properties ?? {}).map(
+                          ([key, value], index) => (
+                            <div key={index}>
+                              {key}: {value}
+                            </div>
+                          ),
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
               <DisclosurePanel className="flex w-full flex-col gap-2 pl-5">
                 {!!topicSpaceId && (
                   <a
@@ -122,7 +162,7 @@ export const GraphInfoPanel = ({
                           if (!!node) setFocusNode(node);
                         }}
                       >
-                        <div className="flex w-max flex-col items-center justify-center truncate rounded-md bg-white p-1 text-sm font-semibold text-orange-500">
+                        <div className="flex w-max flex-col items-center justify-center truncate rounded-full bg-white px-2 py-1 text-sm font-semibold text-orange-500">
                           {node?.name}
                         </div>
                         <div className="truncate text-xs">

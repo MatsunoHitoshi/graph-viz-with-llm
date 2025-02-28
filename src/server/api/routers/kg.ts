@@ -29,7 +29,7 @@ import { env } from "@/env";
 import type { Prisma } from "@prisma/client";
 import { GraphDataStatus } from "@prisma/client";
 import { stripGraphData } from "@/app/_utils/kg/data-strip";
-import { TopicGraphFilterOption } from "@/app/const/types";
+import type { TopicGraphFilterOption } from "@/app/const/types";
 import { nodePathSearch } from "@/app/_utils/kg/bfs";
 
 const ExtractInputSchema = z.object({
@@ -373,12 +373,17 @@ export const filterGraph = (
   switch (filterOption.type) {
     case "tag":
       const tagFilteredNodes = graphDocument.nodes.filter((node) => {
-        return (
-          node.properties.tags?.toLowerCase() ===
-          filterOption.value.toLowerCase()
-        );
+        if (node.properties.tag) {
+          return (
+            node.properties.tag.toLowerCase() ===
+            filterOption.value.toLowerCase()
+          );
+        } else {
+          return false;
+        }
       });
       let tagRelationships: RelationshipType[] = [];
+      const cutOff = Math.max(filterOption.cutOff ?? 5, 1);
       const nodeLength = tagFilteredNodes.length;
       tagFilteredNodes.forEach((sourceNode, sIndex) => {
         tagFilteredNodes.forEach((targetNode, tIndex) => {
@@ -386,7 +391,7 @@ export const filterGraph = (
             const nodesDistance =
               nodePathSearch(graphDocument, sourceNode.id, targetNode.id).nodes
                 .length - 1;
-            if (nodesDistance > 0 && nodesDistance < 4) {
+            if (nodesDistance > 0 && nodesDistance <= cutOff) {
               const r = {
                 id: sIndex * nodeLength + tIndex,
                 sourceName: sourceNode.name,
@@ -447,4 +452,25 @@ export const filterGraph = (
         relationships: labelRelationships,
       };
   }
+};
+
+export const updateKg = (update: GraphDocument, graphData: GraphDocument) => {
+  const updatedNodes = graphData.nodes.map((node) => {
+    if (update.nodes.map((n) => n.id).includes(node.id)) {
+      return update.nodes.find((n) => n.id === node.id);
+    } else {
+      return node;
+    }
+  });
+  const updatedRelationships = graphData.relationships.map((relationship) => {
+    if (update.relationships.map((r) => r.id).includes(relationship.id)) {
+      return update.relationships.find((r) => r.id === relationship.id);
+    } else {
+      return relationship;
+    }
+  });
+  return {
+    nodes: updatedNodes.filter((n) => typeof n !== undefined),
+    relationships: updatedRelationships.filter((r) => typeof r !== undefined),
+  } as GraphDocument;
 };

@@ -22,8 +22,8 @@ import {
   ShareIcon,
 } from "../../icons";
 import { exportSvg } from "@/app/_utils/sys/svg";
-import { TopicGraphFilterOption } from "@/app/const/types";
-import { TagOption, TagsInput } from "../../input/tags-input";
+import type { TopicGraphFilterOption } from "@/app/const/types";
+import { type TagOption, TagsInput } from "../../input/tags-input";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -72,12 +72,15 @@ export const D3ForceGraph = ({
   selectedGraphData,
   selectedPathData,
   isLinkFiltered = false,
-  filterOption,
+  tagFilter = false,
+  tagFilterOption: filterOption,
   nodeSearchQuery,
   topicSpaceId,
   isClustered = false,
   graphFullScreen = false,
   setGraphFullScreen,
+  isEditor = false,
+  refetch,
 }: {
   height: number;
   width: number;
@@ -85,12 +88,15 @@ export const D3ForceGraph = ({
   selectedGraphData?: GraphDocument | null;
   selectedPathData?: GraphDocument | null;
   isLinkFiltered?: boolean;
-  filterOption?: TopicGraphFilterOption;
+  tagFilter?: boolean;
+  tagFilterOption?: TopicGraphFilterOption;
   nodeSearchQuery?: string;
   topicSpaceId?: string;
   isClustered?: boolean;
   graphFullScreen?: boolean;
   setGraphFullScreen?: React.Dispatch<React.SetStateAction<boolean>>;
+  isEditor?: boolean;
+  refetch?: () => void;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
@@ -117,7 +123,7 @@ export const D3ForceGraph = ({
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
   const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
   const [focusedLink, setFocusedLink] = useState<CustomLinkType>();
-  const [tags, setTags] = useState<TagOption[]>();
+  const [tags, setTags] = useState<TagOption>();
   const nodeLabels = Array.from(new Set(graphNodes.map((n) => n.label)));
   const tagOptions = nodeLabels.map((l, i) => {
     return { label: l, id: String(i), type: "label" };
@@ -249,14 +255,27 @@ export const D3ForceGraph = ({
           >
             <ShareIcon height={16} width={16} color="white" />
           </button>
-          <div className="rounded-lg bg-black/20 p-2 text-sm backdrop-blur-sm">
-            <TagsInput
-              selected={tags}
-              setSelected={setTags}
-              options={tagOptions}
-              placeholder="ラベル・タグで絞り込む"
-            />
-          </div>
+          {tagFilter ? (
+            <div className="rounded-lg bg-black/20 p-2 text-sm backdrop-blur-sm">
+              <TagsInput
+                selected={tags}
+                setSelected={setTags}
+                options={tagOptions}
+                placeholder="ラベル・タグで絞り込む"
+                defaultOption={
+                  filterOption?.value && filterOption?.type
+                    ? {
+                        id: "0",
+                        label: filterOption.value,
+                        type: filterOption.type,
+                      }
+                    : undefined
+                }
+              />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
 
         {!!isLargeGraph && !graphFullScreen && (
@@ -285,112 +304,122 @@ export const D3ForceGraph = ({
           graphNodes={graphNodes}
           graphLinks={graphLinks}
           topicSpaceId={topicSpaceId}
+          isEditor={isEditor}
+          refetch={refetch}
           // maxHeight={height}
           setFocusNode={setFocusedNode}
         />
-        <svg
-          ref={svgRef}
-          id="container"
-          width={width}
-          height={height}
-          viewBox={`0 0 ${String(width)} ${String(height)}`}
-        >
-          <D3ZoomProvider
-            setCurrentScale={setCurrentScale}
-            setCurrentTransformX={setCurrentTransformX}
-            setCurrentTransformY={setCurrentTransformY}
-            currentScale={currentScale}
-            currentTransformX={currentTransformX}
-            currentTransformY={currentTransformY}
+
+        {nodes.length === 0 && relationships.length === 0 ? (
+          <div className="mt-60 flex flex-col items-center">
+            <div>グラフデータがありません</div>
+          </div>
+        ) : (
+          <svg
+            ref={svgRef}
+            id="container"
+            width={width}
+            height={height}
+            viewBox={`0 0 ${String(width)} ${String(height)}`}
           >
-            {graphLinks.map((graphLink) => {
-              const { source, target, type } = graphLink;
-              const modSource = source as CustomNodeType;
-              const modTarget = target as CustomNodeType;
-              const isFocused = graphLink.id === focusedLink?.id;
-              const isPathLink = selectedPathData?.relationships
-                .map((relationship) => relationship.id)
-                .includes(graphLink.id);
+            <D3ZoomProvider
+              setCurrentScale={setCurrentScale}
+              setCurrentTransformX={setCurrentTransformX}
+              setCurrentTransformY={setCurrentTransformY}
+              currentScale={currentScale}
+              currentTransformX={currentTransformX}
+              currentTransformY={currentTransformY}
+            >
+              {graphLinks.map((graphLink) => {
+                const { source, target, type } = graphLink;
+                const modSource = source as CustomNodeType;
+                const modTarget = target as CustomNodeType;
+                const isFocused = graphLink.id === focusedLink?.id;
+                const isPathLink = selectedPathData?.relationships
+                  .map((relationship) => relationship.id)
+                  .includes(graphLink.id);
 
-              const sourceNode = getNodeById(modSource.id, graphNodes);
-              const targetNode = getNodeById(modTarget.id, graphNodes);
-              const sourceNodeVisible = sourceNode?.visible ?? false;
-              const targetNodeVisible = targetNode?.visible ?? false;
+                const sourceNode = getNodeById(modSource.id, graphNodes);
+                const targetNode = getNodeById(modTarget.id, graphNodes);
+                const sourceNodeVisible = sourceNode?.visible ?? false;
+                const targetNodeVisible = targetNode?.visible ?? false;
 
-              if (
-                (sourceNodeVisible || targetNodeVisible) &&
-                modSource.x !== undefined &&
-                modTarget.x !== undefined &&
-                modSource.y !== undefined &&
-                modTarget.y !== undefined
-              ) {
-                const isGradient = sourceNodeVisible !== targetNodeVisible;
-                const gradientTo: number | undefined =
-                  isGradient && targetNodeVisible
-                    ? sourceNode?.id
-                    : targetNode?.id;
+                if (
+                  (sourceNodeVisible || targetNodeVisible) &&
+                  modSource.x !== undefined &&
+                  modTarget.x !== undefined &&
+                  modSource.y !== undefined &&
+                  modTarget.y !== undefined
+                ) {
+                  const isGradient = sourceNodeVisible !== targetNodeVisible;
+                  const gradientTo: number | undefined =
+                    isGradient && targetNodeVisible
+                      ? sourceNode?.id
+                      : targetNode?.id;
 
-                const gradientFrom: number | undefined =
-                  gradientTo === sourceNode?.id
-                    ? targetNode?.id
-                    : sourceNode?.id;
+                  const gradientFrom: number | undefined =
+                    gradientTo === sourceNode?.id
+                      ? targetNode?.id
+                      : sourceNode?.id;
 
-                // console.log("-----");
-                // console.log(
-                //   "sourceNode: ",
-                //   sourceNode?.id,
-                //   sourceNode?.visible,
-                // );
-                // console.log(
-                //   "targetNode: ",
-                //   targetNode?.id,
-                //   targetNode?.visible,
-                // );
-                // console.log(gradientFrom, " -> ", gradientTo);
+                  // console.log("-----");
+                  // console.log(
+                  //   "sourceNode: ",
+                  //   sourceNode?.id,
+                  //   sourceNode?.visible,
+                  // );
+                  // console.log(
+                  //   "targetNode: ",
+                  //   targetNode?.id,
+                  //   targetNode?.visible,
+                  // );
+                  // console.log(gradientFrom, " -> ", gradientTo);
 
-                return (
-                  <g
-                    className="link cursor-pointer"
-                    key={`${modSource.id}-${type}-${modTarget.id}`}
-                    onClick={() => {
-                      if (graphLink.id === focusedLink?.id) {
-                        setFocusedLink(undefined);
-                      } else {
-                        setFocusedLink(graphLink);
-                      }
-                    }}
-                  >
-                    <line
-                      stroke={
-                        isFocused ? "#ef7234" : isPathLink ? "#eae80c" : "white"
-                      }
-                      // stroke={
-                      //   isFocused
-                      //     ? "#ef7234"
-                      //     : isPathLink
-                      //       ? "#eae80c"
-                      //       : isGradient
-                      //         ? `url(#gradient-${graphLink.id})`
-                      //         : "white"
-                      // }
-                      strokeWidth={isFocused ? 3 : 2}
-                      strokeOpacity={
-                        isFocused
-                          ? 1
-                          : isGradient
-                            ? 0.04
-                            : (distance(graphLink) ? 0.6 : 0.4) /
-                              (distance(graphLink) *
-                                distance(graphLink) *
-                                distance(graphLink) || 1)
-                      }
-                      // strokeOpacity={isFocused ? 1 : isGradient ? 0.3 : 0.4}
-                      x1={modSource.x}
-                      y1={modSource.y}
-                      x2={modTarget.x}
-                      y2={modTarget.y}
-                    />
-                    {/* <defs>
+                  return (
+                    <g
+                      className="link cursor-pointer"
+                      key={`${modSource.id}-${type}-${modTarget.id}`}
+                      onClick={() => {
+                        if (graphLink.id === focusedLink?.id) {
+                          setFocusedLink(undefined);
+                        } else {
+                          setFocusedLink(graphLink);
+                        }
+                      }}
+                    >
+                      <line
+                        stroke={
+                          isFocused
+                            ? "#ef7234"
+                            : isPathLink
+                              ? "#eae80c"
+                              : "white"
+                        }
+                        // stroke={
+                        //   isFocused
+                        //     ? "#ef7234"
+                        //     : isPathLink
+                        //       ? "#eae80c"
+                        //       : isGradient
+                        //         ? `url(#gradient-${graphLink.id})`
+                        //         : "white"
+                        // }
+                        strokeWidth={isFocused ? 3 : 2}
+                        strokeOpacity={
+                          isFocused
+                            ? 1
+                            : isGradient
+                              ? 0.04
+                              : (distance(graphLink) ? 0.6 : 0.4) /
+                                (distance(graphLink) * distance(graphLink) || 1)
+                        }
+                        // strokeOpacity={isFocused ? 1 : isGradient ? 0.3 : 0.4}
+                        x1={modSource.x}
+                        y1={modSource.y}
+                        x2={modTarget.x}
+                        y2={modTarget.y}
+                      />
+                      {/* <defs>
                       <linearGradient
                         id={`gradient-${graphLink.id}`}
                         x1={gradientTo === modSource.id ? "0%" : "100%"}
@@ -406,102 +435,103 @@ export const D3ForceGraph = ({
                         />
                       </linearGradient>
                     </defs> */}
-                    {currentScale > 3.5 && (
-                      <text
-                        x={(modSource.x + modTarget.x) / 2}
-                        y={(modSource.y + modTarget.y) / 2}
-                        textAnchor="middle"
-                        fill={"darkgray"}
-                        fontSize={2.5}
-                      >
-                        {graphLink.type}
-                      </text>
-                    )}
-                  </g>
-                );
-              }
-            })}
-            {graphNodes.map((graphNode) => {
-              const isFocused = graphNode.id === focusedNode?.id;
-              const isPathNode = selectedPathData?.nodes
-                .map((node) => node.id)
-                .includes(graphNode.id);
-              const graphUnselected = selectedGraphData
-                ? !selectedGraphData.nodes.some((node) => {
-                    return node.name === graphNode.name;
-                  })
-                : false;
-              const queryFiltered =
-                !!nodeSearchQuery &&
-                nodeSearchQuery !== "" &&
-                graphNode.name
-                  .toLowerCase()
-                  .includes(nodeSearchQuery.toLowerCase());
+                      {currentScale > 3.5 && (
+                        <text
+                          x={(modSource.x + modTarget.x) / 2}
+                          y={(modSource.y + modTarget.y) / 2}
+                          textAnchor="middle"
+                          fill={"darkgray"}
+                          fontSize={2.5}
+                        >
+                          {graphLink.type}
+                        </text>
+                      )}
+                    </g>
+                  );
+                }
+              })}
+              {graphNodes.map((graphNode) => {
+                const isFocused = graphNode.id === focusedNode?.id;
+                const isPathNode = selectedPathData?.nodes
+                  .map((node) => node.id)
+                  .includes(graphNode.id);
+                const graphUnselected = selectedGraphData
+                  ? !selectedGraphData.nodes.some((node) => {
+                      return node.name === graphNode.name;
+                    })
+                  : false;
+                const queryFiltered =
+                  !!nodeSearchQuery &&
+                  nodeSearchQuery !== "" &&
+                  graphNode.name
+                    .toLowerCase()
+                    .includes(nodeSearchQuery.toLowerCase());
 
-              if (
-                (graphNode.visible ?? false) ||
-                queryFiltered ||
-                isFocused ||
-                isPathNode
-              ) {
-                return (
-                  <g
-                    key={graphNode.id}
-                    className="node cursor-pointer"
-                    onClick={() => {
-                      if (graphNode.id === focusedNode?.id) {
-                        setFocusedNode(undefined);
-                      } else {
-                        setFocusedNode(graphNode);
-                      }
-                    }}
-                  >
-                    <circle
-                      r={
-                        1.6 *
-                        ((graphNode.neighborLinkCount ?? 0) * 0.1 + 3.6) *
-                        (isNodeFiltered(graphNode, filterOption) ? 1 : 0.5)
-                      }
-                      fill={
-                        isFocused
-                          ? "#ef7234"
-                          : isPathNode
-                            ? "#eae80c"
-                            : graphUnselected
-                              ? "#324557"
-                              : isClustered && graphNode.nodeColor
-                                ? graphNode.nodeColor
-                                : "whitesmoke"
-                      }
-                      opacity={
-                        isNodeFiltered(graphNode, filterOption) ? 0.95 : 0.6
-                      }
-                      cx={graphNode.x}
-                      cy={graphNode.y}
-                      stroke="#eae80c"
-                      strokeWidth={queryFiltered ? 2.5 : 0}
-                    />
-                    {(currentScale > 0.7 || graphFullScreen) && (
-                      <text
-                        x={graphNode.x}
-                        y={graphNode.y}
-                        textAnchor="middle"
-                        fill={queryFiltered ? "#eab000" : "dimgray"}
-                        fontSize={
-                          currentScale > 4 ? 3 : currentScale > 3 ? 4 : 6
+                if (
+                  (graphNode.visible ?? false) ||
+                  queryFiltered ||
+                  isFocused ||
+                  isPathNode
+                ) {
+                  return (
+                    <g
+                      key={graphNode.id}
+                      className="node cursor-pointer"
+                      onClick={() => {
+                        if (graphNode.id === focusedNode?.id) {
+                          setFocusedNode(undefined);
+                        } else {
+                          setFocusedNode(graphNode);
                         }
-                      >
-                        {graphNode.name}
-                      </text>
-                    )}
-                  </g>
-                );
-              } else {
-                return;
-              }
-            })}
-          </D3ZoomProvider>
-        </svg>
+                      }}
+                    >
+                      <circle
+                        r={
+                          1.6 *
+                          ((graphNode.neighborLinkCount ?? 0) * 0.1 + 3.6) *
+                          (isNodeFiltered(graphNode, filterOption) ? 1 : 0.5)
+                        }
+                        fill={
+                          isFocused
+                            ? "#ef7234"
+                            : isPathNode
+                              ? "#eae80c"
+                              : graphUnselected
+                                ? "#324557"
+                                : isClustered && graphNode.nodeColor
+                                  ? graphNode.nodeColor
+                                  : "whitesmoke"
+                        }
+                        opacity={
+                          isNodeFiltered(graphNode, filterOption) ? 0.95 : 0.6
+                        }
+                        cx={graphNode.x}
+                        cy={graphNode.y}
+                        stroke="#eae80c"
+                        strokeWidth={queryFiltered ? 2.5 : 0}
+                      />
+                      {(currentScale > 0.7 || graphFullScreen) && (
+                        <text
+                          x={graphNode.x}
+                          y={graphNode.y}
+                          textAnchor="middle"
+                          fill={queryFiltered ? "#eab000" : "dimgray"}
+                          fontSize={
+                            currentScale > 4 ? 3 : currentScale > 3 ? 4 : 6
+                          }
+                        >
+                          {graphNode.name}
+                        </text>
+                      )}
+                    </g>
+                  );
+                } else {
+                  return;
+                }
+              })}
+            </D3ZoomProvider>
+          </svg>
+        )}
       </div>
     </div>
   );

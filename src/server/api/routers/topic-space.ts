@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { filterGraph, type GraphDocument } from "./kg";
+import { filterGraph, updateKg, type GraphDocument } from "./kg";
 import { fuseGraphs } from "@/app/_utils/kg/data-disambiguation";
 import type {
   TopicGraphFilterOption,
@@ -34,6 +34,14 @@ const DetachDocumentSchema = z.object({
   documentId: z.string(),
   id: z.string(),
 });
+
+const UpdateGraphSchema = z.object({
+  dataJson: z.object({
+    nodes: z.array(z.any()),
+    relationships: z.array(z.any()),
+  }),
+  id: z.string(),
+});
 const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
   let newGraph: GraphDocument = { nodes: [], relationships: [] };
   if (updatedTopicSpace.sourceDocuments) {
@@ -58,7 +66,9 @@ const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
 
 export const topicSpaceRouter = createTRPCRouter({
   getById: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(
+      z.object({ id: z.string(), withDocumentGraph: z.boolean().optional() }),
+    )
     .query(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: {
@@ -68,6 +78,7 @@ export const topicSpaceRouter = createTRPCRouter({
         include: {
           sourceDocuments: {
             where: { isDeleted: false },
+            include: { graph: input.withDocumentGraph },
           },
           admins: true,
           tags: true,
@@ -90,7 +101,11 @@ export const topicSpaceRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         filterOption: z
-          .object({ type: z.string(), value: z.string() })
+          .object({
+            type: z.string(),
+            value: z.string(),
+            cutOff: z.string().optional(),
+          })
           .optional(),
       }),
     )
@@ -116,7 +131,6 @@ export const topicSpaceRouter = createTRPCRouter({
           input.filterOption as TopicGraphFilterOption,
           topicSpace.graphData as GraphDocument,
         );
-        console.log("filtered: ", JSON.stringify(filteredGraph));
         const graphFilteredTopicSpace = {
           ...topicSpace,
           graphData: filteredGraph,
@@ -235,27 +249,51 @@ export const topicSpaceRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const topicSpace = ctx.db.topicSpace.update({
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
+        include: {
+          admins: true,
+        },
+      });
+
+      if (
+        !topicSpace?.admins.some((admin) => {
+          return admin.id === ctx.session.user.id;
+        })
+      ) {
+        throw new Error("TopicSpace not found");
+      }
+
+      const updatedTopicSpace = ctx.db.topicSpace.update({
         where: { id: input.id },
         data: { isDeleted: true },
       });
 
-      return topicSpace;
+      return updatedTopicSpace;
     }),
 
   attachDocuments: protectedProcedure
     .input(AttachDocumentSchema)
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.findFirst({
-        where: { id: ctx.session.user.id },
-        include: { topicSpaces: true },
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
+        include: {
+          admins: true,
+        },
       });
+
       if (
-        !user?.topicSpaces.some((topicSpace) => {
-          return topicSpace.id === input.id;
+        !topicSpace?.admins.some((admin) => {
+          return admin.id === ctx.session.user.id;
         })
       ) {
-        throw new Error("Can't Attach");
+        throw new Error("TopicSpace not found");
       }
 
       // const topicSpace = await ctx.db.topicSpace.findFirst({
@@ -309,17 +347,24 @@ export const topicSpaceRouter = createTRPCRouter({
   detachDocument: protectedProcedure
     .input(DetachDocumentSchema)
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.findFirst({
-        where: { id: ctx.session.user.id },
-        include: { topicSpaces: true },
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
+        include: {
+          admins: true,
+        },
       });
+
       if (
-        !user?.topicSpaces.some((topicSpace) => {
-          return topicSpace.id === input.id;
+        !topicSpace?.admins.some((admin) => {
+          return admin.id === ctx.session.user.id;
         })
       ) {
-        throw new Error("Can't Detach");
+        throw new Error("TopicSpace not found");
       }
+
       const updatedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
@@ -334,6 +379,43 @@ export const topicSpaceRouter = createTRPCRouter({
       await ctx.db.topicSpace.update({
         where: { id: updatedTopicSpace.id },
         data: { graphData: await updateGraphData(updatedTopicSpace) },
+      });
+
+      return updatedTopicSpace;
+    }),
+
+  updateGraph: protectedProcedure
+    .input(UpdateGraphSchema)
+    .mutation(async ({ ctx, input }) => {
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
+        include: {
+          admins: true,
+        },
+      });
+
+      if (
+        !topicSpace?.admins.some((admin) => {
+          return admin.id === ctx.session.user.id;
+        })
+      ) {
+        throw new Error("TopicSpace not found");
+      }
+
+      const updatedGraph = updateKg(
+        stripGraphData(input.dataJson),
+        stripGraphData(topicSpace.graphData as GraphDocument),
+      );
+
+      const updatedTopicSpace = await ctx.db.topicSpace.update({
+        where: { id: input.id },
+        data: {
+          graphData: updatedGraph,
+        },
+        include: { sourceDocuments: { include: { graph: true } } },
       });
 
       return updatedTopicSpace;
