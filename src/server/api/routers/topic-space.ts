@@ -6,7 +6,10 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 import { filterGraph, updateKg, type GraphDocument } from "./kg";
-import { fuseGraphs } from "@/app/_utils/kg/data-disambiguation";
+import {
+  attachGraphProperties,
+  fuseGraphs,
+} from "@/app/_utils/kg/data-disambiguation";
 import type {
   TopicGraphFilterOption,
   TopicSpaceResponse,
@@ -60,7 +63,12 @@ const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
     }
   }
 
-  const sanitizedGraphData = stripGraphData(newGraph);
+  const newGraphWithProperties = attachGraphProperties(
+    newGraph,
+    updatedTopicSpace.graphData as GraphDocument,
+  );
+
+  const sanitizedGraphData = stripGraphData(newGraphWithProperties);
   return sanitizedGraphData;
 };
 
