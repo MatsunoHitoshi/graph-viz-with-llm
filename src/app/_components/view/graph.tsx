@@ -14,6 +14,7 @@ import { Link2Icon } from "../icons";
 import { UrlCopy } from "../url-copy/url-copy";
 import { useSearchParams } from "next/navigation";
 import { useWindowSize } from "../../_hooks/use-window-size";
+import { exportTxt } from "@/app/_utils/sys/svg";
 
 export const GraphExtraction = () => {
   const { data: session } = useSession();
@@ -187,14 +188,30 @@ export const GraphEditor = ({ graphId }: { graphId: string }) => {
                   </UrlCopy>
                   <div className="w-full truncate">
                     参照：
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full underline hover:no-underline"
-                      href={graphDocument.sourceDocument.url}
-                    >
-                      {graphDocument.sourceDocument.name}
-                    </a>
+                    {graphDocument.sourceDocument.url.includes(
+                      "/input-txt/",
+                    ) ? (
+                      <button
+                        onClick={() => {
+                          exportTxt(
+                            graphDocument.sourceDocument.url,
+                            graphDocument.sourceDocument.name,
+                          );
+                        }}
+                        className="underline hover:no-underline"
+                      >
+                        {graphDocument.sourceDocument.name}
+                      </button>
+                    ) : (
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full underline hover:no-underline"
+                        href={graphDocument.sourceDocument.url}
+                      >
+                        {graphDocument.sourceDocument.name}
+                      </a>
+                    )}
                   </div>
                 </div>
               }
