@@ -17,6 +17,7 @@ import { RelationPathSearch } from "../toolbar/relation-path-search";
 import { Button } from "../button/button";
 import { interpolateRainbow } from "d3";
 import { useSearchParams } from "next/navigation";
+import { Switch } from "@headlessui/react";
 
 export const circlePosition = (
   index: number,
@@ -82,6 +83,7 @@ export const TopicGraphDetail = ({
 }: TopicGraphDetailProps) => {
   const searchParams = useSearchParams();
   const cutOff = searchParams.get("cut-off");
+  const withBetweenNodes = searchParams.get("with-between-nodes");
   const { data: topicSpace, refetch } = api.topicSpaces.getByIdPublic.useQuery(
     filterOption
       ? {
@@ -89,6 +91,7 @@ export const TopicGraphDetail = ({
           filterOption: {
             ...filterOption,
             cutOff: cutOff ?? undefined,
+            withBetweenNodes: withBetweenNodes === "true",
           },
         }
       : {
@@ -199,14 +202,18 @@ export const TopicGraphDetail = ({
             <div className="flex flex-col gap-1">
               <div className="flex w-full flex-row items-center justify-between">
                 <div className="font-semibold">ドキュメント</div>
-                <Button
-                  className="text-xs"
-                  onClick={() => {
-                    setIsClustered(!isClustered);
-                  }}
-                >
-                  ドキュメントごとに分割
-                </Button>
+                <div className="flex flex-row items-center gap-2">
+                  <div className="text-sm">色分け</div>
+                  <div>
+                    <Switch
+                      checked={isClustered}
+                      onChange={setIsClustered}
+                      className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
+                    >
+                      <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+                    </Switch>
+                  </div>
+                </div>
               </div>
 
               <TopicGraphDocumentList

@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { filterGraph, updateKg, type GraphDocument } from "./kg";
+import type { GraphDocument } from "./kg";
 import {
   attachGraphProperties,
   fuseGraphs,
@@ -21,12 +21,25 @@ import type {
   NodeType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
+import { filterGraph, updateKg } from "@/app/_utils/kg/filter";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
   image: z.string().url().optional(),
   description: z.string().optional(),
   documentId: z.string().optional(),
+});
+
+const TopicSpaceGetSchema = z.object({
+  id: z.string(),
+  filterOption: z
+    .object({
+      type: z.string(),
+      value: z.string(),
+      cutOff: z.string().optional(),
+      withBetweenNodes: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 const AttachDocumentSchema = z.object({
@@ -105,18 +118,7 @@ export const topicSpaceRouter = createTRPCRouter({
     }),
 
   getByIdPublic: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        filterOption: z
-          .object({
-            type: z.string(),
-            value: z.string(),
-            cutOff: z.string().optional(),
-          })
-          .optional(),
-      }),
-    )
+    .input(TopicSpaceGetSchema)
     .query(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: {

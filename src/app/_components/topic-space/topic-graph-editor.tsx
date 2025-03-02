@@ -13,9 +13,9 @@ import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
-import { Button } from "../button/button";
 import { circleColor } from "./topic-graph-detail";
 import { useSession } from "next-auth/react";
+import { Switch } from "@headlessui/react";
 
 type TopicGraphDetailProps = {
   id: string;
@@ -137,14 +137,18 @@ export const TopicGraphEditor = ({
             <div className="flex flex-col gap-1">
               <div className="flex w-full flex-row items-center justify-between">
                 <div className="font-semibold">ドキュメント</div>
-                <Button
-                  className="text-xs"
-                  onClick={() => {
-                    setIsClustered(!isClustered);
-                  }}
-                >
-                  ドキュメントごとに分割
-                </Button>
+                <div className="flex flex-row items-center gap-2">
+                  <div className="text-sm">色分け</div>
+                  <div>
+                    <Switch
+                      checked={isClustered}
+                      onChange={setIsClustered}
+                      className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
+                    >
+                      <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+                    </Switch>
+                  </div>
+                </div>
               </div>
 
               <TopicGraphDocumentList

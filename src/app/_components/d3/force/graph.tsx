@@ -515,9 +515,15 @@ export const D3ForceGraph = ({
                           x={graphNode.x}
                           y={graphNode.y}
                           textAnchor="middle"
-                          fill={queryFiltered ? "#eab000" : "dimgray"}
+                          fill={
+                            queryFiltered
+                              ? "#eab000"
+                              : isClustered
+                                ? "whitesmoke"
+                                : "dimgray"
+                          }
                           fontSize={
-                            currentScale > 4 ? 3 : currentScale > 3 ? 4 : 6
+                            currentScale > 4 ? 4 : currentScale > 3 ? 6 : 8
                           }
                         >
                           {graphNode.name}

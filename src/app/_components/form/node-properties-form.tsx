@@ -1,6 +1,6 @@
-import { PropertyType } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
-import { CustomNodeType } from "../d3/force/graph";
-import { useState } from "react";
+import type { PropertyType } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
+import type { CustomNodeType } from "../d3/force/graph";
+import React, { useState } from "react";
 import { Button } from "../button/button";
 import { api } from "@/trpc/react";
 import { PlusIcon, TrashIcon } from "../icons";
@@ -9,10 +9,12 @@ export const NodePropertiesForm = ({
   topicSpaceId,
   focusedNode,
   refetch,
+  setIsEditing,
 }: {
   topicSpaceId: string;
   focusedNode: CustomNodeType;
   refetch: () => void;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const updateProperty = api.topicSpaces.updateGraph.useMutation();
   const [properties, setProperties] = useState<PropertyType>(
@@ -31,6 +33,7 @@ export const NodePropertiesForm = ({
       {
         onSuccess: (_res) => {
           refetch();
+          setIsEditing(false);
         },
         onError: (e) => {
           console.log(e);
