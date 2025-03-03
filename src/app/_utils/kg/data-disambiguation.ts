@@ -117,9 +117,9 @@ export const attachGraphProperties = (
 ) => {
   const newNodesWithProperties = newGraph.nodes.map((nn) => {
     const matchedPrevNode = prevGraph.nodes.find((pn) => {
-      return pn.id === nn.id && pn.name === pn.name;
+      return pn.name === nn.name;
     });
-    if (!!matchedPrevNode) {
+    if (!!matchedPrevNode && !!matchedPrevNode.properties) {
       return { ...nn, properties: matchedPrevNode.properties };
     } else {
       return nn;
@@ -127,9 +127,9 @@ export const attachGraphProperties = (
   });
   const newRelationshipsWithProperties = newGraph.relationships.map((nr) => {
     const matchedPrevRelationship = prevGraph.relationships.find((pr) => {
-      return pr.id === nr.id && pr.type === pr.type;
+      return pr.type === nr.type;
     });
-    if (!!matchedPrevRelationship) {
+    if (!!matchedPrevRelationship && !!matchedPrevRelationship.properties) {
       return { ...nr, properties: matchedPrevRelationship.properties };
     } else {
       return nr;

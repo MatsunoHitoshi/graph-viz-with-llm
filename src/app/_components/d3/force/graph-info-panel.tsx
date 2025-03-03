@@ -108,7 +108,7 @@ export const GraphInfoPanel = ({
                 </>
               </DisclosureButton>
 
-              {isEditor && focusedNode && (
+              {focusedNode && (
                 <div className="flex flex-col gap-2 text-sm">
                   <div className="flex flex-row items-center gap-1">
                     <div className="font-semibold">プロパティ</div>
@@ -122,7 +122,7 @@ export const GraphInfoPanel = ({
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    {isEditing && topicSpaceId && refetch ? (
+                    {isEditor && isEditing && topicSpaceId && refetch ? (
                       <NodePropertiesForm
                         focusedNode={focusedNode}
                         topicSpaceId={topicSpaceId}

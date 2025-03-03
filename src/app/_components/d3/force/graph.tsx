@@ -143,7 +143,7 @@ export const D3ForceGraph = ({
         "link",
         forceLink<CustomNodeType, CustomLinkType>(newLinks)
           .id((d) => d.id)
-          .distance((d) => 20 * (distance(d) * distance(d) * 2 || 1))
+          .distance((d) => 20 * (distance(d) * distance(d) * 3 || 1))
           .strength((d) => 0.15 / (distance(d) * distance(d) || 1)),
       )
       .force("center", forceCenter(centerX, centerY))
