@@ -178,8 +178,8 @@ export const GraphInfoPanel = ({
           <div className="flex w-full flex-col gap-2 rounded-md border border-slate-400 p-2">
             <div className="font-semibold text-slate-50">選択中のリンク</div>
             {focusedLink && (
-              <div className="flex max-w-[300px] flex-col gap-2 text-orange-500">
-                <div className="font-semibold">
+              <div className="flex max-w-[300px] flex-col gap-2">
+                <div className="font-semibold text-orange-500">
                   <div className="flex w-max flex-col items-center">
                     <div className="flex w-max flex-col items-center justify-center truncate rounded-md bg-white p-1 text-sm">
                       {focusedLink.sourceName}
