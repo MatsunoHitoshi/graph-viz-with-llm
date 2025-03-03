@@ -113,34 +113,30 @@ export const GraphInfoPanel = ({
                   <div className="flex flex-row items-center gap-1">
                     <div className="font-semibold">プロパティ</div>
 
-                    <Button
-                      className="!p-1 !text-sm"
-                      onClick={() => setIsEditing(!isEditing)}
-                    >
-                      {isEditing ? "キャンセル" : "編集"}
-                    </Button>
+                    {isEditor ? (
+                      <Button
+                        className="!p-1 !text-sm"
+                        onClick={() => setIsEditing(!isEditing)}
+                      >
+                        {isEditing ? "キャンセル" : "編集"}
+                      </Button>
+                    ) : (
+                      <></>
+                    )}
                   </div>
 
-                  <div className="flex flex-col gap-1">
-                    {isEditor && isEditing && topicSpaceId && refetch ? (
+                  {isEditor && isEditing && topicSpaceId && refetch ? (
+                    <div className="flex flex-col gap-1">
                       <NodePropertiesForm
                         focusedNode={focusedNode}
                         topicSpaceId={topicSpaceId}
                         refetch={refetch}
                         setIsEditing={setIsEditing}
                       />
-                    ) : (
-                      <>
-                        {Object.entries(focusedNode.properties ?? {}).map(
-                          ([key, value], index) => (
-                            <div key={index}>
-                              {key}: {value}
-                            </div>
-                          ),
-                        )}
-                      </>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <PropertyInfo data={focusedNode} />
+                  )}
                 </div>
               )}
 
@@ -182,7 +178,7 @@ export const GraphInfoPanel = ({
           <div className="flex w-full flex-col gap-2 rounded-md border border-slate-400 p-2">
             <div className="font-semibold text-slate-50">選択中のリンク</div>
             {focusedLink && (
-              <div className="flex max-w-[300px] flex-col text-orange-500">
+              <div className="flex max-w-[300px] flex-col gap-2 text-orange-500">
                 <div className="font-semibold">
                   <div className="flex w-max flex-col items-center">
                     <div className="flex w-max flex-col items-center justify-center truncate rounded-md bg-white p-1 text-sm">
@@ -196,11 +192,42 @@ export const GraphInfoPanel = ({
                     </div>
                   </div>
                 </div>
+
+                <div className="flex flex-col gap-2 text-sm">
+                  <div className="flex flex-row items-center gap-1">
+                    <div className="font-semibold">プロパティ</div>
+                  </div>
+                  <PropertyInfo data={focusedLink} />
+                </div>
               </div>
             )}
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+const PropertyInfo = ({ data }: { data: CustomNodeType | CustomLinkType }) => {
+  return (
+    <div className="flex flex-col gap-1">
+      {Object.entries(data.properties ?? {}).map(([key, value], index) => (
+        <div key={index}>
+          {key}:{" "}
+          {value.startsWith("http://") || value.startsWith("https://") ? (
+            <a
+              href={value}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:no-underline"
+            >
+              {value}
+            </a>
+          ) : (
+            value
+          )}
+        </div>
+      ))}
     </div>
   );
 };

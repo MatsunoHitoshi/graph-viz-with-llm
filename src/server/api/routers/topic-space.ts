@@ -140,6 +140,7 @@ export const topicSpaceRouter = createTRPCRouter({
         const filteredGraph = filterGraph(
           input.filterOption as TopicGraphFilterOption,
           topicSpace.graphData as GraphDocument,
+          topicSpace.id,
         );
         const graphFilteredTopicSpace = {
           ...topicSpace,

@@ -5,10 +5,12 @@ import type {
   RelationshipType,
 } from "./get-nodes-and-relationships-from-result";
 import { nodePathSearch } from "./bfs";
+import { env } from "@/env";
 
 export const filterGraph = (
   filterOption: TopicGraphFilterOption,
   graphDocument: GraphDocument,
+  topicSpaceId?: string,
 ) => {
   switch (filterOption.type) {
     case "tag":
@@ -76,6 +78,9 @@ export const filterGraph = (
                   type: String(nodesDistance),
                   properties: {
                     distance: String(nodesDistance),
+                    url: topicSpaceId
+                      ? `${env.NEXT_PUBLIC_BASE_URL}/topic-spaces/${topicSpaceId}/path/${sourceNode.id}/${targetNode.id}`
+                      : "",
                   },
                 } as RelationshipType;
                 tagRelationships = [...tagRelationships, r];
