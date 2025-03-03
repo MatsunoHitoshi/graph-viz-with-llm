@@ -111,6 +111,37 @@ const deleteDuplicatedNode = (graphDocument: GraphDocument) => {
   return { nodes: newNodes, relationships: graphDocument.relationships };
 };
 
+export const attachGraphProperties = (
+  newGraph: GraphDocument,
+  prevGraph: GraphDocument,
+) => {
+  const newNodesWithProperties = newGraph.nodes.map((nn) => {
+    const matchedPrevNode = prevGraph.nodes.find((pn) => {
+      return pn.name === nn.name;
+    });
+    if (!!matchedPrevNode && !!matchedPrevNode.properties) {
+      return { ...nn, properties: matchedPrevNode.properties };
+    } else {
+      return nn;
+    }
+  });
+  const newRelationshipsWithProperties = newGraph.relationships.map((nr) => {
+    const matchedPrevRelationship = prevGraph.relationships.find((pr) => {
+      return pr.type === nr.type;
+    });
+    if (!!matchedPrevRelationship && !!matchedPrevRelationship.properties) {
+      return { ...nr, properties: matchedPrevRelationship.properties };
+    } else {
+      return nr;
+    }
+  });
+
+  return {
+    nodes: newNodesWithProperties,
+    relationships: newRelationshipsWithProperties,
+  };
+};
+
 export const fuseGraphs = async (
   sourceGraph: GraphDocument,
   targetGraph: GraphDocument,

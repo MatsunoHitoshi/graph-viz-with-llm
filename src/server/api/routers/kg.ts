@@ -85,7 +85,7 @@ const graphExtractionWithLangChain = async (
   localFilePath: string,
   isPlaneTextMode: boolean,
 ) => {
-  const llm = new ChatOpenAI({ temperature: 0.0, model: "gpt-4o-mini" });
+  const llm = new ChatOpenAI({ temperature: 0.8, model: "gpt-4o" });
   const llmTransformer = new LLMGraphTransformer({ llm });
 
   const loader = isPlaneTextMode
@@ -124,6 +124,8 @@ const graphExtractionWithLangChain = async (
   const nodes: Node[] = [];
   const relationships: Relationship[] = [];
   llmGraphDocuments.map((graphDocument) => {
+    console.log("nodes from llm: ", graphDocument.nodes);
+    console.log("links from llm: ", graphDocument.relationships);
     nodes.push(...graphDocument.nodes);
     relationships.push(...graphDocument.relationships);
   });

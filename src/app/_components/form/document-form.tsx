@@ -61,21 +61,23 @@ export const DocumentForm = ({
     };
 
     if (isPlaneTextMode) {
-      // planeTextMode
       if (!text) {
         alert("テキストが入力されていません。");
         return;
       }
       console.log("planeTextMode");
-      const textBlob = new Blob([text], { type: "text/plain" });
-      reader.readAsDataURL(textBlob);
+      const textBlob = new Blob([text], { type: "text/plain; charset=utf-8" });
+      const textFile = new File([textBlob], `input_${Date.now()}.txt`, {
+        type: "text/plain; charset=utf-8",
+      });
+      setFile(textFile);
+      reader.readAsDataURL(textFile);
       reader.onload = async () => {
         setIsExtracting(true);
-        const base64Text = reader.result?.toString();
-        console.log(base64Text);
-        if (base64Text) {
-          fileUrl = await storageUtils.uploadFromDataURL(
-            base64Text,
+        // const base64Text = reader.result?.toString();
+        if (textBlob) {
+          fileUrl = await storageUtils.uploadFromBlob(
+            textBlob,
             BUCKETS.PATH_TO_INPUT_TXT,
           );
           if (fileUrl) {
@@ -87,7 +89,6 @@ export const DocumentForm = ({
         }
       };
     } else {
-      // pdfMode
       if (!file) {
         alert("ファイルが選択されていません。");
         return;

@@ -6,7 +6,6 @@ import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type {
   DocumentResponse,
-  DocumentResponseWithGraphData,
   TopicGraphFilterOption,
 } from "@/app/const/types";
 import { useEffect, useState } from "react";
@@ -14,90 +13,24 @@ import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
-import { Button } from "../button/button";
-import { interpolateRainbow } from "d3";
-import { useSearchParams } from "next/navigation";
+import { circleColor } from "./topic-graph-detail";
+import { useSession } from "next-auth/react";
 import { Switch } from "@headlessui/react";
-
-export const circlePosition = (
-  index: number,
-  length: number,
-  type: "sin" | "cos",
-) => {
-  const dig = index / length - 1;
-  const radius = 400;
-  const angle = dig * Math.PI * 2;
-  return type === "sin" ? radius * Math.sin(angle) : radius * Math.cos(angle);
-};
-
-export const circleColor = (
-  clusteredGraphData: GraphDocument,
-  documents: DocumentResponseWithGraphData[],
-) => {
-  const documentIdArray = documents.map((d) => d.id);
-  documents.forEach((document, index) => {
-    const documentGraph = document.graph?.dataJson as GraphDocument;
-    clusteredGraphData.nodes.forEach((node) => {
-      if (documentGraph.nodes.map((n) => n.name).includes(node.name)) {
-        node.clustered = node.clustered ?? { x: 0, y: 0 };
-        node.clustered = {
-          x:
-            node.clustered.x +
-            circlePosition(index, documentIdArray?.length, "cos"),
-          y:
-            node.clustered.y +
-            circlePosition(index, documentIdArray?.length, "sin"),
-        };
-        if (!node.nodeColor && node.nodeColor !== "") {
-          node.nodeColor = interpolateRainbow(index / documentIdArray?.length);
-        } else {
-          const color = node.nodeColor?.split(",") ?? [];
-          const r = parseInt(color[0]?.split(`(`)[1] ?? "0", 10);
-          const g = parseInt(color[1] ?? "0", 10);
-          const b = parseInt(color[2]?.split(`)`)[0] ?? "0", 10);
-          const addColor =
-            interpolateRainbow(index / documentIdArray?.length).split(",") ??
-            [];
-          const addR = parseInt(addColor[0]?.split("(")[1] ?? "0", 10);
-          const addG = parseInt(addColor[1] ?? "0", 10);
-          const addB = parseInt(addColor[2]?.split(`)`)[0] ?? "0", 10);
-          const avgR = Math.floor((r + addR) / 2);
-          const avgG = Math.floor((g + addG) / 2);
-          const avgB = Math.floor((b + addB) / 2);
-          node.nodeColor = `rgb(${avgR}, ${avgG}, ${avgB})`;
-        }
-      }
-    });
-  });
-  return clusteredGraphData;
-};
 
 type TopicGraphDetailProps = {
   id: string;
   filterOption?: TopicGraphFilterOption;
 };
 
-export const TopicGraphDetail = ({
+export const TopicGraphEditor = ({
   id,
   filterOption,
 }: TopicGraphDetailProps) => {
-  const searchParams = useSearchParams();
-  const cutOff = searchParams.get("cut-off");
-  const withBetweenNodes = searchParams.get("with-between-nodes");
-  const { data: topicSpace, refetch } = api.topicSpaces.getByIdPublic.useQuery(
-    filterOption
-      ? {
-          id: id,
-          filterOption: {
-            ...filterOption,
-            cutOff: cutOff ?? undefined,
-            withBetweenNodes: withBetweenNodes === "true",
-          },
-        }
-      : {
-          id: id,
-        },
-  );
+  const { data: session } = useSession();
+  const { data: topicSpace, refetch } = api.topicSpaces.getById.useQuery({
+    id: id,
+    withDocumentGraph: true,
+  });
   const [innerWidth, innerHeight] = useWindowSize();
   const [graphFullScreen, setGraphFullScreen] = useState<boolean>(false);
   const graphAreaWidth =
@@ -106,6 +39,8 @@ export const TopicGraphDetail = ({
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);
+  const [documentAttachModalOpen, setDocumentAttachModalOpen] =
+    useState<boolean>(false);
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
   const [pathData, setPathData] = useState<GraphDocument>();
@@ -140,7 +75,7 @@ export const TopicGraphDetail = ({
     }
   }, [isClustered, topicSpace]);
 
-  if (!topicSpace) return null;
+  if (!session || !topicSpace) return null;
   console.log("graphData: ", selectedGraphData);
 
   return (
@@ -251,6 +186,8 @@ export const TopicGraphDetail = ({
               setGraphFullScreen={setGraphFullScreen}
               tagFilter
               tagFilterOption={filterOption}
+              isEditor={true}
+              refetch={refetch}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">
@@ -260,6 +197,12 @@ export const TopicGraphDetail = ({
           )}
         </div>
       </div>
+      <DocumentAttachModal
+        isOpen={documentAttachModalOpen}
+        setIsOpen={setDocumentAttachModalOpen}
+        topicSpaceId={id}
+        refetch={refetch}
+      />
     </TabsContainer>
   );
 };

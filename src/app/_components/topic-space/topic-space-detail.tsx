@@ -18,7 +18,7 @@ import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
-import { useRouter } from "next/navigation";
+import { LinkButton } from "../button/button copy";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
   const { data: session } = useSession();
@@ -32,7 +32,6 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
 
   const [documentAttachModalOpen, setDocumentAttachModalOpen] =
     useState<boolean>(false);
-  const router = useRouter();
 
   if (!session || !topicSpace) return null;
   return (
@@ -88,20 +87,25 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
                 </div>
               </div>
 
-              <Button
-                className=""
-                onClick={() => {
-                  console.log("ok");
-                  router.push(`/topic-spaces/${id}/graph`);
-                }}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <div className="flex flex-row items-center gap-2">
-                    <GraphIcon height={20} width={20} color="white" />
+              <div className="flex flex-row items-center gap-1">
+                <LinkButton href={`/topic-spaces/${id}/edit`} className="">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-row items-center gap-2">
+                      <GraphIcon height={20} width={20} color="white" />
+                    </div>
+                    <div className="text-sm">編集する</div>
                   </div>
-                  <div className="text-sm">公開ページ</div>
-                </div>
-              </Button>
+                </LinkButton>
+
+                <LinkButton href={`/topic-spaces/${id}/graph`} className="">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-row items-center gap-2">
+                      <GraphIcon height={20} width={20} color="white" />
+                    </div>
+                    <div className="text-sm">公開ページ</div>
+                  </div>
+                </LinkButton>
+              </div>
             </div>
           </div>
 

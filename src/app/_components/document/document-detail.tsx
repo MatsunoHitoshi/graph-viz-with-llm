@@ -8,6 +8,7 @@ import { D3ForceGraph } from "../d3/force/graph";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import { api } from "@/trpc/react";
+import { exportTxt } from "@/app/_utils/sys/svg";
 export const DocumentDetail = ({ documentId }: { documentId: string }) => {
   const router = useRouter();
   const [innerWidth, innerHeight] = useWindowSize();
@@ -23,16 +24,28 @@ export const DocumentDetail = ({ documentId }: { documentId: string }) => {
       <div className="flex w-full flex-row items-start justify-between">
         <div className="text-lg">{document.name}</div>
         <div className="flex flex-row items-center">
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            className="z-10 truncate no-underline hover:underline"
-            href={document.url}
-          >
-            <Button className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10">
+          {document.url.includes("/input-txt/") ? (
+            <Button
+              className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10"
+              onClick={() => {
+                exportTxt(document.url, document.name);
+              }}
+            >
               <FileTextIcon height={16} width={16} color="white" />
             </Button>
-          </a>
+          ) : (
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              className="z-10 truncate no-underline hover:underline"
+              href={document.url}
+            >
+              <Button className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10">
+                <FileTextIcon height={16} width={16} color="white" />
+              </Button>
+            </a>
+          )}
+
           <Button
             className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10"
             onClick={() => {

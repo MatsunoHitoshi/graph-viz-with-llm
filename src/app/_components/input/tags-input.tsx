@@ -5,38 +5,38 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import React, { useState } from "react";
-import clsx from "clsx";
 
-type SelectBoxOption = { id: string; label: string };
-type SelectInputProps = {
-  options: SelectBoxOption[];
-  selected: SelectBoxOption | undefined;
-  setSelected: React.Dispatch<
-    React.SetStateAction<SelectBoxOption | undefined>
-  >;
+export type TagOption = { id: string; label: string; type: "label" | "tag" };
+type TagsInputProps = {
+  options: TagOption[];
+  selected: TagOption | undefined;
+  setSelected: React.Dispatch<React.SetStateAction<TagOption | undefined>>;
   borderRed?: boolean;
   placeholder?: string;
+  defaultOption?: TagOption;
 };
 
-export const SelectInput = ({
+export const TagsInput = ({
   options,
   selected,
   setSelected,
-  borderRed,
   placeholder,
-}: SelectInputProps) => {
+  defaultOption,
+}: TagsInputProps) => {
   const [query, setQuery] = useState("");
 
   const filteredOptions =
     query === ""
       ? []
-      : options.filter((option: SelectBoxOption) => {
+      : options.filter((option: TagOption) => {
           return option.label.toLowerCase().includes(query.toLowerCase());
         }) ?? [];
 
   return (
     <Combobox
       value={selected}
+      defaultValue={defaultOption}
+      // multiple
       onChange={(val) => {
         if (val) {
           setSelected(val);
@@ -45,15 +45,14 @@ export const SelectInput = ({
       onClose={() => setQuery("")}
     >
       <ComboboxInput
-        displayValue={(option: SelectBoxOption) => (option ? option.label : "")}
+        displayValue={(option: TagOption) => (option ? option.label : "")}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={placeholder}
-        className={clsx(
-          "w-full rounded-lg bg-white/5 py-1.5 pl-3 pr-8 text-sm/6 text-white",
-          borderRed
-            ? "border border-red-600/70 focus:outline-none"
-            : "border-none focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400",
-        )}
+        className="border-none bg-transparent text-sm focus:outline-none"
+        // className={clsx(
+        //   "w-full rounded-lg bg-white/5 py-1.5 pl-3 pr-8 text-sm/6 text-white",
+        //   "border-none focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400",
+        // )}
       />
       <ComboboxOptions
         anchor="bottom start"

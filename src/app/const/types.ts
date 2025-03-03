@@ -31,3 +31,10 @@ export type TreeNode = {
   children?: TreeNode[];
   label?: string;
 };
+
+export type TopicGraphFilterOption = {
+  type: "label" | "tag";
+  value: string;
+  cutOff?: number;
+  withBetweenNodes?: boolean;
+};
