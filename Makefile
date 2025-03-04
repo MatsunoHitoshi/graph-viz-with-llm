@@ -7,6 +7,7 @@ default: help
 # Next.js tasks
 next_dev:
 	pnpm next dev --turbo
+# pnpm next dev --turbo
 
 next_build:
 	NODE_ENV=production pnpm next build

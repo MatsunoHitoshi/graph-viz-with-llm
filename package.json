@@ -3,20 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "main": "build/main.ts",
+  "homepage": "https://caric.jp",
+  "author": {
+    "name": "Hitoshi Matuno",
+    "email": "hitoshi@caric.jp",
+    "url": "https://caric.jp"
+  },
   "scripts": {
-    "build": "next build",
-    "db:generate": "prisma migrate dev",
-    "db:migrate": "prisma migrate deploy",
-    "db:push": "prisma db push",
-    "db:studio": "prisma studio",
-    "dev": "next dev",
-    "postinstall": "prisma generate",
-    "lint": "next lint",
-    "start": "next start"
+    "next:dev": "next dev",
+    "next:build": "next build",
+    "next:start": "next start",
+    "next:lint": "next lint",
+    "format": "dprint fmt",
+    "postinstall": "electron-builder install-app-deps",
+    "electron:dist": "electron-builder --dir",
+    "electron:dist:deb": "electron-builder --linux deb",
+    "electron:build": "tsup",
+    "build": "run-s next:build electron:build",
+    "dist": "run-s build electron:dist",
+    "dev": "npm-run-all --parallel electron:dev next:dev",
+    "electron:build_watch": "tsup --watch",
+    "electron:dev": "npm-run-all --parallel electron:build_watch electron:watch",
+    "electron:watch": "cross-env NODE_ENV='development' nodemon"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.6.0",
-    "@electron-toolkit/utils": "^4.0.0",
+    "@electron-toolkit/utils": "^3.0.0",
+    "@next/env": "^14.2.5",
     "@headlessui/react": "^2.1.2",
     "@hookform/resolvers": "^3.9.0",
     "@langchain/community": "^0.2.25",
@@ -34,17 +48,16 @@
     "cross-env": "^7.0.3",
     "d3": "^7.9.0",
     "dayjs": "^1.11.13",
-    "electron-serve": "^2.1.1",
     "formidable": "^3.5.1",
     "geist": "^1.3.0",
     "get-port-please": "^3.1.2",
     "langchain": "^0.2.15",
-    "next": "^14.2.1",
+    "next": "^14.2.5",
     "next-auth": "^4.24.7",
     "pdf-parse": "^1.1.1",
     "picocolors": "^1.1.1",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
     "react-input-slider": "^6.0.1",
     "react-markdown": "^9.1.0",
@@ -52,8 +65,8 @@
     "react-textarea-autosize": "^8.5.5",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
-    "tsup": "^8.3.6",
     "zod": "^3.23.3",
+    "sharp": "^0.33.4",
     "zod-form-data": "^2.0.2"
   },
   "devDependencies": {
@@ -65,21 +78,20 @@
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "concurrently": "^9.1.2",
-    "electron": "^34.2.0",
-    "electron-builder": "^25.1.8",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.3",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.34",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "prisma": "^5.14.0",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.4.2"
+    "typescript": "^5.5.4",
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3",
+    "nodemon": "^3.1.4",
+    "tsup": "^8.2.4"
   },
-  "ct3aMetadata": {
-    "initVersion": "7.35.0"
-  },
-  "packageManager": "npm@9.5.0",
   "build": {
     "asar": true,
     "executableName": "NextJSElectron",
@@ -120,5 +132,9 @@
       ],
       "category": "Development"
     }
-  }
+  },
+  "ct3aMetadata": {
+    "initVersion": "7.35.0"
+  },
+  "packageManager": "npm@9.5.0"
 }
