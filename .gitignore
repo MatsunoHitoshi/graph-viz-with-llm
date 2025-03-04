@@ -51,3 +51,7 @@ yarn-error.log*
 /public/json
 /public/speech
 /public/tmp
+
+
+# electron
+/dist

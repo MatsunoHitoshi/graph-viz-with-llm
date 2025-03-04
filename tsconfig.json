@@ -15,10 +15,10 @@
     "checkJs": true,
 
     /* Bundled projects */
-    "lib": ["dom", "dom.iterable", "ES2022"],
+    "lib": ["dom", "dom.iterable", "ES2022", "esnext"],
     "noEmit": true,
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "jsx": "preserve",
     "plugins": [{ "name": "next" }],
     "incremental": true,
@@ -27,7 +27,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    "types": ["electron", "node"]
   },
   "include": [
     ".eslintrc.cjs",
@@ -38,5 +40,13 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
+  //  "include": [
+  //   "next-env.d.ts",
+  //   "electron.d.ts",
+  //   "**/*.ts",
+  //   "**/*.tsx",
+  //   ".next/types/**/*.ts"
+  // ],
+
   "exclude": ["node_modules"]
 }

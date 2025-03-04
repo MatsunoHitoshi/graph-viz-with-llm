@@ -10,11 +10,11 @@ export const writeFile = (base64: string, name: string) => {
   }
 
   try {
-    fs.writeFileSync(path, Buffer.from(buffer));
+    fs.writeFileSync(path, new Uint8Array(buffer));
     return path;
   } catch (e) {
     console.log("failed to write file");
-    return "";
+    throw e;
   }
 };
 
