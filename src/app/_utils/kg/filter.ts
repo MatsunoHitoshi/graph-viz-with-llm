@@ -66,8 +66,12 @@ export const filterGraph = (
           tagFilteredNodes.forEach((targetNode, tIndex) => {
             if (sIndex > tIndex) {
               const nodesDistance =
-                nodePathSearch(graphDocument, sourceNode.id, targetNode.id)
-                  .nodes.length - 1;
+                nodePathSearch(
+                  graphDocument,
+                  sourceNode.id,
+                  targetNode.id,
+                  cutOff,
+                ).nodes.length - 1;
               if (nodesDistance > 0 && nodesDistance <= cutOff) {
                 const r = {
                   id: sIndex * nodeLength + tIndex,

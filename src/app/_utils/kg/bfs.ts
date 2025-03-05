@@ -9,6 +9,7 @@ export const nodePathSearch = (
   graphData: GraphDocument,
   startId: number,
   endId: number,
+  cutOff?: number,
 ) => {
   const isReached = (path: GraphDocument) => {
     const firstNode = path.nodes[0];
@@ -17,7 +18,12 @@ export const nodePathSearch = (
   };
   // const directionalResult = directionalBfs(graphData, startId, endId);
   // console.log("directional:", directionalResult);
-  const nonDirectionalResult = nonDirectionalBfs(graphData, startId, endId);
+  const nonDirectionalResult = nonDirectionalBfs(
+    graphData,
+    startId,
+    endId,
+    cutOff,
+  );
   console.log("nonDirectional:", nonDirectionalResult);
 
   return isReached(nonDirectionalResult)
@@ -44,6 +50,7 @@ const nonDirectionalBfs = (
   graphData: GraphDocument,
   startId: number,
   endId: number,
+  cutOff?: number,
 ) => {
   const visited = new Set<number>();
   const queue: number[][] = [[startId]];
@@ -67,6 +74,9 @@ const nonDirectionalBfs = (
           .filter((r) => r.sourceId === node || r.targetId === node)
           .map((r) => (r.sourceId === node ? r.targetId : r.sourceId))
           .filter((id): id is number => id !== undefined);
+        if (cutOff && path.length > cutOff) {
+          return { nodes: [], relationships: [] };
+        }
 
         if (neighbors.includes(endId) && endNode) {
           const nodesEnd = nodes.concat([endNode]);
