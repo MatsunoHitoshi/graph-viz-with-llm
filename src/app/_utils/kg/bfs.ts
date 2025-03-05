@@ -15,25 +15,29 @@ export const nodePathSearch = (
     const lastNode = path.nodes[path.nodes.length - 1];
     return firstNode?.id === startId && lastNode?.id === endId;
   };
-  const directionalResult = directionalBfs(graphData, startId, endId);
-  console.log("directional:", directionalResult);
+  // const directionalResult = directionalBfs(graphData, startId, endId);
+  // console.log("directional:", directionalResult);
   const nonDirectionalResult = nonDirectionalBfs(graphData, startId, endId);
   console.log("nonDirectional:", nonDirectionalResult);
 
-  if (isReached(directionalResult) && isReached(nonDirectionalResult)) {
-    return directionalResult.nodes.length <= nonDirectionalResult.nodes.length
-      ? directionalResult
-      : nonDirectionalResult;
-  } else if (
-    !isReached(directionalResult) &&
-    !isReached(nonDirectionalResult)
-  ) {
-    return { nodes: [], relationships: [] };
-  } else {
-    return isReached(directionalResult)
-      ? directionalResult
-      : nonDirectionalResult;
-  }
+  return isReached(nonDirectionalResult)
+    ? nonDirectionalResult
+    : { nodes: [], relationships: [] };
+
+  // if (isReached(directionalResult) && isReached(nonDirectionalResult)) {
+  //   return directionalResult.nodes.length <= nonDirectionalResult.nodes.length
+  //     ? directionalResult
+  //     : nonDirectionalResult;
+  // } else if (
+  //   !isReached(directionalResult) &&
+  //   !isReached(nonDirectionalResult)
+  // ) {
+  //   return { nodes: [], relationships: [] };
+  // } else {
+  //   return isReached(directionalResult)
+  //     ? directionalResult
+  //     : nonDirectionalResult;
+  // }
 };
 
 const nonDirectionalBfs = (
