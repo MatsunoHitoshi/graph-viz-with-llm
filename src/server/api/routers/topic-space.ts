@@ -130,7 +130,11 @@ export const topicSpaceRouter = createTRPCRouter({
             where: { isDeleted: false },
             include: { graph: true },
           },
-          admins: true,
+          admins: {
+            select: {
+              id: true,
+            },
+          },
           tags: true,
         },
       });
