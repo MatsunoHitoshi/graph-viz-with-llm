@@ -40,6 +40,7 @@ const TopicSpaceGetSchema = z.object({
       withBetweenNodes: z.boolean().optional(),
     })
     .optional(),
+  withDocumentGraph: z.boolean().optional(),
 });
 
 const AttachDocumentSchema = z.object({
@@ -87,9 +88,7 @@ const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
 
 export const topicSpaceRouter = createTRPCRouter({
   getById: protectedProcedure
-    .input(
-      z.object({ id: z.string(), withDocumentGraph: z.boolean().optional() }),
-    )
+    .input(TopicSpaceGetSchema)
     .query(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: {
@@ -114,7 +113,20 @@ export const topicSpaceRouter = createTRPCRouter({
         throw new Error("TopicSpace not found");
       }
 
-      return topicSpace;
+      if (!!input.filterOption) {
+        const filteredGraph = filterGraph(
+          input.filterOption as TopicGraphFilterOption,
+          topicSpace.graphData as GraphDocument,
+          topicSpace.id,
+        );
+        const graphFilteredTopicSpace = {
+          ...topicSpace,
+          graphData: filteredGraph,
+        };
+        return graphFilteredTopicSpace;
+      } else {
+        return topicSpace;
+      }
     }),
 
   getByIdPublic: publicProcedure

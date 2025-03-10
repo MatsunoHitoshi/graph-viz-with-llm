@@ -7,19 +7,17 @@ import { PlusIcon, TrashIcon } from "../icons";
 
 export const NodePropertiesForm = ({
   topicSpaceId,
-  focusedNode,
+  node,
   refetch,
   setIsEditing,
 }: {
   topicSpaceId: string;
-  focusedNode: CustomNodeType;
+  node: CustomNodeType;
   refetch: () => void;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const updateProperty = api.topicSpaces.updateGraph.useMutation();
-  const [properties, setProperties] = useState<PropertyType>(
-    focusedNode.properties,
-  );
+  const [properties, setProperties] = useState<PropertyType>(node.properties);
 
   const submit = () => {
     updateProperty.mutate(
@@ -27,7 +25,7 @@ export const NodePropertiesForm = ({
         id: topicSpaceId,
         dataJson: {
           relationships: [],
-          nodes: [{ ...focusedNode, properties: properties }],
+          nodes: [{ ...node, properties: properties }],
         },
       },
       {

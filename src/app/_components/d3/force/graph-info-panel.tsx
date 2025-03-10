@@ -128,7 +128,7 @@ export const GraphInfoPanel = ({
                   {isEditor && isEditing && topicSpaceId && refetch ? (
                     <div className="flex flex-col gap-1">
                       <NodePropertiesForm
-                        focusedNode={focusedNode}
+                        node={focusedNode}
                         topicSpaceId={topicSpaceId}
                         refetch={refetch}
                         setIsEditing={setIsEditing}
@@ -208,7 +208,11 @@ export const GraphInfoPanel = ({
   );
 };
 
-const PropertyInfo = ({ data }: { data: CustomNodeType | CustomLinkType }) => {
+export const PropertyInfo = ({
+  data,
+}: {
+  data: CustomNodeType | CustomLinkType;
+}) => {
   return (
     <div className="flex flex-col gap-1">
       {Object.entries(data.properties ?? {}).map(([key, value], index) => (
