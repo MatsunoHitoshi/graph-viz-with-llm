@@ -327,7 +327,7 @@ export const topicSpaceRouter = createTRPCRouter({
       //   where: { id: input.id },
       //   include: { sourceDocuments: true },
       // });
-      const updatedTopicSpace = await ctx.db.topicSpace.update({
+      const documentAttachedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
           sourceDocuments: {
@@ -338,9 +338,25 @@ export const topicSpaceRouter = createTRPCRouter({
       });
 
       // 単純な単語一致でグラフ統合処理を行う場合はキューを使う必要がない。
+      const updatedGraphData = await updateGraphData(
+        documentAttachedTopicSpace,
+      );
+      await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: documentAttachedTopicSpace.id,
+          changeType: GraphChangeType.UPDATE,
+          changeEntityType: GraphChangeEntityType.GRAPH,
+          changeEntityId: documentAttachedTopicSpace.id,
+          previousState: documentAttachedTopicSpace.graphData,
+          nextState: updatedGraphData,
+          description: "ドキュメントを追加しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
       await ctx.db.topicSpace.update({
-        where: { id: updatedTopicSpace.id },
-        data: { graphData: await updateGraphData(updatedTopicSpace) },
+        where: { id: documentAttachedTopicSpace.id },
+        data: { graphData: updatedGraphData },
       });
 
       // グラフ統合の処理を工夫する際に統合処理のためのキューを使ったアップデートを行う場合に使用する。
@@ -368,7 +384,7 @@ export const topicSpaceRouter = createTRPCRouter({
       //   data: { graphDataStatus: GraphDataStatus.QUEUED },
       // });
 
-      return updatedTopicSpace;
+      return documentAttachedTopicSpace;
     }),
 
   detachDocument: protectedProcedure
@@ -392,7 +408,7 @@ export const topicSpaceRouter = createTRPCRouter({
         throw new Error("TopicSpace not found");
       }
 
-      const updatedTopicSpace = await ctx.db.topicSpace.update({
+      const documentDetachedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
           sourceDocuments: {
@@ -403,12 +419,106 @@ export const topicSpaceRouter = createTRPCRouter({
       });
 
       // 削除時のグラフアップデート
-      await ctx.db.topicSpace.update({
-        where: { id: updatedTopicSpace.id },
-        data: { graphData: await updateGraphData(updatedTopicSpace) },
+      const updatedGraphData = await updateGraphData(
+        documentDetachedTopicSpace,
+      );
+      const graphChangeHistory = await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: documentDetachedTopicSpace.id,
+          description: "ドキュメントを削除しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
       });
 
-      return updatedTopicSpace;
+      // 生成
+      const originalGraph = documentDetachedTopicSpace.graphData;
+      const updatedGraph = updatedGraphData;
+
+      const diffNodes = (
+        originalNodes: NodeType[],
+        updatedNodes: NodeType[],
+      ) => {
+        return originalNodes
+          .filter(
+            (originalNode) =>
+              !updatedNodes.some(
+                (updatedNode) => updatedNode.id === originalNode.id,
+              ),
+          )
+          .concat(
+            updatedNodes.filter(
+              (updatedNode) =>
+                !originalNodes.some(
+                  (originalNode) => originalNode.id === updatedNode.id,
+                ),
+            ),
+          );
+      };
+
+      const diffRelationships = (
+        originalRelationships: RelationshipType[],
+        updatedRelationships: RelationshipType[],
+      ) => {
+        return originalRelationships
+          .filter(
+            (originalRelationship) =>
+              !updatedRelationships.some(
+                (updatedRelationship) =>
+                  updatedRelationship.id === originalRelationship.id,
+              ),
+          )
+          .concat(
+            updatedRelationships.filter(
+              (updatedRelationship) =>
+                !originalRelationships.some(
+                  (originalRelationship) =>
+                    originalRelationship.id === updatedRelationship.id,
+                ),
+            ),
+          );
+      };
+
+      const nodeDiffs = diffNodes(originalGraph.nodes, updatedGraph.nodes);
+      const relationshipDiffs = diffRelationships(
+        originalGraph.relationships,
+        updatedGraph.relationships,
+      );
+
+      nodeDiffs.forEach((diff) => {
+        ctx.db.nodeLinkChangeHistory.create({
+          data: {
+            changeType: diff.type,
+            changeEntityType: GraphChangeEntityType.NODE,
+            changeEntityId: diff.id,
+            previousState: diff.original,
+            nextState: diff.updated,
+            graphChangeHistory: { connect: { id: graphChangeHistory.id } },
+          },
+        });
+      });
+
+      relationshipDiffs.forEach((diff) => {
+        ctx.db.nodeLinkChangeHistory.create({
+          data: {
+            changeType: diff.type,
+            changeEntityType: GraphChangeEntityType.EDGE,
+            changeEntityId: diff.id,
+            previousState: diff.original,
+            nextState: diff.updated,
+            graphChangeHistory: { connect: { id: graphChangeHistory.id } },
+          },
+        });
+      });
+
+      // 生成終わり
+
+      await ctx.db.topicSpace.update({
+        where: { id: documentDetachedTopicSpace.id },
+        data: { graphData: updatedGraphData },
+      });
+
+      return documentDetachedTopicSpace;
     }),
 
   updateGraph: protectedProcedure
@@ -436,6 +546,20 @@ export const topicSpaceRouter = createTRPCRouter({
         stripGraphData(input.dataJson),
         stripGraphData(topicSpace.graphData as GraphDocument),
       );
+
+      await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: topicSpace.id,
+          changeType: GraphChangeType.UPDATE,
+          changeEntityType: GraphChangeEntityType.GRAPH,
+          changeEntityId: topicSpace.id,
+          previousState: topicSpace.graphData,
+          nextState: updatedGraph,
+          description: "グラフを更新しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
 
       const updatedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
