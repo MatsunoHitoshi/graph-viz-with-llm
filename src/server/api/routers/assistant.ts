@@ -107,6 +107,76 @@ export const assistantRouter = createTRPCRouter({
       }
     }),
 
+  graphOutline: protectedProcedure
+    .input(GenerateGraphSummarySchema)
+    .mutation(async function* ({ ctx, input }) {
+      const sanitizedGraphData = {
+        nodes: input.graphData.nodes as NodeType[],
+        relationships: input.graphData.relationships as RelationshipType[],
+      };
+
+      const openai = new OpenAI();
+      let context = "";
+      const nodes = sanitizedGraphData.nodes;
+      sanitizedGraphData.relationships.forEach((edge) => {
+        context += `(${
+          nodes.find((n) => {
+            return n?.id === edge?.sourceId;
+          })?.name
+        })-[${edge?.type}]->(${
+          nodes.find((n) => {
+            return n?.id === edge?.targetId;
+          })?.name
+        }) \n`;
+      });
+
+      const startNode = nodes.find((n) => {
+        return String(n.id) === input.startId;
+      });
+      const endNode = nodes.find((n) => {
+        return String(n.id) === input.endId;
+      });
+
+      const assistant = await openai.beta.assistants.create({
+        name: "記事執筆アシスタント",
+        instructions:
+          "あなたは美術について紹介する記事を執筆する専門家です。必ず与えられた文脈からわかる情報のみを使用して回答を生成してください。",
+        model: "gpt-4o-mini",
+        temperature: 1.0,
+      });
+      const thread = await openai.beta.threads.create({
+        messages: [
+          {
+            role: "user",
+            content: `「${startNode?.name}」と「${endNode?.name}」の関係について紹介する文章を執筆しようとしています。下記の文脈を使ってアウトラインを作成してください。回答にはアウトラインの内容のみを記載してください。\n${context}`,
+          },
+        ],
+      });
+
+      try {
+        const stream = await openai.beta.threads.runs.create(thread.id, {
+          assistant_id: assistant.id,
+          stream: true,
+        });
+        for await (const event of stream) {
+          if (event.event === "thread.message.delta") {
+            const chunk = event.data.delta.content?.[0];
+            if (chunk && chunk.type === "text") {
+              yield {
+                summary: chunk.text?.value,
+              };
+            }
+          }
+        }
+      } catch (error) {
+        console.log("error: ", error);
+        return {
+          summary: "",
+          error: "アウトラインを作成できませんでした",
+        };
+      }
+    }),
+
   textToSpeech: protectedProcedure
     .input(TextToSpeechSchema)
     .mutation(async ({ ctx, input }) => {

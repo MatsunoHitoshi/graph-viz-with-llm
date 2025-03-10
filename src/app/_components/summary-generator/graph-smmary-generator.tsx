@@ -24,13 +24,49 @@ export const GraphSummaryGenerator = ({
   const [summary, setSummary] = useState<string>();
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const { data: session } = useSession();
+  const [contentType, setContentType] = useState<"summary" | "outline">();
 
   const summarizeGraph = api.assistant.graphSummary.useMutation();
-
-  const submit = () => {
+  const outlineGraph = api.assistant.graphOutline.useMutation();
+  const submitForSummary = () => {
     setGenerationStarted(true);
     setIsProcessing(true);
+    setContentType("summary");
     summarizeGraph.mutate(
+      {
+        graphData: graphData,
+        startId: defaultStartNodeId,
+        endId: defaultEndNodeId,
+      },
+      {
+        onSuccess: (res) => {
+          const handler = async () => {
+            if (res) {
+              for await (const val of res) {
+                setSummary((prev) => (prev ?? "") + val.summary);
+              }
+              setIsProcessing(false);
+            }
+          };
+          handler().catch((e) => {
+            console.log(e);
+            setIsProcessing(false);
+          });
+        },
+        onError: (e) => {
+          console.log(e);
+          setIsProcessing(false);
+        },
+      },
+    );
+  };
+
+  const submitForOutline = () => {
+    console.log("submitForOutline");
+    setGenerationStarted(true);
+    setIsProcessing(true);
+    setContentType("outline");
+    outlineGraph.mutate(
       {
         graphData: graphData,
         startId: defaultStartNodeId,
@@ -62,9 +98,14 @@ export const GraphSummaryGenerator = ({
   if (!generationStarted) {
     if (session) {
       return (
-        <Button className="!w-full" onClick={() => submit()}>
-          <div className="text-sm">グラフの内容を解説する</div>
-        </Button>
+        <div className="flex flex-row gap-2">
+          <Button className="!w-full" onClick={() => submitForSummary()}>
+            <div className="text-sm">解説</div>
+          </Button>
+          <Button className="!w-full" onClick={() => submitForOutline()}>
+            <div className="text-sm">アウトライン</div>
+          </Button>
+        </div>
       );
     } else {
       return (
@@ -80,7 +121,9 @@ export const GraphSummaryGenerator = ({
     return (
       <div className="flex w-full flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
-          <div className="font-semibold">解説</div>
+          <div className="font-semibold">
+            {contentType === "summary" ? "解説" : "アウトライン"}
+          </div>
           {isProcessing ? (
             <Loading size={16} color="white" />
           ) : (
