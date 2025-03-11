@@ -50,19 +50,19 @@ model Session {
 }
 
 model User {
-  id              String           @id @default(cuid())
-  name            String?
-  email           String?          @unique
-  emailVerified   DateTime?
-  image           String?
-  accounts        Account[]
-  sessions        Session[]
-  sourceDocuments SourceDocument[]
-  documentGraphs  DocumentGraph[]
-  topicSpaces     TopicSpace[]
+  id                   String               @id @default(cuid())
+  name                 String?
+  email                String?              @unique
+  emailVerified        DateTime?
+  image                String?
+  accounts             Account[]
+  sessions             Session[]
+  sourceDocuments      SourceDocument[]
+  documentGraphs       DocumentGraph[]
+  topicSpaces          TopicSpace[]
   graphChangeHistories GraphChangeHistory[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
 }
 
 model VerificationToken {
@@ -144,30 +144,30 @@ model Tag {
 }
 
 model GraphChangeHistory {
-  id        String   @id @default(cuid())
-  recordType GraphChangeRecordType
-  recordId String
-  description String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String                @id @default(cuid())
+  recordType  GraphChangeRecordType
+  recordId    String
+  description String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  userId String
+  user                    User                    @relation(fields: [userId], references: [id])
+  userId                  String
   nodeLinkChangeHistories NodeLinkChangeHistory[]
 }
 
 model NodeLinkChangeHistory {
-  id        String   @id @default(cuid())
-  changeType GraphChangeType
+  id               String                @id @default(cuid())
+  changeType       GraphChangeType
   changeEntityType GraphChangeEntityType
-  changeEntityId String
-  previousState Json
-  nextState Json
+  changeEntityId   String
+  previousState    Json
+  nextState        Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  graphChangeHistory GraphChangeHistory @relation(fields: [graphChangeHistoryId], references: [id])
+  graphChangeHistory   GraphChangeHistory @relation(fields: [graphChangeHistoryId], references: [id])
   graphChangeHistoryId String
 }
 

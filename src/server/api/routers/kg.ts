@@ -26,9 +26,9 @@ import {
   fuseGraphs,
 } from "@/app/_utils/kg/data-disambiguation";
 import { env } from "@/env";
-import type { Prisma } from "@prisma/client";
-import { GraphDataStatus } from "@prisma/client";
-import { stripGraphData } from "@/app/_utils/kg/data-strip";
+// import type { Prisma } from "@prisma/client";
+// import { GraphDataStatus } from "@prisma/client";
+// import { stripGraphData } from "@/app/_utils/kg/data-strip";
 
 const ExtractInputSchema = z.object({
   fileUrl: z.string().url(),

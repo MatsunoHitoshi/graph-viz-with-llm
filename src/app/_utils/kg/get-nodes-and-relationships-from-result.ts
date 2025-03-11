@@ -1,4 +1,5 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
+import { GraphChangeType } from "@prisma/client";
 
 export type PropertyType = {
   [K in string]: string;
@@ -41,6 +42,18 @@ export type RelationshipType = {
   targetName: string;
   targetId: number;
   properties: PropertyType;
+};
+
+export type NodeDiffType = {
+  type: GraphChangeType;
+  original?: NodeType;
+  updated?: NodeType;
+};
+
+export type RelationshipDiffType = {
+  type: GraphChangeType;
+  original?: RelationshipType;
+  updated?: RelationshipType;
 };
 
 export const createExtraNode = (

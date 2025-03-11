@@ -3,7 +3,6 @@ import {
   NodeType,
   type RelationshipType,
 } from "./get-nodes-and-relationships-from-result";
-import { neighborNodes } from "./get-tree-layout-data";
 
 const generateSystemMessageForNodes = () => {
   return `
@@ -15,7 +14,7 @@ resulting nodes in the same format. Only return the nodes and relationships no o
 };
 
 const mergeRelationships = (relationships: RelationshipType[]) => {
-  const mergedRelationships = relationships.filter((relationship, index) => {
+  const filteredRelationships = relationships.filter((relationship, index) => {
     return (
       index ===
       relationships.findIndex(
@@ -26,6 +25,12 @@ const mergeRelationships = (relationships: RelationshipType[]) => {
       )
     );
   });
+  const mergedRelationships = filteredRelationships.map(
+    (relationship, index) => ({
+      ...relationship,
+      id: index,
+    }),
+  );
   return mergedRelationships;
 };
 
@@ -62,7 +67,10 @@ const mergerGraphsWithDuplicatedNodeName = (
     newNodes.push({ ...additionalNode, id: newId });
   });
   sourceGraph.relationships.map((sRelationship, index) => {
-    const newId = newRelationships.length + index;
+    const newId =
+      newRelationships.reduce((max, current) => Math.max(max, current.id), 0) +
+      1 +
+      index;
     newRelationships.push({
       ...sRelationship,
       id: newId,
