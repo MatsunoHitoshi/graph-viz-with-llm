@@ -27,6 +27,7 @@ import type {
 import { filterGraph, updateKgProperties } from "@/app/_utils/kg/filter";
 import { GraphChangeEntityType, GraphChangeRecordType } from "@prisma/client";
 import { diffNodes, diffRelationships } from "@/app/_utils/kg/diff";
+import { CustomNodeType } from "@/app/_components/d3/force/graph";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
@@ -619,7 +620,7 @@ export const topicSpaceRouter = createTRPCRouter({
 
       const updatedGraphData = mergerNodes(
         topicSpace.graphData as GraphDocument,
-        input.nodes,
+        input.nodes as CustomNodeType[],
       );
 
       const graphChangeHistory = await ctx.db.graphChangeHistory.create({

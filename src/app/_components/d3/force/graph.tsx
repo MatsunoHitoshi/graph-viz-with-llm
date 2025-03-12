@@ -240,6 +240,7 @@ export const D3ForceGraph = ({
           refetch={refetch}
           focusedNode={focusedNode}
           isClustered={isClustered}
+          nodeSearchQuery={nodeSearchQuery}
         />
       ) : (
         <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>

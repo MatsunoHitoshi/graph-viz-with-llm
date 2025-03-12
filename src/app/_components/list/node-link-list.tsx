@@ -15,6 +15,7 @@ export const NodeLinkList = ({
   isEditor,
   refetch,
   isClustered,
+  nodeSearchQuery,
 }: {
   graphNodes: CustomNodeType[];
   setIsListOpen: (isListOpen: boolean) => void;
@@ -24,6 +25,7 @@ export const NodeLinkList = ({
   refetch: (() => void) | undefined;
   focusedNode: CustomNodeType | undefined;
   isClustered: boolean;
+  nodeSearchQuery: string | undefined;
 }) => {
   const [isNodeMergeMode, setIsNodeMergeMode] = useState<boolean>(false);
   const [mergeNodes, setMergeNodes] = useState<CustomNodeType[]>();
@@ -60,11 +62,19 @@ export const NodeLinkList = ({
 
       <div className="flex w-full flex-col divide-y divide-slate-400 overflow-scroll">
         {graphNodes.map((node) => {
+          const queryFiltered =
+            !!nodeSearchQuery &&
+            nodeSearchQuery !== "" &&
+            node.name.toLowerCase().includes(nodeSearchQuery.toLowerCase());
           return (
             <div
               key={node.id}
               className={`flex flex-row items-center p-2 ${
-                focusedNode?.id === node.id ? "bg-slate-400" : ""
+                focusedNode?.id === node.id
+                  ? "bg-slate-400"
+                  : queryFiltered
+                    ? "bg-slate-700"
+                    : ""
               }`}
             >
               {isNodeMergeMode && (
