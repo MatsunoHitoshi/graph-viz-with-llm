@@ -14,7 +14,7 @@ import type {
   TopicGraphFilterOption,
   TopicSpaceResponse,
 } from "@/app/const/types";
-import { stripGraphData } from "@/app/_utils/kg/data-strip";
+import { shapeGraphData } from "@/app/_utils/kg/shape";
 import { nodePathSearch } from "@/app/_utils/kg/bfs";
 import { neighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
 import type {
@@ -23,7 +23,7 @@ import type {
   RelationshipDiffType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
-import { filterGraph, updateKg } from "@/app/_utils/kg/filter";
+import { filterGraph, updateKgProperties } from "@/app/_utils/kg/filter";
 import { GraphChangeEntityType, GraphChangeRecordType } from "@prisma/client";
 import { diffNodes, diffRelationships } from "@/app/_utils/kg/diff";
 
@@ -56,14 +56,14 @@ const DetachDocumentSchema = z.object({
   id: z.string(),
 });
 
-const UpdateGraphSchema = z.object({
+const UpdateGraphPropertiesSchema = z.object({
   dataJson: z.object({
     nodes: z.array(z.any()),
     relationships: z.array(z.any()),
   }),
   id: z.string(),
 });
-const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
+const mergeGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
   let newGraph: GraphDocument = { nodes: [], relationships: [] };
   if (updatedTopicSpace.sourceDocuments) {
     for (const [
@@ -86,8 +86,8 @@ const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
     updatedTopicSpace.graphData as GraphDocument,
   );
 
-  const sanitizedGraphData = stripGraphData(newGraphWithProperties);
-  return sanitizedGraphData;
+  const shapedGraphData = shapeGraphData(newGraphWithProperties);
+  return shapedGraphData;
 };
 
 export const topicSpaceRouter = createTRPCRouter({
@@ -271,7 +271,7 @@ export const topicSpaceRouter = createTRPCRouter({
           sourceDocuments: { connect: { id: input.documentId } },
           admins: { connect: { id: ctx.session.user.id } },
           graphData:
-            stripGraphData(document?.graph?.dataJson as GraphDocument) ?? {},
+            shapeGraphData(document?.graph?.dataJson as GraphDocument) ?? {},
         },
       });
       return topicSpace;
@@ -348,9 +348,7 @@ export const topicSpaceRouter = createTRPCRouter({
       }
 
       // 単純な単語一致でグラフ統合処理を行う場合はキューを使う必要がない。
-      const updatedGraphData = await updateGraphData(
-        documentAttachedTopicSpace,
-      );
+      const updatedGraphData = await mergeGraphData(documentAttachedTopicSpace);
 
       const graphChangeHistory = await ctx.db.graphChangeHistory.create({
         data: {
@@ -456,9 +454,7 @@ export const topicSpaceRouter = createTRPCRouter({
       });
 
       // 削除時のグラフアップデート
-      const updatedGraphData = await updateGraphData(
-        documentDetachedTopicSpace,
-      );
+      const updatedGraphData = await mergeGraphData(documentDetachedTopicSpace);
       const graphChangeHistory = await ctx.db.graphChangeHistory.create({
         data: {
           recordType: GraphChangeRecordType.TOPIC_SPACE,
@@ -512,8 +508,8 @@ export const topicSpaceRouter = createTRPCRouter({
       return documentDetachedTopicSpace;
     }),
 
-  updateGraph: protectedProcedure
-    .input(UpdateGraphSchema)
+  updateGraphProperties: protectedProcedure
+    .input(UpdateGraphPropertiesSchema)
     .mutation(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: {
@@ -533,9 +529,9 @@ export const topicSpaceRouter = createTRPCRouter({
         throw new Error("TopicSpace not found");
       }
 
-      const updatedGraphData = updateKg(
-        stripGraphData(input.dataJson),
-        stripGraphData(topicSpace.graphData as GraphDocument),
+      const updatedGraphData = updateKgProperties(
+        shapeGraphData(input.dataJson),
+        shapeGraphData(topicSpace.graphData as GraphDocument),
       );
 
       const graphChangeHistory = await ctx.db.graphChangeHistory.create({

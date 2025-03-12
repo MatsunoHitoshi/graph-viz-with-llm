@@ -1,7 +1,7 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
-import {
+import type {
   NodeType,
-  type RelationshipType,
+  RelationshipType,
 } from "./get-nodes-and-relationships-from-result";
 
 const generateSystemMessageForNodes = () => {
@@ -13,7 +13,7 @@ resulting nodes in the same format. Only return the nodes and relationships no o
   `;
 };
 
-const mergeRelationships = (relationships: RelationshipType[]) => {
+const deleteDuplicatedRelationships = (relationships: RelationshipType[]) => {
   const filteredRelationships = relationships.filter((relationship, index) => {
     return (
       index ===
@@ -34,18 +34,34 @@ const mergeRelationships = (relationships: RelationshipType[]) => {
   return mergedRelationships;
 };
 
+const deleteDuplicatedNodes = (nodes: NodeType[]) => {
+  const filteredNodes = nodes.filter((node, index) => {
+    return (
+      index ===
+      nodes.findIndex((n) => n.name === node.name && n.label === node.label)
+    );
+  });
+  return filteredNodes;
+};
+
 const mergerGraphsWithDuplicatedNodeName = (
   sourceGraph: GraphDocument,
   targetGraph: GraphDocument,
 ) => {
   const duplicatedSourceNodes = sourceGraph.nodes.filter((sourceNode) => {
     return targetGraph.nodes.some((targetNode) => {
-      return targetNode.name === sourceNode.name;
+      return (
+        targetNode.name === sourceNode.name &&
+        targetNode.label === sourceNode.label
+      );
     });
   });
   const additionalNodes = sourceGraph.nodes.filter((sourceNode) => {
     return !targetGraph.nodes.some((targetNode) => {
-      return targetNode.name === sourceNode.name;
+      return (
+        targetNode.name === sourceNode.name &&
+        targetNode.label === sourceNode.label
+      );
     });
   });
 
@@ -56,7 +72,7 @@ const mergerGraphsWithDuplicatedNodeName = (
   duplicatedSourceNodes.map((dNode) => {
     const prevId = dNode.id;
     const newId = newNodes.find((nn) => {
-      return nn.name === dNode.name;
+      return nn.name === dNode.name && nn.label === dNode.label;
     })?.id;
     nodeIdRecords.push({ prevId: prevId, newId: newId ?? 0 });
   });
@@ -90,33 +106,14 @@ const mergerGraphsWithDuplicatedNodeName = (
 
 const simpleMerge = (graphDocument: GraphDocument) => {
   const { nodes, relationships } = graphDocument;
-  const mergedRelationships = mergeRelationships(relationships);
-  const result = { nodes: nodes, relationships: mergedRelationships };
-  return result;
+  const mergedRelationships = deleteDuplicatedRelationships(relationships);
+  const mergedNodes = deleteDuplicatedNodes(nodes);
+  return { nodes: mergedNodes, relationships: mergedRelationships };
 };
 
-export const dataDisambiguation = (graphDocument: GraphDocument | null) => {
-  if (!graphDocument) return null;
+export const dataDisambiguation = (graphDocument: GraphDocument) => {
   const disambiguatedGraph = simpleMerge(graphDocument);
   return disambiguatedGraph;
-};
-
-const deleteDuplicatedNode = (graphDocument: GraphDocument) => {
-  const newNodes = [] as NodeType[];
-  graphDocument.nodes.forEach((node) => {
-    const duplicatedNodeArray = graphDocument.nodes.filter((n) => {
-      return node.name === n.name;
-    });
-
-    if (
-      duplicatedNodeArray.length === 1 ||
-      (duplicatedNodeArray.length > 1 && duplicatedNodeArray[0]?.id === node.id)
-    ) {
-      newNodes.push(node);
-    }
-  });
-
-  return { nodes: newNodes, relationships: graphDocument.relationships };
 };
 
 export const attachGraphProperties = (
@@ -155,10 +152,8 @@ export const fuseGraphs = async (
   targetGraph: GraphDocument,
 ) => {
   const graph = mergerGraphsWithDuplicatedNodeName(sourceGraph, targetGraph);
-  const stripedGraph = deleteDuplicatedNode(graph);
-  const mergedRelationships = mergeRelationships(graph.relationships);
-
-  return { nodes: stripedGraph.nodes, relationships: mergedRelationships };
+  const disambiguatedGraph = dataDisambiguation(graph);
+  return disambiguatedGraph;
   // const openai = new OpenAI();
   // const assistant = await openai.beta.assistants.create({
   //   name: "Graph Database Assistant",

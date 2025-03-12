@@ -21,10 +21,7 @@ import type {
   Node,
   Relationship,
 } from "node_modules/@langchain/community/dist/graphs/graph_document";
-import {
-  dataDisambiguation,
-  fuseGraphs,
-} from "@/app/_utils/kg/data-disambiguation";
+import { dataDisambiguation } from "@/app/_utils/kg/data-disambiguation";
 import { env } from "@/env";
 // import type { Prisma } from "@prisma/client";
 // import { GraphDataStatus } from "@prisma/client";
@@ -258,6 +255,11 @@ export const kgRouter = createTRPCRouter({
             ? await graphExtractionWithLangChain(localFilePath, isPlaneTextMode)
             : await graphExtractionWithAssistantsAPI(localFilePath, schema);
 
+        if (!nodesAndRelationships) {
+          return {
+            data: { graph: null, error: "グラフ抽出エラー" },
+          };
+        }
         const disambiguatedNodesAndRelationships = dataDisambiguation(
           nodesAndRelationships,
         );

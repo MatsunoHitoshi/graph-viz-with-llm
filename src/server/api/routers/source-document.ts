@@ -9,7 +9,7 @@ import type {
   NodeType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
-import { stripGraphData } from "@/app/_utils/kg/data-strip";
+import { shapeGraphData } from "@/app/_utils/kg/shape";
 
 const SourceDocumentSchema = z.object({
   name: z.string(),
@@ -95,7 +95,7 @@ export const sourceDocumentRouter = createTRPCRouter({
           user: { connect: { id: ctx.session.user.id } },
         },
       });
-      const sanitizedGraphData = stripGraphData({
+      const sanitizedGraphData = shapeGraphData({
         nodes: input.dataJson.nodes as NodeType[],
         relationships: input.dataJson.relationships as RelationshipType[],
       });

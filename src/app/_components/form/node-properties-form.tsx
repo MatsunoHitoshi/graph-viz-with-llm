@@ -16,7 +16,7 @@ export const NodePropertiesForm = ({
   refetch: () => void;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const updateProperty = api.topicSpaces.updateGraph.useMutation();
+  const updateProperty = api.topicSpaces.updateGraphProperties.useMutation();
   const [properties, setProperties] = useState<PropertyType>(node.properties);
 
   const submit = () => {
