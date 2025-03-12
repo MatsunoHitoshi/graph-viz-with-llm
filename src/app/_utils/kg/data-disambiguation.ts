@@ -44,6 +44,60 @@ const deleteDuplicatedNodes = (nodes: NodeType[]) => {
   return filteredNodes;
 };
 
+export const mergerNodes = (graph: GraphDocument, mergeNodes: NodeType[]) => {
+  const margeTargetNode = mergeNodes[0];
+  const margeSourceNodes = mergeNodes.slice(1);
+
+  if (!margeTargetNode) {
+    throw new Error("Target node is not found");
+  }
+
+  const newRelationships = graph.relationships
+    .map((sRelationship) => {
+      if (
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.targetId) &&
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.sourceId)
+      ) {
+        return undefined;
+      } else if (
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.targetId)
+      ) {
+        return {
+          ...sRelationship,
+          targetId: margeTargetNode.id,
+          targetName: margeTargetNode.name,
+        };
+      } else if (
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.sourceId)
+      ) {
+        return {
+          ...sRelationship,
+          sourceId: margeTargetNode.id,
+          sourceName: margeTargetNode.name,
+        };
+      } else {
+        return sRelationship;
+      }
+    })
+    .filter((r) => !!r);
+
+  const newNodes = graph.nodes.filter((node) => {
+    return !margeSourceNodes.some(
+      (mNode) =>
+        mNode.id === node.id &&
+        mNode.label === node.label &&
+        mNode.name === node.name,
+    );
+  });
+
+  const disambiguatedGraph = dataDisambiguation({
+    nodes: newNodes,
+    relationships: newRelationships,
+  });
+
+  return disambiguatedGraph;
+};
+
 const mergerGraphsWithDuplicatedNodeName = (
   sourceGraph: GraphDocument,
   targetGraph: GraphDocument,

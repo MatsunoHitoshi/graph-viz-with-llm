@@ -9,6 +9,7 @@ import type { GraphDocument } from "./kg";
 import {
   attachGraphProperties,
   fuseGraphs,
+  mergerNodes,
 } from "@/app/_utils/kg/data-disambiguation";
 import type {
   TopicGraphFilterOption,
@@ -61,6 +62,11 @@ const UpdateGraphPropertiesSchema = z.object({
     nodes: z.array(z.any()),
     relationships: z.array(z.any()),
   }),
+  id: z.string(),
+});
+
+const MergeGraphNodesSchema = z.object({
+  nodes: z.array(z.any()),
   id: z.string(),
 });
 const mergeGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
@@ -538,7 +544,89 @@ export const topicSpaceRouter = createTRPCRouter({
         data: {
           recordType: GraphChangeRecordType.TOPIC_SPACE,
           recordId: topicSpace.id,
-          description: "グラフを更新しました",
+          description: "プロパティを更新しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
+
+      const prevGraphData = topicSpace.graphData as GraphDocument;
+      if (!prevGraphData) {
+        throw new Error("グラフデータが存在しません");
+      }
+
+      const nodeDiffs = diffNodes(prevGraphData.nodes, updatedGraphData.nodes);
+      const relationshipDiffs = diffRelationships(
+        prevGraphData.relationships,
+        updatedGraphData.relationships,
+      );
+      const nodeChangeHistories = nodeDiffs.map((diff: NodeDiffType) => {
+        return {
+          changeType: diff.type,
+          changeEntityType: GraphChangeEntityType.NODE,
+          changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+          previousState: diff.original ?? {},
+          nextState: diff.updated ?? {},
+          graphChangeHistoryId: graphChangeHistory.id,
+        };
+      });
+      const relationshipChangeHistories = relationshipDiffs.map(
+        (diff: RelationshipDiffType) => {
+          return {
+            changeType: diff.type,
+            changeEntityType: GraphChangeEntityType.EDGE,
+            changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+            previousState: diff.original ?? {},
+            nextState: diff.updated ?? {},
+            graphChangeHistoryId: graphChangeHistory.id,
+          };
+        },
+      );
+      await ctx.db.nodeLinkChangeHistory.createMany({
+        data: [...nodeChangeHistories, ...relationshipChangeHistories],
+      });
+
+      const updatedTopicSpace = await ctx.db.topicSpace.update({
+        where: { id: input.id },
+        data: {
+          graphData: updatedGraphData,
+        },
+        include: { sourceDocuments: { include: { graph: true } } },
+      });
+
+      return updatedTopicSpace;
+    }),
+
+  mergeGraphNodes: protectedProcedure
+    .input(MergeGraphNodesSchema)
+    .mutation(async ({ ctx, input }) => {
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: {
+          id: input.id,
+          isDeleted: false,
+        },
+        include: {
+          admins: true,
+        },
+      });
+
+      if (
+        !topicSpace?.admins.some((admin) => {
+          return admin.id === ctx.session.user.id;
+        })
+      ) {
+        throw new Error("TopicSpace not found");
+      }
+
+      const updatedGraphData = mergerNodes(
+        topicSpace.graphData as GraphDocument,
+        input.nodes,
+      );
+
+      const graphChangeHistory = await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: topicSpace.id,
+          description: "ノードを統合しました",
           user: { connect: { id: ctx.session.user.id } },
         },
       });

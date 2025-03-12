@@ -1,9 +1,10 @@
 import { GraphIcon } from "@/app/_components/icons";
 import type { CustomNodeType } from "../d3/force/graph";
-import { NodePropertiesForm } from "../form/node-properties-form";
-import { useState } from "react";
-import { PropertyInfo } from "../d3/force/graph-info-panel";
+import { useEffect, useState } from "react";
 import { Button } from "../button/button";
+import { CheckboxInput } from "../input/checkbox-input";
+import { NodePropertyList } from "./node-property-list";
+import { MergeNodesForm } from "../form/merge-nodes-form";
 
 export const NodeLinkList = ({
   graphNodes,
@@ -24,6 +25,11 @@ export const NodeLinkList = ({
   focusedNode: CustomNodeType | undefined;
   isClustered: boolean;
 }) => {
+  const [isNodeMergeMode, setIsNodeMergeMode] = useState<boolean>(false);
+  const [mergeNodes, setMergeNodes] = useState<CustomNodeType[]>();
+  const [isMergeNodesEditModalOpen, setIsMergeNodesEditModalOpen] =
+    useState<boolean>(false);
+
   return (
     <div className="flex h-screen flex-col gap-2">
       <div className="flex flex-row items-center gap-2">
@@ -35,6 +41,21 @@ export const NodeLinkList = ({
         >
           <GraphIcon width={16} height={16} color="white" />
         </button>
+        <Button
+          className="!text-xs"
+          onClick={() => setIsNodeMergeMode(!isNodeMergeMode)}
+        >
+          {isNodeMergeMode ? "統合をキャンセル" : "ノードの統合"}
+        </Button>
+
+        {isNodeMergeMode && mergeNodes && mergeNodes.length > 0 && (
+          <Button
+            className="!text-xs"
+            onClick={() => setIsMergeNodesEditModalOpen(true)}
+          >
+            統合
+          </Button>
+        )}
       </div>
 
       <div className="flex w-full flex-col divide-y divide-slate-400 overflow-scroll">
@@ -42,83 +63,85 @@ export const NodeLinkList = ({
           return (
             <div
               key={node.id}
-              className={`flex flex-col gap-2 p-2 ${
+              className={`flex flex-row items-center p-2 ${
                 focusedNode?.id === node.id ? "bg-slate-400" : ""
               }`}
             >
-              <div className="flex flex-row items-center gap-2">
-                <div>{node.name}</div>
-                <div className="flex w-max flex-row items-center justify-center rounded-md bg-white px-2 text-sm text-slate-900">
-                  {node.label}
+              {isNodeMergeMode && (
+                <MergeCheck
+                  node={node}
+                  mergeNodes={mergeNodes}
+                  setMergeNodes={setMergeNodes}
+                />
+              )}
+              <div className="flex flex-col gap-2 ">
+                <div className="flex flex-row items-center gap-2">
+                  <div>{node.name}</div>
+                  <div className="flex w-max flex-row items-center justify-center rounded-md bg-white px-2 text-sm text-slate-900">
+                    {node.label}
+                  </div>
+                  {isClustered ? (
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{
+                        backgroundColor: node.nodeColor?.replaceAll(" ", ""),
+                      }}
+                    ></div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
-                {isClustered ? (
-                  <div
-                    className="h-3 w-3 rounded-full"
-                    style={{
-                      backgroundColor: node.nodeColor?.replaceAll(" ", ""),
-                    }}
-                  ></div>
-                ) : (
-                  <></>
-                )}
-              </div>
 
-              <PropertyController
-                node={node}
-                isEditor={isEditor}
-                topicSpaceId={topicSpaceId}
-                refetch={refetch}
-              />
+                <NodePropertyList
+                  node={node}
+                  isEditor={isEditor}
+                  topicSpaceId={topicSpaceId}
+                  refetch={refetch}
+                />
+              </div>
             </div>
           );
         })}
       </div>
+      {mergeNodes && setMergeNodes && topicSpaceId && refetch && (
+        <MergeNodesForm
+          isOpen={isMergeNodesEditModalOpen}
+          setIsOpen={setIsMergeNodesEditModalOpen}
+          mergeNodes={mergeNodes}
+          setMergeNodes={setMergeNodes}
+          topicSpaceId={topicSpaceId}
+          refetch={refetch}
+          setIsNodeMergeMode={setIsNodeMergeMode}
+        />
+      )}
     </div>
   );
 };
 
-const PropertyController = ({
+const MergeCheck = ({
   node,
-  isEditor,
-  topicSpaceId,
-  refetch,
+  mergeNodes,
+  setMergeNodes,
 }: {
   node: CustomNodeType;
-  isEditor: boolean;
-  topicSpaceId: string | undefined;
-  refetch: (() => void) | undefined;
+  mergeNodes: CustomNodeType[] | undefined;
+  setMergeNodes: React.Dispatch<
+    React.SetStateAction<CustomNodeType[] | undefined>
+  >;
 }) => {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isNodeMerge, setIsNodeMerge] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isNodeMerge) {
+      setMergeNodes([...(mergeNodes ?? []), node]);
+    } else {
+      setMergeNodes(mergeNodes?.filter((n) => n.id !== node.id));
+    }
+  }, [isNodeMerge]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-row items-center gap-2">
-        <div className="text-sm">プロパティ</div>
-        {isEditor ? (
-          <Button
-            className="!p-1 !text-sm"
-            onClick={() => setIsEditing(!isEditing)}
-          >
-            {isEditing ? "キャンセル" : "編集"}
-          </Button>
-        ) : (
-          <></>
-        )}
-      </div>
-      <div>
-        {isEditor && isEditing && topicSpaceId && refetch ? (
-          <div className="flex flex-col gap-1">
-            <NodePropertiesForm
-              node={node}
-              topicSpaceId={topicSpaceId}
-              refetch={refetch}
-              setIsEditing={setIsEditing}
-            />
-          </div>
-        ) : (
-          <PropertyInfo data={node} />
-        )}
-      </div>
+    <div className="mr-2 h-6 w-6">
+      <CheckboxInput enabled={isNodeMerge} setEnabled={setIsNodeMerge} />
     </div>
   );
 };
