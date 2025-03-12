@@ -1,5 +1,5 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
-import { GraphChangeType } from "@prisma/client";
+import type { GraphChangeType } from "@prisma/client";
 
 export type PropertyType = {
   [K in string]: string;

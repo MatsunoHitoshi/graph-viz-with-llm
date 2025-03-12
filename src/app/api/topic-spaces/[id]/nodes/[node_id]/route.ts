@@ -1,4 +1,4 @@
-import { GraphDocument } from "@/server/api/routers/kg";
+import type { GraphDocument } from "@/server/api/routers/kg";
 import { api } from "@/trpc/server";
 import { NextResponse } from "next/server";
 

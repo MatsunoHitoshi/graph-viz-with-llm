@@ -1,5 +1,5 @@
 import { GraphChangeType } from "@prisma/client";
-import {
+import type {
   NodeType,
   RelationshipType,
 } from "./get-nodes-and-relationships-from-result";
