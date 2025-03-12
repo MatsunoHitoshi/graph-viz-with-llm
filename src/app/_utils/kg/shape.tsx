@@ -1,7 +1,7 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
 
-export const stripGraphData = (graph: GraphDocument) => {
-  const strippedGraph = {
+export const shapeGraphData = (graph: GraphDocument) => {
+  const shapedGraph = {
     nodes: graph.nodes.map((node) => ({
       id: node.id,
       label: node.label,
@@ -10,5 +10,5 @@ export const stripGraphData = (graph: GraphDocument) => {
     })),
     relationships: graph.relationships,
   };
-  return strippedGraph;
+  return shapedGraph;
 };

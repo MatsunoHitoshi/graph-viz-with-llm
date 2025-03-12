@@ -14,14 +14,18 @@ import type {
   TopicGraphFilterOption,
   TopicSpaceResponse,
 } from "@/app/const/types";
-import { stripGraphData } from "@/app/_utils/kg/data-strip";
+import { shapeGraphData } from "@/app/_utils/kg/shape";
 import { nodePathSearch } from "@/app/_utils/kg/bfs";
 import { neighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
 import type {
+  NodeDiffType,
   NodeType,
+  RelationshipDiffType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
-import { filterGraph, updateKg } from "@/app/_utils/kg/filter";
+import { filterGraph, updateKgProperties } from "@/app/_utils/kg/filter";
+import { GraphChangeEntityType, GraphChangeRecordType } from "@prisma/client";
+import { diffNodes, diffRelationships } from "@/app/_utils/kg/diff";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
@@ -52,14 +56,14 @@ const DetachDocumentSchema = z.object({
   id: z.string(),
 });
 
-const UpdateGraphSchema = z.object({
+const UpdateGraphPropertiesSchema = z.object({
   dataJson: z.object({
     nodes: z.array(z.any()),
     relationships: z.array(z.any()),
   }),
   id: z.string(),
 });
-const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
+const mergeGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
   let newGraph: GraphDocument = { nodes: [], relationships: [] };
   if (updatedTopicSpace.sourceDocuments) {
     for (const [
@@ -82,8 +86,8 @@ const updateGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
     updatedTopicSpace.graphData as GraphDocument,
   );
 
-  const sanitizedGraphData = stripGraphData(newGraphWithProperties);
-  return sanitizedGraphData;
+  const shapedGraphData = shapeGraphData(newGraphWithProperties);
+  return shapedGraphData;
 };
 
 export const topicSpaceRouter = createTRPCRouter({
@@ -267,7 +271,7 @@ export const topicSpaceRouter = createTRPCRouter({
           sourceDocuments: { connect: { id: input.documentId } },
           admins: { connect: { id: ctx.session.user.id } },
           graphData:
-            stripGraphData(document?.graph?.dataJson as GraphDocument) ?? {},
+            shapeGraphData(document?.graph?.dataJson as GraphDocument) ?? {},
         },
       });
       return topicSpace;
@@ -327,7 +331,7 @@ export const topicSpaceRouter = createTRPCRouter({
       //   where: { id: input.id },
       //   include: { sourceDocuments: true },
       // });
-      const updatedTopicSpace = await ctx.db.topicSpace.update({
+      const documentAttachedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
           sourceDocuments: {
@@ -337,10 +341,57 @@ export const topicSpaceRouter = createTRPCRouter({
         include: { sourceDocuments: { include: { graph: true } } },
       });
 
+      const prevGraphData =
+        documentAttachedTopicSpace.graphData as GraphDocument;
+      if (!prevGraphData) {
+        throw new Error("グラフデータが存在しません");
+      }
+
       // 単純な単語一致でグラフ統合処理を行う場合はキューを使う必要がない。
+      const updatedGraphData = await mergeGraphData(documentAttachedTopicSpace);
+
+      const graphChangeHistory = await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: documentAttachedTopicSpace.id,
+          description: "ドキュメントを追加しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
+      const nodeDiffs = diffNodes(prevGraphData.nodes, updatedGraphData.nodes);
+      const relationshipDiffs = diffRelationships(
+        prevGraphData.relationships,
+        updatedGraphData.relationships,
+      );
+      const nodeChangeHistories = nodeDiffs.map((diff: NodeDiffType) => {
+        return {
+          changeType: diff.type,
+          changeEntityType: GraphChangeEntityType.NODE,
+          changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+          previousState: diff.original ?? {},
+          nextState: diff.updated ?? {},
+          graphChangeHistoryId: graphChangeHistory.id,
+        };
+      });
+      const relationshipChangeHistories = relationshipDiffs.map(
+        (diff: RelationshipDiffType) => {
+          return {
+            changeType: diff.type,
+            changeEntityType: GraphChangeEntityType.EDGE,
+            changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+            previousState: diff.original ?? {},
+            nextState: diff.updated ?? {},
+            graphChangeHistoryId: graphChangeHistory.id,
+          };
+        },
+      );
+      await ctx.db.nodeLinkChangeHistory.createMany({
+        data: [...nodeChangeHistories, ...relationshipChangeHistories],
+      });
+
       await ctx.db.topicSpace.update({
-        where: { id: updatedTopicSpace.id },
-        data: { graphData: await updateGraphData(updatedTopicSpace) },
+        where: { id: documentAttachedTopicSpace.id },
+        data: { graphData: updatedGraphData },
       });
 
       // グラフ統合の処理を工夫する際に統合処理のためのキューを使ったアップデートを行う場合に使用する。
@@ -368,7 +419,7 @@ export const topicSpaceRouter = createTRPCRouter({
       //   data: { graphDataStatus: GraphDataStatus.QUEUED },
       // });
 
-      return updatedTopicSpace;
+      return documentAttachedTopicSpace;
     }),
 
   detachDocument: protectedProcedure
@@ -392,7 +443,7 @@ export const topicSpaceRouter = createTRPCRouter({
         throw new Error("TopicSpace not found");
       }
 
-      const updatedTopicSpace = await ctx.db.topicSpace.update({
+      const documentDetachedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
           sourceDocuments: {
@@ -403,16 +454,62 @@ export const topicSpaceRouter = createTRPCRouter({
       });
 
       // 削除時のグラフアップデート
-      await ctx.db.topicSpace.update({
-        where: { id: updatedTopicSpace.id },
-        data: { graphData: await updateGraphData(updatedTopicSpace) },
+      const updatedGraphData = await mergeGraphData(documentDetachedTopicSpace);
+      const graphChangeHistory = await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: documentDetachedTopicSpace.id,
+          description: "ドキュメントを削除しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
+      const prevGraphData =
+        documentDetachedTopicSpace.graphData as GraphDocument;
+      if (!prevGraphData) {
+        throw new Error("グラフデータが存在しません");
+      }
+
+      const nodeDiffs = diffNodes(prevGraphData.nodes, updatedGraphData.nodes);
+      const relationshipDiffs = diffRelationships(
+        prevGraphData.relationships,
+        updatedGraphData.relationships,
+      );
+      const nodeChangeHistories = nodeDiffs.map((diff: NodeDiffType) => {
+        return {
+          changeType: diff.type,
+          changeEntityType: GraphChangeEntityType.NODE,
+          changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+          previousState: diff.original ?? {},
+          nextState: diff.updated ?? {},
+          graphChangeHistoryId: graphChangeHistory.id,
+        };
+      });
+      const relationshipChangeHistories = relationshipDiffs.map(
+        (diff: RelationshipDiffType) => {
+          return {
+            changeType: diff.type,
+            changeEntityType: GraphChangeEntityType.EDGE,
+            changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+            previousState: diff.original ?? {},
+            nextState: diff.updated ?? {},
+            graphChangeHistoryId: graphChangeHistory.id,
+          };
+        },
+      );
+      await ctx.db.nodeLinkChangeHistory.createMany({
+        data: [...nodeChangeHistories, ...relationshipChangeHistories],
       });
 
-      return updatedTopicSpace;
+      await ctx.db.topicSpace.update({
+        where: { id: documentDetachedTopicSpace.id },
+        data: { graphData: updatedGraphData },
+      });
+
+      return documentDetachedTopicSpace;
     }),
 
-  updateGraph: protectedProcedure
-    .input(UpdateGraphSchema)
+  updateGraphProperties: protectedProcedure
+    .input(UpdateGraphPropertiesSchema)
     .mutation(async ({ ctx, input }) => {
       const topicSpace = await ctx.db.topicSpace.findFirst({
         where: {
@@ -432,15 +529,60 @@ export const topicSpaceRouter = createTRPCRouter({
         throw new Error("TopicSpace not found");
       }
 
-      const updatedGraph = updateKg(
-        stripGraphData(input.dataJson),
-        stripGraphData(topicSpace.graphData as GraphDocument),
+      const updatedGraphData = updateKgProperties(
+        shapeGraphData(input.dataJson),
+        shapeGraphData(topicSpace.graphData as GraphDocument),
       );
+
+      const graphChangeHistory = await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: topicSpace.id,
+          description: "グラフを更新しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
+
+      const prevGraphData = topicSpace.graphData as GraphDocument;
+      if (!prevGraphData) {
+        throw new Error("グラフデータが存在しません");
+      }
+
+      const nodeDiffs = diffNodes(prevGraphData.nodes, updatedGraphData.nodes);
+      const relationshipDiffs = diffRelationships(
+        prevGraphData.relationships,
+        updatedGraphData.relationships,
+      );
+      const nodeChangeHistories = nodeDiffs.map((diff: NodeDiffType) => {
+        return {
+          changeType: diff.type,
+          changeEntityType: GraphChangeEntityType.NODE,
+          changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+          previousState: diff.original ?? {},
+          nextState: diff.updated ?? {},
+          graphChangeHistoryId: graphChangeHistory.id,
+        };
+      });
+      const relationshipChangeHistories = relationshipDiffs.map(
+        (diff: RelationshipDiffType) => {
+          return {
+            changeType: diff.type,
+            changeEntityType: GraphChangeEntityType.EDGE,
+            changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+            previousState: diff.original ?? {},
+            nextState: diff.updated ?? {},
+            graphChangeHistoryId: graphChangeHistory.id,
+          };
+        },
+      );
+      await ctx.db.nodeLinkChangeHistory.createMany({
+        data: [...nodeChangeHistories, ...relationshipChangeHistories],
+      });
 
       const updatedTopicSpace = await ctx.db.topicSpace.update({
         where: { id: input.id },
         data: {
-          graphData: updatedGraph,
+          graphData: updatedGraphData,
         },
         include: { sourceDocuments: { include: { graph: true } } },
       });

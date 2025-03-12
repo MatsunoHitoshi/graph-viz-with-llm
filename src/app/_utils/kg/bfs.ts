@@ -92,47 +92,47 @@ const nonDirectionalBfs = (
   return getOptimalPath(graphData, nodes);
 };
 
-const directionalBfs = (
-  graphData: GraphDocument,
-  startId: number,
-  endId: number,
-) => {
-  const visited = new Set<number>();
-  const queue: number[][] = [[startId]];
-  const nodes: NodeType[] = [];
-  const endNode = graphData.nodes.find((n) => n.id === endId);
+// const directionalBfs = (
+//   graphData: GraphDocument,
+//   startId: number,
+//   endId: number,
+// ) => {
+//   const visited = new Set<number>();
+//   const queue: number[][] = [[startId]];
+//   const nodes: NodeType[] = [];
+//   const endNode = graphData.nodes.find((n) => n.id === endId);
 
-  while (queue.length > 0) {
-    const path = queue.shift();
-    if (!path) continue;
+//   while (queue.length > 0) {
+//     const path = queue.shift();
+//     if (!path) continue;
 
-    const node = path[path.length - 1]!;
-    if (!visited.has(node)) {
-      visited.add(node);
-      const currentNode = graphData.nodes.find((n) => n.id === node);
-      if (currentNode) {
-        nodes.push(currentNode);
-        if (node === endId) {
-          return getOptimalPath(graphData, nodes);
-        }
+//     const node = path[path.length - 1]!;
+//     if (!visited.has(node)) {
+//       visited.add(node);
+//       const currentNode = graphData.nodes.find((n) => n.id === node);
+//       if (currentNode) {
+//         nodes.push(currentNode);
+//         if (node === endId) {
+//           return getOptimalPath(graphData, nodes);
+//         }
 
-        const neighbors = graphData.relationships
-          .filter((r) => r.sourceId === node)
-          .map((r) => r.targetId)
-          .filter((id): id is number => id !== undefined);
+//         const neighbors = graphData.relationships
+//           .filter((r) => r.sourceId === node)
+//           .map((r) => r.targetId)
+//           .filter((id): id is number => id !== undefined);
 
-        for (const neighbor of neighbors) {
-          queue.push([...path, neighbor]);
-        }
-        if (neighbors.includes(endId) && endNode) {
-          const nodesEnd = nodes.concat([endNode]);
-          return getOptimalPath(graphData, nodesEnd);
-        }
-      }
-    }
-  }
-  return getOptimalPath(graphData, nodes);
-};
+//         for (const neighbor of neighbors) {
+//           queue.push([...path, neighbor]);
+//         }
+//         if (neighbors.includes(endId) && endNode) {
+//           const nodesEnd = nodes.concat([endNode]);
+//           return getOptimalPath(graphData, nodesEnd);
+//         }
+//       }
+//     }
+//   }
+//   return getOptimalPath(graphData, nodes);
+// };
 
 const getOptimalPath = (graphData: GraphDocument, nodes: NodeType[]) => {
   const optimalPath = {

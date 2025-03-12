@@ -137,7 +137,10 @@ export const filterGraph = (
   }
 };
 
-export const updateKg = (update: GraphDocument, graphData: GraphDocument) => {
+export const updateKgProperties = (
+  update: GraphDocument,
+  graphData: GraphDocument,
+) => {
   const updatedNodes = graphData.nodes.map((node) => {
     if (update.nodes.map((n) => n.id).includes(node.id)) {
       return update.nodes.find((n) => n.id === node.id);
