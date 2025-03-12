@@ -1,6 +1,6 @@
 import { GraphIcon } from "@/app/_components/icons";
 import type { CustomNodeType } from "../d3/force/graph";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "../button/button";
 import { CheckboxInput } from "../input/checkbox-input";
 import { NodePropertyList } from "./node-property-list";
@@ -31,6 +31,15 @@ export const NodeLinkList = ({
   const [mergeNodes, setMergeNodes] = useState<CustomNodeType[]>();
   const [isMergeNodesEditModalOpen, setIsMergeNodesEditModalOpen] =
     useState<boolean>(false);
+  const [isSorted, setIsSorted] = useState<boolean>(false);
+
+  const sortedGraphNodes = useMemo(() => {
+    if (isSorted) {
+      return graphNodes.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      return graphNodes;
+    }
+  }, [graphNodes, isSorted]);
 
   return (
     <div className="flex h-screen flex-col gap-2">
@@ -58,10 +67,14 @@ export const NodeLinkList = ({
             統合
           </Button>
         )}
+
+        <Button className="!text-xs" onClick={() => setIsSorted(!isSorted)}>
+          <div className={isSorted ? "text-orange-500" : ""}>ソート</div>
+        </Button>
       </div>
 
       <div className="flex w-full flex-col divide-y divide-slate-400 overflow-scroll">
-        {graphNodes.map((node) => {
+        {sortedGraphNodes.map((node) => {
           const queryFiltered =
             !!nodeSearchQuery &&
             nodeSearchQuery !== "" &&
