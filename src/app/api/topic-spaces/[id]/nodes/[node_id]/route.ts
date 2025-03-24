@@ -13,16 +13,21 @@ export const GET = async (
     });
 
     const graphData = res.graphData as GraphDocument;
-    const neighborLinks = graphData.relationships.filter(
+    const sourceLinks = graphData.relationships.filter(
       (link) =>
         link.sourceId === parseInt(params.node_id) ||
         link.targetId === parseInt(params.node_id),
     );
     const neighborNodes = graphData.nodes.filter((node) =>
-      neighborLinks?.some(
+      sourceLinks?.some(
         (l) => l.sourceId === node.id || l.targetId === node.id,
       ),
     );
+    const neighborNodesIds = neighborNodes.map((node) => node.id);
+    const neighborLinks = graphData.relationships.filter((l) =>
+      neighborNodesIds.some((id) => l.sourceId === id || l.targetId === id),
+    );
+
     return NextResponse.json({
       id: res.id,
       graphData: {
