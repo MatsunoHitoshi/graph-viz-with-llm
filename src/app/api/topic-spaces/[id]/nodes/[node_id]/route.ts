@@ -9,16 +9,24 @@ export const GET = async (
   try {
     const res = await api.topicSpaces.getByIdPublic({
       id: params.id,
-      filterOption: { type: "tag", value: "main", cutOff: "1" },
+      // filterOption: { type: "tag", value: "main", cutOff: "1" },
     });
 
     const graphData = res.graphData as GraphDocument;
+
+    const tagFilteredNodes = graphData.nodes.filter((node) => {
+      if (node.properties.tag) {
+        return node.properties.tag.toLowerCase() === "main";
+      } else {
+        return false;
+      }
+    });
     const sourceLinks = graphData.relationships.filter(
       (link) =>
         link.sourceId === parseInt(params.node_id) ||
         link.targetId === parseInt(params.node_id),
     );
-    const neighborNodes = graphData.nodes.filter((node) =>
+    const neighborNodes = tagFilteredNodes.filter((node) =>
       sourceLinks?.some(
         (l) => l.sourceId === node.id || l.targetId === node.id,
       ),
