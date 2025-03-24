@@ -24,8 +24,10 @@ export const GET = async (
       ),
     );
     const neighborNodesIds = neighborNodes.map((node) => node.id);
-    const neighborLinks = graphData.relationships.filter((l) =>
-      neighborNodesIds.some((id) => l.sourceId === id || l.targetId === id),
+    const neighborLinks = graphData.relationships.filter(
+      (l) =>
+        neighborNodesIds.some((id) => l.sourceId === id) &&
+        neighborNodesIds.some((id) => l.targetId === id),
     );
 
     return NextResponse.json({
