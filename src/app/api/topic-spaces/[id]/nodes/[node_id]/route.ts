@@ -9,6 +9,7 @@ export const GET = async (
   try {
     const res = await api.topicSpaces.getByIdPublic({
       id: params.id,
+      filterOption: { type: "tag", value: "main", cutOff: "1" },
     });
 
     const graphData = res.graphData as GraphDocument;
