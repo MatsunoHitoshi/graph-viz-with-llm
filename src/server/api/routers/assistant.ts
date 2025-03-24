@@ -59,7 +59,7 @@ export const assistantRouter = createTRPCRouter({
       const assistant = await openai.beta.assistants.create({
         name: "記事執筆アシスタント",
         instructions:
-          "あなたは美術について紹介する記事を執筆する専門家です。必ず与えられた文脈からわかる情報のみを使用して回答を生成してください。",
+          "あなたは美術について紹介する記事を執筆する専門家です。必ず与えられた文脈からわかる情報を使用して回答を生成してください。",
         model: "gpt-4o-mini",
         temperature: 1.0,
       });
@@ -67,7 +67,7 @@ export const assistantRouter = createTRPCRouter({
         messages: [
           {
             role: "user",
-            content: `「${startNode?.name}」と「${endNode?.name}」の関係について紹介する文章を執筆しようとしています。下記の文脈を使って簡易的な下書きを作成してください。\n${context}`,
+            content: `「${startNode?.name}」と「${endNode?.name}」の関係について紹介する文章を執筆しようとしています。下記の文脈を使用して簡単な解説を作成してください。\n${context}`,
           },
         ],
       });

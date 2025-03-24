@@ -52,20 +52,25 @@ export const NodeLinkList = ({
         >
           <GraphIcon width={16} height={16} color="white" />
         </button>
-        <Button
-          className="!text-xs"
-          onClick={() => setIsNodeMergeMode(!isNodeMergeMode)}
-        >
-          {isNodeMergeMode ? "統合をキャンセル" : "ノードの統合"}
-        </Button>
 
-        {isNodeMergeMode && mergeNodes && mergeNodes.length > 0 && (
-          <Button
-            className="!text-xs"
-            onClick={() => setIsMergeNodesEditModalOpen(true)}
-          >
-            統合
-          </Button>
+        {isEditor && (
+          <>
+            <Button
+              className="!text-xs"
+              onClick={() => setIsNodeMergeMode(!isNodeMergeMode)}
+            >
+              {isNodeMergeMode ? "統合をキャンセル" : "ノードの統合"}
+            </Button>
+
+            {isNodeMergeMode && mergeNodes && mergeNodes.length > 0 && (
+              <Button
+                className="!text-xs"
+                onClick={() => setIsMergeNodesEditModalOpen(true)}
+              >
+                統合
+              </Button>
+            )}
+          </>
         )}
 
         <Button className="!text-xs" onClick={() => setIsSorted(!isSorted)}>

@@ -10,6 +10,9 @@ import type {
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 import { shapeGraphData } from "@/app/_utils/kg/shape";
+import { BUCKETS } from "@/app/_utils/supabase/const";
+import { storageUtils } from "@/app/_utils/supabase/supabase";
+import { env } from "@/env";
 
 const SourceDocumentSchema = z.object({
   name: z.string(),
@@ -26,6 +29,36 @@ const SourceDocumentWithGraphSchema = z.object({
 });
 
 export const sourceDocumentRouter = createTRPCRouter({
+  cleaningInputFiles: publicProcedure
+    .input(
+      z.object({
+        type: z.enum(["input-pdf", "input-txt"]),
+        key: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const documents = await ctx.db.sourceDocument.findMany();
+
+      if (input.key !== env.DELETE_KEY) {
+        throw new Error("Invalid key");
+      }
+
+      const filePaths = documents.map(
+        (document) => document.url.split("/").pop() ?? "",
+      );
+      console.log("filePaths: ", filePaths);
+      console.log("filePaths-length: ", filePaths.length);
+      const res = await storageUtils.cleaning(
+        filePaths,
+        input.type === "input-pdf"
+          ? BUCKETS.PATH_TO_INPUT_PDF
+          : BUCKETS.PATH_TO_INPUT_TXT,
+        input.key,
+      );
+
+      return res;
+    }),
+
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {

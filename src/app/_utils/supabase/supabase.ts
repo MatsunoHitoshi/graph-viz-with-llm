@@ -24,4 +24,28 @@ export const storageUtils = {
   uploadFromBlob: async (blob: Blob, bucket: string) => {
     return storageUtils.upload(blob, bucket);
   },
+
+  cleaning: async (ids: string[], bucket: string, deleteKey: string) => {
+    if (env.DELETE_KEY !== deleteKey) {
+      throw new Error("Invalid delete key");
+    } else {
+      const files = await supabase.storage.from(bucket).list();
+      const fileIds = files.data?.map((file) => file.name);
+      console.log("fileIds: ", fileIds);
+      console.log("fileIds-length: ", fileIds?.length);
+      let res: string[] = [];
+      if (fileIds) {
+        for (const fileId of fileIds) {
+          if (!ids.includes(fileId)) {
+            const spRes = await supabase.storage.from(bucket).remove([fileId]);
+            const removedIds = spRes.data?.map((file) => file.id) ?? [];
+            res = [...res, ...removedIds];
+            console.log("path: ", fileId);
+          }
+        }
+      }
+      console.log("res-length: ", res.length);
+      return res;
+    }
+  },
 };
