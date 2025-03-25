@@ -11,6 +11,7 @@ export const GET = async (
       startId: params.start_id,
       endId: params.end_id,
     });
+
     return NextResponse.json({
       id: res.id,
       graphData: res.graphData,

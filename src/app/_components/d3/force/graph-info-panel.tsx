@@ -132,6 +132,7 @@ export const GraphInfoPanel = ({
                         topicSpaceId={topicSpaceId}
                         refetch={refetch}
                         setIsEditing={setIsEditing}
+                        width="short"
                       />
                     </div>
                   ) : (
@@ -216,7 +217,7 @@ export const PropertyInfo = ({
   return (
     <div className="flex flex-col gap-1">
       {Object.entries(data.properties ?? {}).map(([key, value], index) => (
-        <div key={index}>
+        <div key={index} className="whitespace-pre-wrap">
           {key}:{" "}
           {value.startsWith("http://") || value.startsWith("https://") ? (
             <a

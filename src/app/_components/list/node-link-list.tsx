@@ -87,7 +87,7 @@ export const NodeLinkList = ({
           return (
             <div
               key={node.id}
-              className={`flex flex-row items-center p-2 ${
+              className={`flex w-full flex-row items-center p-2 ${
                 focusedNode?.id === node.id
                   ? "bg-slate-400"
                   : queryFiltered
@@ -102,7 +102,7 @@ export const NodeLinkList = ({
                   setMergeNodes={setMergeNodes}
                 />
               )}
-              <div className="flex flex-col gap-2 ">
+              <div className="flex w-full flex-col gap-2">
                 <div className="flex flex-row items-center gap-2">
                   <div>{node.name}</div>
                   <div className="flex w-max flex-row items-center justify-center rounded-md bg-white px-2 text-sm text-slate-900">
