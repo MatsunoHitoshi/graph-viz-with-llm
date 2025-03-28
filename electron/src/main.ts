@@ -28,7 +28,11 @@ const createWindow = () => {
 
   const loadURL = async () => {
     if (is.dev) {
-      mainWindow.loadURL("http://localhost:3000");
+      mainWindow.loadURL(
+        "http://localhost:3000",
+        // for mingei exhibition
+        // "http://localhost:3000/topic-spaces/cm8pp08cb00ej4u2oom556bc1/graph",
+      );
     } else {
       try {
         const port = await startNextJSServer();
