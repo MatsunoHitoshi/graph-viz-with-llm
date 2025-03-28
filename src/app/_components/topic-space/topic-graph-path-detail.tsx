@@ -10,6 +10,7 @@ import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
 import { GraphSummaryGenerator } from "../summary-generator/graph-smmary-generator";
+import { useSession } from "next-auth/react";
 
 export const TopicGraphPathDetail = ({
   id,
@@ -27,7 +28,8 @@ export const TopicGraphPathDetail = ({
   });
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth = (2 * (innerWidth ?? 100)) / 3 - 36;
-  const graphAreaHeight = (innerHeight ?? 300) - 160;
+  const { data: session } = useSession();
+  const graphAreaHeight = (innerHeight ?? 300) - (session ? 160 : 108);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);
