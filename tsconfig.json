@@ -80,9 +80,13 @@
   "include": [
     "next-env.d.ts",
     "electron.d.ts",
+    ".eslintrc.cjs",
+    "prettier.config.js",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "**/*.cjs",
+    "**/*.mjs"
   ],
   "exclude": ["node_modules"]
 }

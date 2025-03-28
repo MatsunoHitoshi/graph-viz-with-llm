@@ -16,6 +16,7 @@ const config = {
       },
     ],
   },
+
   async headers() {
     return [
       {

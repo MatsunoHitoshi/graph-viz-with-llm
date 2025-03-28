@@ -28,23 +28,19 @@ const createWindow = () => {
 
   const loadURL = async () => {
     if (is.dev) {
-      mainWindow.loadURL(
-        "http://localhost:3000",
-        // for mingei exhibition
-        // "http://localhost:3000/topic-spaces/cm8pp08cb00ej4u2oom556bc1/graph",
-      );
+      void mainWindow.loadURL("http://localhost:3000");
     } else {
       try {
         const port = await startNextJSServer();
         console.log("Next.js server started on port:", port);
-        mainWindow.loadURL(`http://localhost:${port}`);
+        void mainWindow.loadURL(`http://localhost:${port}`);
       } catch (error) {
         console.error("Error starting Next.js server:", error);
       }
     }
   };
 
-  loadURL();
+  void loadURL();
   return mainWindow;
 };
 
@@ -71,7 +67,7 @@ const startNextJSServer = async () => {
   }
 };
 
-app.whenReady().then(() => {
+void app.whenReady().then(() => {
   createWindow();
 
   ipcMain.on("ping", () => console.log("pong"));

@@ -1,6 +1,5 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
-import OpenAI from "openai";
 import { exportJson, writeFile } from "@/app/_utils/sys/file";
 import fs from "fs";
 import {
@@ -169,64 +168,64 @@ const graphExtractionWithLangChain = async (
   return nodesAndRelationships;
 };
 
-const graphExtractionWithAssistantsAPI = async (
-  localFilePath: string,
-  schema: string,
-) => {
-  const openai = new OpenAI();
-  const assistant = await openai.beta.assistants.create({
-    name: "Graph Database Assistant",
-    instructions:
-      "You are a top-tier algorithm designed for extracting information in structured formats to build a knowledge graph. Your task is to identify the Nodes and Relations requested with the user prompt from a given file.",
-    model: "gpt-4o-mini",
-    tools: [{ type: "file_search" }],
-    temperature: 0.0,
-  });
+// const graphExtractionWithAssistantsAPI = async (
+//   localFilePath: string,
+//   schema: string,
+// ) => {
+//   const openai = new OpenAI();
+//   const assistant = await openai.beta.assistants.create({
+//     name: "Graph Database Assistant",
+//     instructions:
+//       "You are a top-tier algorithm designed for extracting information in structured formats to build a knowledge graph. Your task is to identify the Nodes and Relations requested with the user prompt from a given file.",
+//     model: "gpt-4o-mini",
+//     tools: [{ type: "file_search" }],
+//     temperature: 0.0,
+//   });
 
-  const inputFile = await openai.files.create({
-    file: fs.createReadStream(localFilePath),
-    purpose: "assistants",
-  });
+//   const inputFile = await openai.files.create({
+//     file: fs.createReadStream(localFilePath),
+//     purpose: "assistants",
+//   });
 
-  const thread = await openai.beta.threads.create({
-    messages: [
-      {
-        role: "user",
-        content: schema
-          ? generateSystemMessageWithSchema(schema)
-          : generateSystemMessage(),
-        attachments: [
-          { file_id: inputFile.id, tools: [{ type: "file_search" }] },
-        ],
-      },
-    ],
-  });
-  console.log("thread's vector store: ", thread.tool_resources?.file_search);
-  console.log(
-    "prompt: ",
-    schema ? generateSystemMessageWithSchema(schema) : generateSystemMessage(),
-  );
+//   const thread = await openai.beta.threads.create({
+//     messages: [
+//       {
+//         role: "user",
+//         content: schema
+//           ? generateSystemMessageWithSchema(schema)
+//           : generateSystemMessage(),
+//         attachments: [
+//           { file_id: inputFile.id, tools: [{ type: "file_search" }] },
+//         ],
+//       },
+//     ],
+//   });
+//   console.log("thread's vector store: ", thread.tool_resources?.file_search);
+//   console.log(
+//     "prompt: ",
+//     schema ? generateSystemMessageWithSchema(schema) : generateSystemMessage(),
+//   );
 
-  const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
-    assistant_id: assistant.id, // or "asst_jTbI1u826T6wkvn5A1zXoGSt"
-  });
+//   const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
+//     assistant_id: assistant.id, // or "asst_jTbI1u826T6wkvn5A1zXoGSt"
+//   });
 
-  const messages = await openai.beta.threads.messages.list(thread.id, {
-    run_id: run.id,
-  });
-  const message = messages.data.pop()!;
+//   const messages = await openai.beta.threads.messages.list(thread.id, {
+//     run_id: run.id,
+//   });
+//   const message = messages.data.pop()!;
 
-  if (message?.content[0]!.type === "text") {
-    const { text } = message.content[0];
-    console.log(text.value);
+//   if (message?.content[0]!.type === "text") {
+//     const { text } = message.content[0];
+//     console.log(text.value);
 
-    const nodesAndRelationships = getNodesAndRelationshipsFromResult(
-      text.value,
-    );
-    return nodesAndRelationships;
-  }
-  return null;
-};
+//     const nodesAndRelationships = getNodesAndRelationshipsFromResult(
+//       text.value,
+//     );
+//     return nodesAndRelationships;
+//   }
+//   return null;
+// };
 
 export const kgRouter = createTRPCRouter({
   extractKG: publicProcedure
@@ -250,10 +249,15 @@ export const kgRouter = createTRPCRouter({
 
       try {
         console.log("type: ", extractMode);
-        const nodesAndRelationships =
-          extractMode === "langChain"
-            ? await graphExtractionWithLangChain(localFilePath, isPlaneTextMode)
-            : await graphExtractionWithAssistantsAPI(localFilePath, schema);
+
+        const nodesAndRelationships = await graphExtractionWithLangChain(
+          localFilePath,
+          isPlaneTextMode,
+        );
+        // const nodesAndRelationships =
+        //   extractMode === "langChain"
+        //     ? await graphExtractionWithLangChain(localFilePath, isPlaneTextMode)
+        //     : await graphExtractionWithAssistantsAPI(localFilePath, schema);
 
         if (!nodesAndRelationships) {
           return {
