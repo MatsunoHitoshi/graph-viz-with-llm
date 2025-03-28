@@ -1,9 +1,8 @@
 import type { GraphDocument } from "@/server/api/routers/kg";
-import {
+import type {
   NodeType,
-  type RelationshipType,
+  RelationshipType,
 } from "./get-nodes-and-relationships-from-result";
-import { neighborNodes } from "./get-tree-layout-data";
 
 const generateSystemMessageForNodes = () => {
   return `
@@ -14,8 +13,8 @@ resulting nodes in the same format. Only return the nodes and relationships no o
   `;
 };
 
-const mergeRelationships = (relationships: RelationshipType[]) => {
-  const mergedRelationships = relationships.filter((relationship, index) => {
+const deleteDuplicatedRelationships = (relationships: RelationshipType[]) => {
+  const filteredRelationships = relationships.filter((relationship, index) => {
     return (
       index ===
       relationships.findIndex(
@@ -26,7 +25,77 @@ const mergeRelationships = (relationships: RelationshipType[]) => {
       )
     );
   });
+  const mergedRelationships = filteredRelationships.map(
+    (relationship, index) => ({
+      ...relationship,
+      id: index,
+    }),
+  );
   return mergedRelationships;
+};
+
+const deleteDuplicatedNodes = (nodes: NodeType[]) => {
+  const filteredNodes = nodes.filter((node, index) => {
+    return (
+      index ===
+      nodes.findIndex((n) => n.name === node.name && n.label === node.label)
+    );
+  });
+  return filteredNodes;
+};
+
+export const mergerNodes = (graph: GraphDocument, mergeNodes: NodeType[]) => {
+  const margeTargetNode = mergeNodes[0];
+  const margeSourceNodes = mergeNodes.slice(1);
+
+  if (!margeTargetNode) {
+    throw new Error("Target node is not found");
+  }
+
+  const newRelationships = graph.relationships
+    .map((sRelationship) => {
+      if (
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.targetId) &&
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.sourceId)
+      ) {
+        return undefined;
+      } else if (
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.targetId)
+      ) {
+        return {
+          ...sRelationship,
+          targetId: margeTargetNode.id,
+          targetName: margeTargetNode.name,
+        };
+      } else if (
+        margeSourceNodes.some((mNode) => mNode.id === sRelationship.sourceId)
+      ) {
+        return {
+          ...sRelationship,
+          sourceId: margeTargetNode.id,
+          sourceName: margeTargetNode.name,
+        };
+      } else {
+        return sRelationship;
+      }
+    })
+    .filter((r) => !!r);
+
+  const newNodes = graph.nodes.filter((node) => {
+    return !margeSourceNodes.some(
+      (mNode) =>
+        mNode.id === node.id &&
+        mNode.label === node.label &&
+        mNode.name === node.name,
+    );
+  });
+
+  const disambiguatedGraph = dataDisambiguation({
+    nodes: newNodes,
+    relationships: newRelationships,
+  });
+
+  return disambiguatedGraph;
 };
 
 const mergerGraphsWithDuplicatedNodeName = (
@@ -35,12 +104,18 @@ const mergerGraphsWithDuplicatedNodeName = (
 ) => {
   const duplicatedSourceNodes = sourceGraph.nodes.filter((sourceNode) => {
     return targetGraph.nodes.some((targetNode) => {
-      return targetNode.name === sourceNode.name;
+      return (
+        targetNode.name === sourceNode.name &&
+        targetNode.label === sourceNode.label
+      );
     });
   });
   const additionalNodes = sourceGraph.nodes.filter((sourceNode) => {
     return !targetGraph.nodes.some((targetNode) => {
-      return targetNode.name === sourceNode.name;
+      return (
+        targetNode.name === sourceNode.name &&
+        targetNode.label === sourceNode.label
+      );
     });
   });
 
@@ -51,7 +126,7 @@ const mergerGraphsWithDuplicatedNodeName = (
   duplicatedSourceNodes.map((dNode) => {
     const prevId = dNode.id;
     const newId = newNodes.find((nn) => {
-      return nn.name === dNode.name;
+      return nn.name === dNode.name && nn.label === dNode.label;
     })?.id;
     nodeIdRecords.push({ prevId: prevId, newId: newId ?? 0 });
   });
@@ -62,7 +137,10 @@ const mergerGraphsWithDuplicatedNodeName = (
     newNodes.push({ ...additionalNode, id: newId });
   });
   sourceGraph.relationships.map((sRelationship, index) => {
-    const newId = newRelationships.length + index;
+    const newId =
+      newRelationships.reduce((max, current) => Math.max(max, current.id), 0) +
+      1 +
+      index;
     newRelationships.push({
       ...sRelationship,
       id: newId,
@@ -82,33 +160,14 @@ const mergerGraphsWithDuplicatedNodeName = (
 
 const simpleMerge = (graphDocument: GraphDocument) => {
   const { nodes, relationships } = graphDocument;
-  const mergedRelationships = mergeRelationships(relationships);
-  const result = { nodes: nodes, relationships: mergedRelationships };
-  return result;
+  const mergedRelationships = deleteDuplicatedRelationships(relationships);
+  const mergedNodes = deleteDuplicatedNodes(nodes);
+  return { nodes: mergedNodes, relationships: mergedRelationships };
 };
 
-export const dataDisambiguation = (graphDocument: GraphDocument | null) => {
-  if (!graphDocument) return null;
+export const dataDisambiguation = (graphDocument: GraphDocument) => {
   const disambiguatedGraph = simpleMerge(graphDocument);
   return disambiguatedGraph;
-};
-
-const deleteDuplicatedNode = (graphDocument: GraphDocument) => {
-  const newNodes = [] as NodeType[];
-  graphDocument.nodes.forEach((node) => {
-    const duplicatedNodeArray = graphDocument.nodes.filter((n) => {
-      return node.name === n.name;
-    });
-
-    if (
-      duplicatedNodeArray.length === 1 ||
-      (duplicatedNodeArray.length > 1 && duplicatedNodeArray[0]?.id === node.id)
-    ) {
-      newNodes.push(node);
-    }
-  });
-
-  return { nodes: newNodes, relationships: graphDocument.relationships };
 };
 
 export const attachGraphProperties = (
@@ -147,10 +206,8 @@ export const fuseGraphs = async (
   targetGraph: GraphDocument,
 ) => {
   const graph = mergerGraphsWithDuplicatedNodeName(sourceGraph, targetGraph);
-  const stripedGraph = deleteDuplicatedNode(graph);
-  const mergedRelationships = mergeRelationships(graph.relationships);
-
-  return { nodes: stripedGraph.nodes, relationships: mergedRelationships };
+  const disambiguatedGraph = dataDisambiguation(graph);
+  return disambiguatedGraph;
   // const openai = new OpenAI();
   // const assistant = await openai.beta.assistants.create({
   //   name: "Graph Database Assistant",

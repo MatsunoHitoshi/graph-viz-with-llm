@@ -3,7 +3,7 @@ import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { GraphIcon } from "../icons";
 import { useRouter } from "next/navigation";
-import { color, interpolateRainbow } from "d3";
+import { interpolateRainbow } from "d3";
 import clsx from "clsx";
 
 type TopicGraphDocumentListProps = {

@@ -16,6 +16,7 @@ import { RelationPathSearch } from "../toolbar/relation-path-search";
 import { circleColor } from "./topic-graph-detail";
 import { useSession } from "next-auth/react";
 import { Switch } from "@headlessui/react";
+import { useSearchParams } from "next/navigation";
 
 type TopicGraphDetailProps = {
   id: string;
@@ -27,10 +28,23 @@ export const TopicGraphEditor = ({
   filterOption,
 }: TopicGraphDetailProps) => {
   const { data: session } = useSession();
-  const { data: topicSpace, refetch } = api.topicSpaces.getById.useQuery({
-    id: id,
-    withDocumentGraph: true,
-  });
+  const searchParams = useSearchParams();
+  const cutOff = searchParams.get("cut-off");
+  const withBetweenNodes = searchParams.get("with-between-nodes");
+  const { data: topicSpace, refetch } = api.topicSpaces.getById.useQuery(
+    filterOption
+      ? {
+          id: id,
+          filterOption: {
+            ...filterOption,
+            cutOff: cutOff ?? undefined,
+            withBetweenNodes: withBetweenNodes === "true",
+          },
+        }
+      : {
+          id: id,
+        },
+  );
   const [innerWidth, innerHeight] = useWindowSize();
   const [graphFullScreen, setGraphFullScreen] = useState<boolean>(false);
   const graphAreaWidth =

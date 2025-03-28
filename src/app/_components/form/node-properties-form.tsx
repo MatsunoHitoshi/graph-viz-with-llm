@@ -4,22 +4,24 @@ import React, { useState } from "react";
 import { Button } from "../button/button";
 import { api } from "@/trpc/react";
 import { PlusIcon, TrashIcon } from "../icons";
+import { Textarea } from "../textarea";
 
 export const NodePropertiesForm = ({
   topicSpaceId,
-  focusedNode,
+  node,
   refetch,
   setIsEditing,
+  width = "long",
 }: {
   topicSpaceId: string;
-  focusedNode: CustomNodeType;
+  node: CustomNodeType;
   refetch: () => void;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  className?: string;
+  width?: "short" | "long";
 }) => {
-  const updateProperty = api.topicSpaces.updateGraph.useMutation();
-  const [properties, setProperties] = useState<PropertyType>(
-    focusedNode.properties,
-  );
+  const updateProperty = api.topicSpaces.updateGraphProperties.useMutation();
+  const [properties, setProperties] = useState<PropertyType>(node.properties);
 
   const submit = () => {
     updateProperty.mutate(
@@ -27,7 +29,7 @@ export const NodePropertiesForm = ({
         id: topicSpaceId,
         dataJson: {
           relationships: [],
-          nodes: [{ ...focusedNode, properties: properties }],
+          nodes: [{ ...node, properties: properties }],
         },
       },
       {
@@ -46,10 +48,10 @@ export const NodePropertiesForm = ({
       {Object.entries(properties).map(([key, value], index) => {
         return (
           <div className="flex w-full flex-col gap-2" key={index}>
-            <div className="flex w-full flex-row items-center gap-1">
+            <div className="flex w-full flex-row items-start gap-1">
               <input
                 type="text"
-                className="w-20 rounded-md bg-black/40 p-1 text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
+                className="w-[96px] rounded-md bg-black/40 p-1 text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
                 id={`key-${index}`}
                 name={`key-${index}`}
                 defaultValue={key}
@@ -63,18 +65,33 @@ export const NodePropertiesForm = ({
                 }}
               />
               <div>:</div>
-              <input
-                type="text"
-                className="w-20 rounded-md bg-black/40 p-1 text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
-                id={`value-${index}`}
-                name={`value-${index}`}
-                defaultValue={String(value)}
-                onChange={(e) => {
-                  const newProperties = { ...properties };
-                  newProperties[key] = e.target.value;
-                  setProperties(newProperties);
-                }}
-              />
+              {width === "short" ? (
+                <input
+                  type="text"
+                  className="w-full rounded-md bg-black/40 p-1 text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
+                  id={`value-${index}`}
+                  name={`value-${index}`}
+                  defaultValue={String(value)}
+                  onChange={(e) => {
+                    const newProperties = { ...properties };
+                    newProperties[key] = e.target.value;
+                    setProperties(newProperties);
+                  }}
+                />
+              ) : (
+                <Textarea
+                  placeholder="テキストを入力"
+                  autoFocus={true}
+                  className="min-h-[194px] w-full resize-none rounded-xl bg-slate-500 !p-4 text-base"
+                  defaultValue={String(value)}
+                  onChange={(e) => {
+                    const newProperties = { ...properties };
+                    newProperties[key] = e.target.value;
+                    setProperties(newProperties);
+                  }}
+                />
+              )}
+
               <Button
                 className="!ml-4 !p-1"
                 onClick={() =>

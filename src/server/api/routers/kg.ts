@@ -21,14 +21,11 @@ import type {
   Node,
   Relationship,
 } from "node_modules/@langchain/community/dist/graphs/graph_document";
-import {
-  dataDisambiguation,
-  fuseGraphs,
-} from "@/app/_utils/kg/data-disambiguation";
+import { dataDisambiguation } from "@/app/_utils/kg/data-disambiguation";
 import { env } from "@/env";
-import type { Prisma } from "@prisma/client";
-import { GraphDataStatus } from "@prisma/client";
-import { stripGraphData } from "@/app/_utils/kg/data-strip";
+// import type { Prisma } from "@prisma/client";
+// import { GraphDataStatus } from "@prisma/client";
+// import { stripGraphData } from "@/app/_utils/kg/data-strip";
 
 const ExtractInputSchema = z.object({
   fileUrl: z.string().url(),
@@ -258,6 +255,11 @@ export const kgRouter = createTRPCRouter({
             ? await graphExtractionWithLangChain(localFilePath, isPlaneTextMode)
             : await graphExtractionWithAssistantsAPI(localFilePath, schema);
 
+        if (!nodesAndRelationships) {
+          return {
+            data: { graph: null, error: "グラフ抽出エラー" },
+          };
+        }
         const disambiguatedNodesAndRelationships = dataDisambiguation(
           nodesAndRelationships,
         );
@@ -283,83 +285,83 @@ export const kgRouter = createTRPCRouter({
       }
     }),
 
-  graphFusion: publicProcedure.mutation(async ({ ctx }) => {
-    const updateFusionStatus = async (id: string, status: GraphDataStatus) => {
-      await ctx.db.graphFusionQueue.update({
-        where: { id: id },
-        data: { status: status },
-      });
-    };
-    const updateTopicGraph = async (
-      id: string,
-      graphData: Prisma.JsonObject,
-    ) => {
-      await ctx.db.topicSpace.update({
-        where: { id: id },
-        data: { graphData: stripGraphData(graphData as GraphDocument) },
-      });
-    };
-    const createCompleteCheck = async (topicId: string) => {
-      const topicSpace = await ctx.db.topicSpace.findFirst({
-        where: { id: topicId, isDeleted: false },
-        include: { graphFusionQueue: true },
-      });
-      if (
-        !topicSpace?.graphFusionQueue.some((fusion) => {
-          return (
-            fusion.status ===
-            (GraphDataStatus.QUEUED || GraphDataStatus.PROCESSING)
-          );
-        })
-      ) {
-        await ctx.db.topicSpace.update({
-          where: { id: topicId },
-          data: { graphDataStatus: GraphDataStatus.CREATED },
-        });
-      }
-    };
-    const fetchTopicSpace = async (id: string) => {
-      const topicSpace = await ctx.db.topicSpace.findFirst({
-        where: { id: id, isDeleted: false },
-        include: { graphFusionQueue: true },
-      });
-      return topicSpace;
-    };
+  // graphFusion: publicProcedure.mutation(async ({ ctx }) => {
+  //   const updateFusionStatus = async (id: string, status: GraphDataStatus) => {
+  //     await ctx.db.graphFusionQueue.update({
+  //       where: { id: id },
+  //       data: { status: status },
+  //     });
+  //   };
+  //   const updateTopicGraph = async (
+  //     id: string,
+  //     graphData: Prisma.JsonObject,
+  //   ) => {
+  //     await ctx.db.topicSpace.update({
+  //       where: { id: id },
+  //       data: { graphData: stripGraphData(graphData as GraphDocument) },
+  //     });
+  //   };
+  //   const createCompleteCheck = async (topicId: string) => {
+  //     const topicSpace = await ctx.db.topicSpace.findFirst({
+  //       where: { id: topicId, isDeleted: false },
+  //       include: { graphFusionQueue: true },
+  //     });
+  //     if (
+  //       !topicSpace?.graphFusionQueue.some((fusion) => {
+  //         return (
+  //           fusion.status ===
+  //           (GraphDataStatus.QUEUED || GraphDataStatus.PROCESSING)
+  //         );
+  //       })
+  //     ) {
+  //       await ctx.db.topicSpace.update({
+  //         where: { id: topicId },
+  //         data: { graphDataStatus: GraphDataStatus.CREATED },
+  //       });
+  //     }
+  //   };
+  //   const fetchTopicSpace = async (id: string) => {
+  //     const topicSpace = await ctx.db.topicSpace.findFirst({
+  //       where: { id: id, isDeleted: false },
+  //       include: { graphFusionQueue: true },
+  //     });
+  //     return topicSpace;
+  //   };
 
-    const graphFusionQueue = await ctx.db.graphFusionQueue.findMany({
-      where: { status: GraphDataStatus.QUEUED },
-      include: { topicSpace: true, additionalGraph: true },
-      orderBy: { createdAt: "asc" },
-    });
+  //   const graphFusionQueue = await ctx.db.graphFusionQueue.findMany({
+  //     where: { status: GraphDataStatus.QUEUED },
+  //     include: { topicSpace: true, additionalGraph: true },
+  //     orderBy: { createdAt: "asc" },
+  //   });
 
-    for (const fusion of graphFusionQueue) {
-      await updateFusionStatus(fusion.id, GraphDataStatus.PROCESSING);
-      const topicSpace = await fetchTopicSpace(fusion.topicSpace.id);
-      if (!topicSpace?.graphData) {
-        await updateTopicGraph(
-          fusion.topicSpace.id,
-          fusion.additionalGraph.dataJson as GraphDocument,
-        );
-        await updateFusionStatus(fusion.id, GraphDataStatus.CREATED);
-      } else {
-        const graphData = await fuseGraphs(
-          topicSpace.graphData as GraphDocument,
-          fusion.additionalGraph.dataJson as GraphDocument,
-        );
-        if (!graphData) {
-          await updateFusionStatus(fusion.id, GraphDataStatus.CREATION_FAILED);
-        } else {
-          await updateTopicGraph(fusion.topicSpace.id, graphData);
-          await updateFusionStatus(fusion.id, GraphDataStatus.CREATED);
-        }
-      }
+  //   for (const fusion of graphFusionQueue) {
+  //     await updateFusionStatus(fusion.id, GraphDataStatus.PROCESSING);
+  //     const topicSpace = await fetchTopicSpace(fusion.topicSpace.id);
+  //     if (!topicSpace?.graphData) {
+  //       await updateTopicGraph(
+  //         fusion.topicSpace.id,
+  //         fusion.additionalGraph.dataJson as GraphDocument,
+  //       );
+  //       await updateFusionStatus(fusion.id, GraphDataStatus.CREATED);
+  //     } else {
+  //       const graphData = await fuseGraphs(
+  //         topicSpace.graphData as GraphDocument,
+  //         fusion.additionalGraph.dataJson as GraphDocument,
+  //       );
+  //       if (!graphData) {
+  //         await updateFusionStatus(fusion.id, GraphDataStatus.CREATION_FAILED);
+  //       } else {
+  //         await updateTopicGraph(fusion.topicSpace.id, graphData);
+  //         await updateFusionStatus(fusion.id, GraphDataStatus.CREATED);
+  //       }
+  //     }
 
-      await createCompleteCheck(fusion.topicSpace.id);
-    }
+  //     await createCompleteCheck(fusion.topicSpace.id);
+  //   }
 
-    return {
-      message: "complete",
-      numberOfRecords: graphFusionQueue.length,
-    };
-  }),
+  //   return {
+  //     message: "complete",
+  //     numberOfRecords: graphFusionQueue.length,
+  //   };
+  // }),
 });
