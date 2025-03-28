@@ -31,15 +31,26 @@ export const NodeLinkList = ({
   const [mergeNodes, setMergeNodes] = useState<CustomNodeType[]>();
   const [isMergeNodesEditModalOpen, setIsMergeNodesEditModalOpen] =
     useState<boolean>(false);
-  const [isSorted, setIsSorted] = useState<boolean>(false);
+  const [isNameSorted, setIsNameSorted] = useState<boolean>(false);
+  const [isCentralitySorted, setIsCentralitySorted] = useState<boolean>(false);
 
-  const sortedGraphNodes = useMemo(() => {
-    if (isSorted) {
+  const nameSortedGraphNodes = useMemo(() => {
+    if (isNameSorted) {
       return graphNodes.sort((a, b) => a.name.localeCompare(b.name));
     } else {
       return graphNodes;
     }
-  }, [graphNodes, isSorted]);
+  }, [graphNodes, isNameSorted]);
+
+  const centralitySortedGraphNodes = useMemo(() => {
+    if (isCentralitySorted) {
+      return nameSortedGraphNodes.sort(
+        (a, b) => (b.neighborLinkCount ?? 0) - (a.neighborLinkCount ?? 0),
+      );
+    } else {
+      return nameSortedGraphNodes;
+    }
+  }, [nameSortedGraphNodes, isCentralitySorted]);
 
   return (
     <div className="flex h-screen flex-col gap-2">
@@ -73,13 +84,27 @@ export const NodeLinkList = ({
           </>
         )}
 
-        <Button className="!text-xs" onClick={() => setIsSorted(!isSorted)}>
-          <div className={isSorted ? "text-orange-500" : ""}>ソート</div>
+        <Button
+          className="!text-xs"
+          onClick={() => setIsNameSorted(!isNameSorted)}
+        >
+          <div className={isNameSorted ? "text-orange-500" : ""}>
+            名称ソート
+          </div>
+        </Button>
+
+        <Button
+          className="!text-xs"
+          onClick={() => setIsCentralitySorted(!isCentralitySorted)}
+        >
+          <div className={isCentralitySorted ? "text-orange-500" : ""}>
+            中心性ソート
+          </div>
         </Button>
       </div>
 
       <div className="flex w-full flex-col divide-y divide-slate-400 overflow-scroll">
-        {sortedGraphNodes.map((node) => {
+        {centralitySortedGraphNodes.map((node) => {
           const queryFiltered =
             !!nodeSearchQuery &&
             nodeSearchQuery !== "" &&
