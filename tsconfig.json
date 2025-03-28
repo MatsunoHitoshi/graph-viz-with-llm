@@ -73,7 +73,9 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "baseUrl": "."
+    "baseUrl": ".",
+    "target": "es2022"
+    // "downlevelIteration": true
   },
   "include": [
     "next-env.d.ts",
