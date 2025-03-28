@@ -180,7 +180,7 @@ export const D3ForceGraph = ({
       .force("collision", forceCollide(1));
 
     simulation.alpha(0.5);
-    simulation.alphaDecay(0.1);
+    simulation.alphaDecay(0.2);
 
     simulation.on("tick", () => {
       setGraphNodes([
