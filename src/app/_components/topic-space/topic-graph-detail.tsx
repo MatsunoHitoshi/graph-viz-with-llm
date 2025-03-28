@@ -10,14 +10,13 @@ import type {
   TopicGraphFilterOption,
 } from "@/app/const/types";
 import { useEffect, useState } from "react";
-import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
-import { Button } from "../button/button";
 import { interpolateRainbow } from "d3";
 import { useSearchParams } from "next/navigation";
 import { Switch } from "@headlessui/react";
+import { useSession } from "next-auth/react";
 
 export const circlePosition = (
   index: number,
@@ -98,11 +97,13 @@ export const TopicGraphDetail = ({
           id: id,
         },
   );
+
   const [innerWidth, innerHeight] = useWindowSize();
   const [graphFullScreen, setGraphFullScreen] = useState<boolean>(false);
+  const { data: session } = useSession();
   const graphAreaWidth =
     (2 * (innerWidth ?? 100)) / (graphFullScreen ? 2 : 3) - 36;
-  const graphAreaHeight = (innerHeight ?? 300) - 160;
+  const graphAreaHeight = (innerHeight ?? 300) - (session ? 160 : 108);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);

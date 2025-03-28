@@ -136,7 +136,10 @@ export const GraphInfoPanel = ({
                       />
                     </div>
                   ) : (
-                    <PropertyInfo data={focusedNode} />
+                    <PropertyInfo
+                      data={focusedNode}
+                      topicSpaceId={topicSpaceId}
+                    />
                   )}
                 </div>
               )}
@@ -198,7 +201,10 @@ export const GraphInfoPanel = ({
                   <div className="flex flex-row items-center gap-1">
                     <div className="font-semibold">プロパティ</div>
                   </div>
-                  <PropertyInfo data={focusedLink} />
+                  <PropertyInfo
+                    data={focusedLink}
+                    topicSpaceId={topicSpaceId}
+                  />
                 </div>
               </div>
             )}
@@ -211,8 +217,10 @@ export const GraphInfoPanel = ({
 
 export const PropertyInfo = ({
   data,
+  topicSpaceId,
 }: {
   data: CustomNodeType | CustomLinkType;
+  topicSpaceId?: string;
 }) => {
   return (
     <div className="flex flex-col gap-1">
@@ -229,7 +237,20 @@ export const PropertyInfo = ({
               {value}
             </a>
           ) : (
-            value
+            <>
+              {key == "tag" ? (
+                <a
+                  href={`/topic-spaces/${topicSpaceId}/tags/${value}?cut-off=2`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:no-underline"
+                >
+                  {value}
+                </a>
+              ) : (
+                value
+              )}
+            </>
           )}
         </div>
       ))}
