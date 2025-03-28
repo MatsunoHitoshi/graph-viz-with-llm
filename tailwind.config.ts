@@ -1,18 +1,45 @@
-import { type Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+// import { type Config } from "tailwindcss";
+// import { fontFamily } from "tailwindcss/defaultTheme";
 
-export default {
-  content: ["./src/**/*.tsx"],
+// export default {
+//   content: ["./src/**/*.tsx"],
+//   theme: {
+//     extend: {
+//       fontFamily: {
+//         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+//       },
+//       colors: {
+//         "focus-yellow": "#eae80c",
+//         "error-red": "#ea1c0c",
+//       },
+//     },
+//   },
+//   plugins: [],
+// } satisfies Config;
+
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
-        "focus-yellow": "#eae80c",
-        "error-red": "#ea1c0c",
+        beige: "#fffef5",
+        gold: "#b07f4f",
+        blue: "#4473b5",
+        darkbeige: "#c8ae90",
       },
     },
   },
   plugins: [],
-} satisfies Config;
+};
+export default config;

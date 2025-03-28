@@ -7,7 +7,6 @@ default: help
 # Next.js tasks
 next_dev:
 	pnpm next dev --turbo
-# pnpm next dev --turbo
 
 next_build:
 	NODE_ENV=production pnpm next build
@@ -28,6 +27,12 @@ postinstall:
 
 electron_dist:
 	pnpm electron-builder --dir
+
+electron_dist_intel_mac:
+	pnpm electron-builder --mac --x64
+
+electron_dist_arm64_mac:
+	pnpm electron-builder --mac --arm64
 
 electron_dist_deb:
 	pnpm electron-builder --linux deb

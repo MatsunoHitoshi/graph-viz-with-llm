@@ -1,5 +1,5 @@
 import { is } from "@electron-toolkit/utils";
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, globalShortcut } from "electron";
 import { getPort } from "get-port-please";
 import { startServer } from "next/dist/server/lib/start-server";
 import { join } from "path";
@@ -9,28 +9,38 @@ const createWindow = () => {
     width: 900,
     height: 670,
     webPreferences: {
-      preload: join(__dirname, "preload.ts"),
+      preload: join(__dirname, "preload.js"),
       nodeIntegration: true,
     },
+    // kiosk: true,
+    // fullscreen: true,
+    // frame: false,
+
+    // resizable: false,
   });
 
   mainWindow.on("ready-to-show", () => mainWindow.show());
 
+  globalShortcut.register("ctrl+q", function () {
+    mainWindow.close();
+    app.quit();
+  });
+
   const loadURL = async () => {
     if (is.dev) {
-      void mainWindow.loadURL("http://localhost:3000");
+      mainWindow.loadURL("http://localhost:3000");
     } else {
       try {
         const port = await startNextJSServer();
         console.log("Next.js server started on port:", port);
-        void mainWindow.loadURL(`http://localhost:${port}`);
+        mainWindow.loadURL(`http://localhost:${port}`);
       } catch (error) {
         console.error("Error starting Next.js server:", error);
       }
     }
   };
 
-  void loadURL();
+  loadURL();
   return mainWindow;
 };
 
@@ -57,7 +67,7 @@ const startNextJSServer = async () => {
   }
 };
 
-void app.whenReady().then(() => {
+app.whenReady().then(() => {
   createWindow();
 
   ipcMain.on("ping", () => console.log("pong"));

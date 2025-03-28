@@ -1,52 +1,86 @@
+// {
+//   "compilerOptions": {
+//     /* Base Options: */
+//     "esModuleInterop": true,
+//     "skipLibCheck": true,
+//     "target": "es2022",
+//     "allowJs": true,
+//     "resolveJsonModule": true,
+//     "moduleDetection": "force",
+//     "isolatedModules": true,
+
+//     /* Strictness */
+//     "strict": true,
+//     "noUncheckedIndexedAccess": true,
+//     "checkJs": true,
+
+//     /* Bundled projects */
+//     "lib": ["dom", "dom.iterable", "ES2022", "esnext"],
+//     "noEmit": true,
+//     "module": "esnext",
+//     "moduleResolution": "bundler",
+//     "jsx": "preserve",
+//     "plugins": [{ "name": "next" }],
+//     "incremental": true,
+
+//     /* Path Aliases */
+//     "baseUrl": ".",
+//     "paths": {
+//       "@/*": ["./src/*"]
+//     },
+
+//     "types": ["electron", "node"]
+//   },
+//   "include": [
+//     ".eslintrc.cjs",
+//     "next-env.d.ts",
+//     "**/*.ts",
+//     "**/*.tsx",
+//     "**/*.cjs",
+//     "**/*.js",
+//     ".next/types/**/*.ts"
+//   ],
+//   //  "include": [
+//   //   "next-env.d.ts",
+//   //   "electron.d.ts",
+//   //   "**/*.ts",
+//   //   "**/*.tsx",
+//   //   ".next/types/**/*.ts"
+//   // ],
+
+//   "exclude": ["node_modules"]
+// }
+
 {
   "compilerOptions": {
-    /* Base Options: */
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-
-    /* Strictness */
+    "skipLibCheck": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "checkJs": true,
-
-    /* Bundled projects */
-    "lib": ["dom", "dom.iterable", "ES2022", "esnext"],
     "noEmit": true,
+    "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "jsx": "preserve",
-    "plugins": [{ "name": "next" }],
     "incremental": true,
-
-    /* Path Aliases */
-    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
-
-    "types": ["electron", "node"]
+    "baseUrl": "."
   },
   "include": [
-    ".eslintrc.cjs",
     "next-env.d.ts",
+    "electron.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "**/*.cjs",
-    "**/*.js",
     ".next/types/**/*.ts"
   ],
-  //  "include": [
-  //   "next-env.d.ts",
-  //   "electron.d.ts",
-  //   "**/*.ts",
-  //   "**/*.tsx",
-  //   ".next/types/**/*.ts"
-  // ],
-
   "exclude": ["node_modules"]
 }
