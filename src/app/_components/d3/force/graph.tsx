@@ -83,6 +83,7 @@ export const D3ForceGraph = ({
   setGraphFullScreen,
   isEditor = false,
   refetch,
+  tool = true,
 }: {
   height: number;
   width: number;
@@ -99,6 +100,7 @@ export const D3ForceGraph = ({
   setGraphFullScreen?: React.Dispatch<React.SetStateAction<boolean>>;
   isEditor?: boolean;
   refetch?: () => void;
+  tool?: boolean;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
@@ -248,96 +250,108 @@ export const D3ForceGraph = ({
         />
       ) : (
         <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
-          <div className="absolute flex flex-row items-center gap-2">
-            {!!setGraphFullScreen ? (
-              <button
-                onClick={() => {
-                  setGraphFullScreen(!graphFullScreen);
-                }}
-                className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-              >
-                {graphFullScreen ? (
-                  <ExitFullScreenIcon height={16} width={16} color="white" />
+          {tool && (
+            <>
+              <div className="absolute flex flex-row items-center gap-2">
+                {!!setGraphFullScreen ? (
+                  <button
+                    onClick={() => {
+                      setGraphFullScreen(!graphFullScreen);
+                    }}
+                    className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
+                  >
+                    {graphFullScreen ? (
+                      <ExitFullScreenIcon
+                        height={16}
+                        width={16}
+                        color="white"
+                      />
+                    ) : (
+                      <EnterFullScreenIcon
+                        height={16}
+                        width={16}
+                        color="white"
+                      />
+                    )}
+                  </button>
                 ) : (
-                  <EnterFullScreenIcon height={16} width={16} color="white" />
+                  <></>
                 )}
-              </button>
-            ) : (
-              <></>
-            )}
-            <button
-              className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-              onClick={() => {
-                if (svgRef.current) {
-                  exportSvg(svgRef.current, 4 / currentScale);
-                }
-              }}
-            >
-              <ShareIcon height={16} width={16} color="white" />
-            </button>
-            {tagFilter ? (
-              <div className="rounded-lg bg-black/20 p-2 text-sm backdrop-blur-sm">
-                <TagsInput
-                  selected={tags}
-                  setSelected={setTags}
-                  options={tagOptions}
-                  placeholder="ラベル・タグで絞り込む"
-                  defaultOption={
-                    filterOption?.value && filterOption?.type
-                      ? {
-                          id: "0",
-                          label: filterOption.value,
-                          type: filterOption.type,
-                        }
-                      : undefined
-                  }
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-
-            <button
-              className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-              onClick={() => {
-                setIsListOpen(!isListOpen);
-              }}
-            >
-              <ListBulletIcon width={16} height={16} color="white" />
-            </button>
-          </div>
-
-          {!!isLargeGraph && !graphFullScreen && (
-            <div className="absolute bottom-4 flex flex-row items-center gap-1 text-xs">
-              <div className="text-orange-500">
-                ノード数が多いため一部のみが表示されています
-              </div>
-              {!!setGraphFullScreen ? (
                 <button
+                  className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
                   onClick={() => {
-                    setGraphFullScreen(true);
+                    if (svgRef.current) {
+                      exportSvg(svgRef.current, 4 / currentScale);
+                    }
                   }}
-                  className="underline hover:no-underline"
                 >
-                  全て表示
+                  <ShareIcon height={16} width={16} color="white" />
                 </button>
-              ) : (
-                <></>
-              )}
-            </div>
-          )}
+                {tagFilter ? (
+                  <div className="rounded-lg bg-black/20 p-2 text-sm backdrop-blur-sm">
+                    <TagsInput
+                      selected={tags}
+                      setSelected={setTags}
+                      options={tagOptions}
+                      placeholder="ラベル・タグで絞り込む"
+                      defaultOption={
+                        filterOption?.value && filterOption?.type
+                          ? {
+                              id: "0",
+                              label: filterOption.value,
+                              type: filterOption.type,
+                            }
+                          : undefined
+                      }
+                    />
+                  </div>
+                ) : (
+                  <></>
+                )}
 
-          <GraphInfoPanel
-            focusedNode={focusedNode}
-            focusedLink={focusedLink}
-            graphNodes={graphNodes}
-            graphLinks={graphLinks}
-            topicSpaceId={topicSpaceId}
-            isEditor={isEditor}
-            refetch={refetch}
-            // maxHeight={height}
-            setFocusNode={setFocusedNode}
-          />
+                <button
+                  className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
+                  onClick={() => {
+                    setIsListOpen(!isListOpen);
+                  }}
+                >
+                  <ListBulletIcon width={16} height={16} color="white" />
+                </button>
+              </div>
+
+              {!!isLargeGraph && !graphFullScreen && (
+                <div className="absolute bottom-4 flex flex-row items-center gap-1 text-xs">
+                  <div className="text-orange-500">
+                    ノード数が多いため一部のみが表示されています
+                  </div>
+                  {!!setGraphFullScreen ? (
+                    <button
+                      onClick={() => {
+                        setGraphFullScreen(true);
+                      }}
+                      className="underline hover:no-underline"
+                    >
+                      全て表示
+                    </button>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              )}
+
+              <GraphInfoPanel
+                focusedNode={focusedNode}
+                focusedLink={focusedLink}
+                graphNodes={graphNodes}
+                graphLinks={graphLinks}
+                topicSpaceId={topicSpaceId}
+                isEditor={isEditor}
+                refetch={refetch}
+                // maxHeight={height}
+                setFocusNode={setFocusedNode}
+              />
+            </>
+          )}
 
           {nodes.length === 0 && relationships.length === 0 ? (
             <div className="mt-60 flex flex-col items-center">

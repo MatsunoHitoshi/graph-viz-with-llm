@@ -8,6 +8,7 @@ type ButtonProps = {
   isLoading?: boolean;
   width?: "max" | "full";
   className?: string;
+  disabled?: boolean;
 };
 
 export const Button = ({
@@ -18,6 +19,7 @@ export const Button = ({
   isLoading = false,
   width = "max",
   className,
+  disabled = false,
 }: ButtonProps) => {
   return (
     <>
@@ -27,6 +29,7 @@ export const Button = ({
           type={type}
           className={`font-md rounded-md bg-slate-700 px-3 py-2 text-slate-50 w-${width} ${className}`}
           onClick={onClick}
+          disabled={disabled}
         >
           {children}
         </button>
