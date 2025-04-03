@@ -101,12 +101,13 @@ export const mergerNodes = (graph: GraphDocument, mergeNodes: NodeType[]) => {
 const mergerGraphsWithDuplicatedNodeName = (
   sourceGraph: GraphDocument,
   targetGraph: GraphDocument,
+  labelCheck: boolean,
 ) => {
   const duplicatedSourceNodes = sourceGraph.nodes.filter((sourceNode) => {
     return targetGraph.nodes.some((targetNode) => {
       return (
         targetNode.name === sourceNode.name &&
-        targetNode.label === sourceNode.label
+        (labelCheck ? targetNode.label === sourceNode.label : true)
       );
     });
   });
@@ -114,7 +115,7 @@ const mergerGraphsWithDuplicatedNodeName = (
     return !targetGraph.nodes.some((targetNode) => {
       return (
         targetNode.name === sourceNode.name &&
-        targetNode.label === sourceNode.label
+        (labelCheck ? targetNode.label === sourceNode.label : true)
       );
     });
   });
@@ -204,8 +205,13 @@ export const attachGraphProperties = (
 export const fuseGraphs = async (
   sourceGraph: GraphDocument,
   targetGraph: GraphDocument,
+  labelCheck: boolean,
 ) => {
-  const graph = mergerGraphsWithDuplicatedNodeName(sourceGraph, targetGraph);
+  const graph = mergerGraphsWithDuplicatedNodeName(
+    sourceGraph,
+    targetGraph,
+    labelCheck,
+  );
   const disambiguatedGraph = dataDisambiguation(graph);
   return disambiguatedGraph;
   // const openai = new OpenAI();

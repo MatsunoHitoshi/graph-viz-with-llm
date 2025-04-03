@@ -24,6 +24,8 @@ export const NodePropertyList = ({
   const [graphDocument, setGraphDocument] = useState<GraphDocument | null>(
     null,
   );
+  const integrateGraph = api.kg.integrateGraph.useMutation();
+  const [isIntegrating, setIsIntegrating] = useState<boolean>(false);
   const generateGraphFromDescription = () => {
     setIsExtracting(true);
     const textContent = `${node.name}:${node.label}\n${node.properties.description}`;
@@ -38,13 +40,37 @@ export const NodePropertyList = ({
       },
       {
         onSuccess: (res) => {
-          console.log("res client", res);
           setGraphDocument(res.data.graph);
           setIsExtracting(false);
         },
         onError: (e) => {
           console.log(e);
           setIsExtracting(false);
+        },
+      },
+    );
+  };
+
+  const submitGraph = () => {
+    setIsIntegrating(true);
+    if (!topicSpaceId || !graphDocument) {
+      setIsIntegrating(false);
+      return;
+    }
+    integrateGraph.mutate(
+      {
+        topicSpaceId: topicSpaceId,
+        graphDocument: graphDocument,
+      },
+      {
+        onSuccess: () => {
+          setIsIntegrating(false);
+          setGraphDocument(null);
+          refetch?.();
+        },
+        onError: (e) => {
+          console.log(e);
+          setIsIntegrating(false);
         },
       },
     );
@@ -104,35 +130,16 @@ export const NodePropertyList = ({
             <CrossLargeIcon color="white" width={16} height={16} />
           </Button>
           <div className="flex w-max flex-col gap-1 rounded-md border border-gray-300 p-2">
-            {/* <div className="text-sm">グラフ</div>
-          <div className="flex flex-col gap-1">
-            <div className="text-sm">ノード</div>
-            <div className="flex flex-col gap-1">
-              {graphDocument.nodes.map((node) => (
-                <div key={node.id}>{node.name}</div>
-              ))}
-            </div>
-            <div className="text-sm">エッジ</div>
-            <div className="flex flex-col gap-1">
-              {graphDocument.relationships.map((relationship) => (
-                <div key={relationship.id}>
-                  {relationship.sourceId}
-                  {relationship.targetId}
-                  {relationship.type}
-                </div>
-              ))}
-            </div>
-          </div> */}
-
             <D3ForceGraph
               width={500}
               height={500}
               graphDocument={graphDocument}
               tool={false}
-              // isLinkFiltered={isLinkFiltered}
-              // nodeSearchQuery={nodeSearchQuery}
             />
           </div>
+          <Button onClick={() => submitGraph()} disabled={isIntegrating}>
+            {isIntegrating ? <Loading color="white" size={12} /> : "統合"}
+          </Button>
         </>
       )}
     </div>

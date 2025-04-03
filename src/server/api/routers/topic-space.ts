@@ -83,6 +83,7 @@ const mergeGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
         newGraph = await fuseGraphs(
           newGraph,
           document.graph?.dataJson as GraphDocument,
+          true,
         );
       }
     }

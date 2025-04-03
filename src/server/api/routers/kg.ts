@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
 import OpenAI from "openai";
 import { exportJson, writeFile } from "@/app/_utils/sys/file";
@@ -8,7 +8,9 @@ import {
   getNodesAndRelationshipsFromResult,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 import type {
+  NodeDiffType,
   NodeType,
+  RelationshipDiffType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 import { ChatOpenAI } from "@langchain/openai";
@@ -21,8 +23,15 @@ import type {
   Node,
   Relationship,
 } from "node_modules/@langchain/community/dist/graphs/graph_document";
-import { dataDisambiguation } from "@/app/_utils/kg/data-disambiguation";
+import {
+  attachGraphProperties,
+  dataDisambiguation,
+  fuseGraphs,
+} from "@/app/_utils/kg/data-disambiguation";
 import { env } from "@/env";
+import { GraphChangeEntityType, GraphChangeRecordType } from "@prisma/client";
+import { diffNodes, diffRelationships } from "@/app/_utils/kg/diff";
+import { shapeGraphData } from "@/app/_utils/kg/shape";
 // import type { Prisma } from "@prisma/client";
 // import { GraphDataStatus } from "@prisma/client";
 // import { stripGraphData } from "@/app/_utils/kg/data-strip";
@@ -31,6 +40,14 @@ const ExtractInputSchema = z.object({
   fileUrl: z.string().url(),
   extractMode: z.string().optional(),
   isPlaneTextMode: z.boolean(),
+});
+
+const IntegrateGraphInputSchema = z.object({
+  topicSpaceId: z.string(),
+  graphDocument: z.object({
+    nodes: z.array(z.any()),
+    relationships: z.array(z.any()),
+  }),
 });
 
 export type GraphDocument = {
@@ -283,6 +300,92 @@ export const kgRouter = createTRPCRouter({
           data: { graph: null, error: "グラフ抽出エラー" },
         };
       }
+    }),
+
+  integrateGraph: protectedProcedure
+    .input(IntegrateGraphInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: { id: input.topicSpaceId, isDeleted: false },
+        include: {
+          admins: true,
+        },
+      });
+
+      if (
+        !topicSpace?.admins.some((admin) => {
+          return admin.id === ctx.session.user.id;
+        })
+      ) {
+        throw new Error("TopicSpace not found");
+      }
+
+      const prevGraphData = topicSpace.graphData as GraphDocument;
+
+      const updatedGraphData = await fuseGraphs(
+        prevGraphData,
+        input.graphDocument as GraphDocument,
+        false,
+      );
+
+      const newGraphWithProperties = attachGraphProperties(
+        updatedGraphData,
+        prevGraphData,
+      );
+      const shapedGraphData = shapeGraphData(newGraphWithProperties);
+
+      if (!shapedGraphData) {
+        throw new Error("Graph fusion failed");
+      }
+
+      const graphChangeHistory = await ctx.db.graphChangeHistory.create({
+        data: {
+          recordType: GraphChangeRecordType.TOPIC_SPACE,
+          recordId: topicSpace.id,
+          description: "グラフを追加しました",
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
+
+      const nodeDiffs = diffNodes(prevGraphData.nodes, shapedGraphData.nodes);
+      const relationshipDiffs = diffRelationships(
+        prevGraphData.relationships,
+        shapedGraphData.relationships,
+      );
+      const nodeChangeHistories = nodeDiffs.map((diff: NodeDiffType) => {
+        return {
+          changeType: diff.type,
+          changeEntityType: GraphChangeEntityType.NODE,
+          changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+          previousState: diff.original ?? {},
+          nextState: diff.updated ?? {},
+          graphChangeHistoryId: graphChangeHistory.id,
+        };
+      });
+      const relationshipChangeHistories = relationshipDiffs.map(
+        (diff: RelationshipDiffType) => {
+          return {
+            changeType: diff.type,
+            changeEntityType: GraphChangeEntityType.EDGE,
+            changeEntityId: String(diff.original?.id ?? diff.updated?.id),
+            previousState: diff.original ?? {},
+            nextState: diff.updated ?? {},
+            graphChangeHistoryId: graphChangeHistory.id,
+          };
+        },
+      );
+      await ctx.db.nodeLinkChangeHistory.createMany({
+        data: [...nodeChangeHistories, ...relationshipChangeHistories],
+      });
+
+      const updatedTopicSpace = await ctx.db.topicSpace.update({
+        where: { id: input.topicSpaceId },
+        data: { graphData: shapedGraphData },
+      });
+
+      return {
+        data: updatedTopicSpace,
+      };
     }),
 
   // graphFusion: publicProcedure.mutation(async ({ ctx }) => {
