@@ -130,9 +130,9 @@ export const NodePropertyList = ({
             <Button onClick={() => setGraphDocument(null)}>
               <CrossLargeIcon color="white" width={16} height={16} />
             </Button>
-            {/* <Button onClick={() => submitGraph()} disabled={isIntegrating}>
+            <Button onClick={() => submitGraph()} disabled={isIntegrating}>
               {isIntegrating ? <Loading color="white" size={12} /> : "統合"}
-            </Button> */}
+            </Button>
           </div>
 
           <div className="flex w-max flex-col gap-1 rounded-md border border-gray-300 p-2">

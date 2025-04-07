@@ -322,11 +322,11 @@ export const kgRouter = createTRPCRouter({
 
       const prevGraphData = topicSpace.graphData as GraphDocument;
 
-      const updatedGraphData = await fuseGraphs(
-        prevGraphData,
-        input.graphDocument as GraphDocument,
-        false,
-      );
+      const updatedGraphData = await fuseGraphs({
+        sourceGraph: input.graphDocument as GraphDocument,
+        targetGraph: prevGraphData,
+        labelCheck: false,
+      });
 
       const newGraphWithProperties = attachGraphProperties(
         updatedGraphData,

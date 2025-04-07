@@ -98,11 +98,12 @@ export const mergerNodes = (graph: GraphDocument, mergeNodes: NodeType[]) => {
   return disambiguatedGraph;
 };
 
-const mergerGraphsWithDuplicatedNodeName = (
-  sourceGraph: GraphDocument,
-  targetGraph: GraphDocument,
-  labelCheck: boolean,
-) => {
+const mergerGraphsWithDuplicatedNodeName = (p: {
+  sourceGraph: GraphDocument;
+  targetGraph: GraphDocument;
+  labelCheck: boolean;
+}) => {
+  const { sourceGraph, targetGraph, labelCheck } = p;
   const duplicatedSourceNodes = sourceGraph.nodes.filter((sourceNode) => {
     return targetGraph.nodes.some((targetNode) => {
       return (
@@ -127,21 +128,23 @@ const mergerGraphsWithDuplicatedNodeName = (
   duplicatedSourceNodes.map((dNode) => {
     const prevId = dNode.id;
     const newId = newNodes.find((nn) => {
-      return nn.name === dNode.name && nn.label === dNode.label;
+      return (
+        nn.name === dNode.name && (labelCheck ? nn.label === dNode.label : true)
+      );
     })?.id;
     nodeIdRecords.push({ prevId: prevId, newId: newId ?? 0 });
   });
-  additionalNodes.map((additionalNode, index) => {
+  additionalNodes.map((additionalNode) => {
     const prevId = additionalNode.id;
-    const newId = newNodes.length + index;
+    const newId =
+      newNodes.reduce((max, current) => Math.max(max, current.id), 0) + 1;
     nodeIdRecords.push({ prevId: prevId, newId: newId });
     newNodes.push({ ...additionalNode, id: newId });
   });
-  sourceGraph.relationships.map((sRelationship, index) => {
+  sourceGraph.relationships.map((sRelationship) => {
     const newId =
       newRelationships.reduce((max, current) => Math.max(max, current.id), 0) +
-      1 +
-      index;
+      1;
     newRelationships.push({
       ...sRelationship,
       id: newId,
@@ -202,16 +205,12 @@ export const attachGraphProperties = (
   };
 };
 
-export const fuseGraphs = async (
-  sourceGraph: GraphDocument,
-  targetGraph: GraphDocument,
-  labelCheck: boolean,
-) => {
-  const graph = mergerGraphsWithDuplicatedNodeName(
-    sourceGraph,
-    targetGraph,
-    labelCheck,
-  );
+export const fuseGraphs = async (p: {
+  sourceGraph: GraphDocument;
+  targetGraph: GraphDocument;
+  labelCheck: boolean;
+}) => {
+  const graph = mergerGraphsWithDuplicatedNodeName(p);
   const disambiguatedGraph = dataDisambiguation(graph);
   return disambiguatedGraph;
   // const openai = new OpenAI();

@@ -80,11 +80,11 @@ const mergeGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
       if (index === 0) {
         newGraph = document.graph?.dataJson as GraphDocument;
       } else {
-        newGraph = await fuseGraphs(
-          newGraph,
-          document.graph?.dataJson as GraphDocument,
-          true,
-        );
+        newGraph = await fuseGraphs({
+          sourceGraph: newGraph,
+          targetGraph: document.graph?.dataJson as GraphDocument,
+          labelCheck: true,
+        });
       }
     }
   }
