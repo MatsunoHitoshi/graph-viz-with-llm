@@ -21,6 +21,15 @@ export const GET = async (
         return false;
       }
     });
+
+    const sourceNode = tagFilteredNodes.find(
+      (node) => node.id === parseInt(params.node_id),
+    ) ?? {
+      id: parseInt(params.node_id),
+      name: "",
+      label: "",
+      properties: {},
+    };
     const sourceLinks = graphData.relationships.filter(
       (link) =>
         link.sourceId === parseInt(params.node_id) ||
@@ -41,7 +50,7 @@ export const GET = async (
     return NextResponse.json({
       id: res.id,
       graphData: {
-        nodes: neighborNodes,
+        nodes: neighborNodes.length !== 0 ? neighborNodes : [sourceNode],
         relationships: neighborLinks,
       },
     });
