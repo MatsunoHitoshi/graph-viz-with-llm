@@ -10,15 +10,15 @@ export const writeFile = (base64: string, name: string) => {
   }
 
   try {
-    fs.writeFileSync(path, Buffer.from(buffer));
+    // fs.writeFileSync(path, new Uint8Array(buffer));
     return path;
   } catch (e) {
     console.log("failed to write file");
-    return "";
+    throw e;
   }
 };
 
 export const exportJson = (jsonString: string, name: string) => {
   const path = `./public/json/${new Date().getTime()}_${name}`;
-  fs.writeFileSync(path, jsonString);
+  // fs.writeFileSync(path, jsonString);
 };

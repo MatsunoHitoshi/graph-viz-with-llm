@@ -61,7 +61,7 @@ const nonDirectionalBfs = (
     const path = queue.shift();
     if (!path) continue;
 
-    const node = path[path.length - 1]!;
+    const node = path[path.length - 1];
     if (!visited.has(node)) {
       visited.add(node);
       const currentNode = graphData.nodes.find((n) => n.id === node);
