@@ -3,10 +3,10 @@ import "@/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 
 import { TRPCReactProvider } from "@/trpc/react";
-import { UrlCopy } from "./_components/url-copy/url-copy";
 import NextAuthProvider from "@/providers/next-auth";
 import { Header } from "./_components/header/header";
 import { Analytics } from "@vercel/analytics/react";
+import { SPGuardProvider } from "@/providers/sp-guard";
 
 export const metadata = {
   title: "ArsTraverse",
@@ -29,20 +29,7 @@ export default function RootLayout({
               <Header />
             </div>
             <div>
-              <div className="flex flex-col gap-8 pt-16 sm:hidden">
-                <div className="flex flex-row items-center justify-center pt-[200px] text-center text-xl font-semibold">
-                  このアプリはスマートフォンの
-                  <br />
-                  画面サイズに対応していません😖
-                  <br />
-                  <br />
-                  PC・タブレットにてご利用ください🙇‍♂️
-                </div>
-                <div className="flex flex-row justify-center">
-                  <UrlCopy>このページのURLをコピーする</UrlCopy>
-                </div>
-              </div>
-              <div className="hidden sm:block">{children}</div>
+              <SPGuardProvider>{children}</SPGuardProvider>
             </div>
           </NextAuthProvider>
         </TRPCReactProvider>
