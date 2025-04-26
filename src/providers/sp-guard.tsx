@@ -11,7 +11,7 @@ export const SPGuardProvider = ({
   const spAllowed = pagePath.startsWith("/about");
   return (
     <>
-      {spAllowed && (
+      {!spAllowed && (
         <div className="flex flex-col gap-8 pt-16 sm:hidden">
           <div className="flex flex-row items-center justify-center pt-[200px] text-center text-xl font-semibold">
             このアプリはスマートフォンの
@@ -26,7 +26,7 @@ export const SPGuardProvider = ({
           </div>
         </div>
       )}
-      <div className={spAllowed ? "block" : "hidden sm:block"}>{children}</div>
+      <div className={!spAllowed ? "hidden sm:block" : "block"}>{children}</div>
     </>
   );
 };
