@@ -7,8 +7,8 @@ export const About = () => {
   const [innerWidth = 100] = useWindowSize();
   return (
     <div className="flex w-full flex-col text-white">
-      <div className="absolute z-0 w-full opacity-45">
-        <TopGraph height={252} width={innerWidth} />
+      <div className="absolute inset-0 z-0 w-full opacity-45">
+        <TopGraph height={252 + 64} width={innerWidth} />
       </div>
       <div className="relative z-10 flex w-full flex-col items-center gap-2 py-20">
         <h1 className="text-4xl font-bold sm:text-6xl">ArsTraverse</h1>
@@ -24,7 +24,7 @@ export const About = () => {
         </p>
       </Section>
 
-      <Section className="bg-white/10">
+      <Section className="bg-black/20">
         <h2 className="text-2xl font-bold lg:text-3xl">
           つながりを表現する「知識グラフ」とは？
         </h2>
