@@ -1,9 +1,16 @@
 "use client";
 
+import Image from "next/image";
+import { TopGraph } from "./top-graph";
+import { useWindowSize } from "../../_hooks/use-window-size";
 export const About = () => {
+  const [innerWidth = 100] = useWindowSize();
   return (
     <div className="flex w-full flex-col text-white">
-      <div className="flex w-full flex-col items-center gap-2 py-20">
+      <div className="absolute z-0 w-full opacity-45">
+        <TopGraph height={252} width={innerWidth} />
+      </div>
+      <div className="relative z-10 flex w-full flex-col items-center gap-2 py-20">
         <h1 className="text-4xl font-bold sm:text-6xl">ArsTraverse</h1>
         <p>関係性の宇宙を横断する可視化ツール</p>
       </div>
@@ -21,24 +28,56 @@ export const About = () => {
         <h2 className="text-2xl font-bold lg:text-3xl">
           つながりを表現する「知識グラフ」とは？
         </h2>
-        <p className="container">
-          ArsTraverseの核である
-          <span className="font-bold"> 「知識グラフ」 </span>
-          技術は、一見複雑な情報や関係性を、「点（ノード）」と「線（エッジ）」で表現するデータのかたちです。例えば、「作家A」という点と「作品X」という点があり、その間を「制作した」という線で結ぶことで、「作家Aが作品Xを制作した」という関係性を視覚的に分かりやすく表現できます。
-        </p>
-        <p className="container">
-          これにより、文献に書かれている人物、作品、概念、出来事などが互いにどのように関連しているかを直感的に把握できるようになります。物語のように文章で書かれている文脈情報を、この知識グラフとして整理することで、全体像を掴んだり、特定の関連性に着目したりすることが容易になります。ArsTraverseでは、この知識グラフを芸術文化における調査、思考整理、そして他のユーザとの共有・共同作業の中心においています。
-        </p>
+
+        <div className="flex flex-col gap-8 md:flex-row">
+          <div className="flex flex-col gap-4">
+            <p className="container">
+              ArsTraverseの核である知識グラフ技術は、一見複雑な情報や関係性を、
+              「点（ノード）」 と 「線（エッジ）」
+              で表現するデータのかたちです。例えば、{" "}
+              <span className="text-orange-500">「作家A」</span> という点と{" "}
+              <span className="text-orange-500">「作品X」</span>{" "}
+              という点があり、その間を{" "}
+              <span className="text-orange-500">「制作」</span>{" "}
+              という線で結ぶことで、{" "}
+              <span className="text-orange-500">
+                「作家Aが作品Xを制作した」
+              </span>{" "}
+              という関係性を視覚的に分かりやすく表現できます。
+            </p>
+            <div className="flex flex-col items-center md:hidden">
+              <Image
+                src="/images/about/knowledge-graph.png"
+                alt="知識グラフ"
+                className="max-w-52"
+                width={1000}
+                height={1000}
+              />
+            </div>
+            <p className="container">
+              これにより、文献に書かれている人物、作品、概念、出来事などが互いにどのように関連しているかを直感的に把握できるようになります。物語のように文章で書かれている文脈情報を、この知識グラフとして整理することで、全体像を掴んだり、特定の関連性に着目したりすることが容易になります。ArsTraverseでは、この知識グラフを芸術文化における調査、思考整理、そして他のユーザとの共有・共同作業の中心においています。
+            </p>
+          </div>
+          <div className="hidden flex-col items-center md:flex">
+            <Image
+              src="/images/about/knowledge-graph.png"
+              alt="知識グラフ"
+              className="max-w-52"
+              width={1000}
+              height={1000}
+            />
+          </div>
+        </div>
       </Section>
 
       <Section className="">
-        <div className="divide-y divide-gray-500">
+        <div className="divide-y divide-gray-700">
           <SubSection>
-            <div className="flex flex-col gap-10">
-              <div className="text-center text-2xl font-bold lg:text-3xl">
+            <div className="flex flex-col gap-8">
+              <h2 className="text-center text-2xl font-bold lg:text-3xl">
                 特徴
-              </div>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              </h2>
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <MainDescription title="文献からの知識グラフ自動構築と可視化">
                   <div>
                     お手持ちの文献（テキスト形式）をアップロードするだけで、AIが作家や概念、作品間の関係性などを自動的に抽出し、知識グラフとして分かりやすく可視化します。
@@ -53,11 +92,23 @@ export const About = () => {
                   <div>
                     自動構築された知識グラフに対し、ご自身の知見や仮説、独自の主張を直接書き加えることができます。
                   </div>
+                  <Image
+                    src="/images/about/graph-editor.png"
+                    alt="編集画面"
+                    width={1000}
+                    height={1000}
+                  />
                 </MainDescription>
                 <MainDescription title="コミュニティでの共同編集" developing>
                   <div>
                     お手持ちの文献（テキスト形式）をアップロードするだけで、AIが作家や概念、作品間の関係性などを自動的に抽出し、知識グラフとして分かりやすく可視化します。調査・整理にかかる時間と労力を大幅に軽減します。
                   </div>
+                  <Image
+                    src="/images/about/data-repository.png"
+                    alt="共同編集"
+                    width={1000}
+                    height={1000}
+                  />
                 </MainDescription>
                 <MainDescription
                   title="展示などの発表用の柔軟なカスタマイズ"
@@ -72,10 +123,10 @@ export const About = () => {
           </SubSection>
 
           <SubSection>
-            <div className="flex flex-col gap-10">
-              <div className="text-center text-2xl font-bold lg:text-3xl">
+            <div className="flex flex-col gap-8">
+              <h2 className="text-center text-2xl font-bold lg:text-3xl">
                 利用シーン
-              </div>
+              </h2>
 
               <div className="flex flex-col gap-4">
                 <MainDescription title="文献調査と研究の効率化">
@@ -99,10 +150,10 @@ export const About = () => {
           </SubSection>
 
           <SubSection>
-            <div className="flex flex-col gap-10">
-              <div className="text-center text-2xl font-bold lg:text-3xl">
+            <div className="flex flex-col gap-8">
+              <h2 className="text-center text-2xl font-bold lg:text-3xl">
                 開発ビジョン
-              </div>
+              </h2>
 
               <div className="flex flex-col gap-4">
                 <div>
@@ -155,17 +206,17 @@ const MainDescription = ({
   developing?: boolean;
 }) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       <div className="flex flex-row items-center gap-2 sm:justify-center">
         {developing && (
           <div className="flex h-6 min-w-[58px] items-center justify-center rounded-full bg-orange-500 px-2 text-sm text-slate-900">
             開発中
           </div>
         )}
-        <div className="text-xl font-bold">{title}</div>
+        <h3 className="text-xl font-bold">{title}</h3>
       </div>
 
-      <div className="container text-sm">{children}</div>
+      <div className="container flex flex-col gap-3 text-sm">{children}</div>
     </div>
   );
 };

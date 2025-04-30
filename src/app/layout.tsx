@@ -25,11 +25,12 @@ export default function RootLayout({
       <body>
         <TRPCReactProvider>
           <NextAuthProvider>
-            <div className="fixed top-0 w-full">
+            <div className="fixed top-0 z-20 w-full">
               <Header />
             </div>
-
-            <SPGuardProvider>{children}</SPGuardProvider>
+            <div className="z-0">
+              <SPGuardProvider>{children}</SPGuardProvider>
+            </div>
           </NextAuthProvider>
         </TRPCReactProvider>
       </body>
