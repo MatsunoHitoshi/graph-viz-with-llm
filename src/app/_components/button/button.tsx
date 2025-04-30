@@ -9,6 +9,19 @@ type ButtonProps = {
   width?: "max" | "full";
   className?: string;
   disabled?: boolean;
+  theme?: "transparent" | "primary";
+  size?: "small" | "medium";
+};
+
+const style = {
+  theme: {
+    transparent: "rounded-lg bg-black/20 p-2 backdrop-blur-sm",
+    primary: " rounded-md bg-slate-700 text-slate-50",
+  },
+  size: {
+    small: "text-sm p-2",
+    medium: "px-3 py-2 text-md",
+  },
 };
 
 export const Button = ({
@@ -19,7 +32,9 @@ export const Button = ({
   isLoading = false,
   width = "max",
   className,
+  theme = "primary",
   disabled = false,
+  size = "medium",
 }: ButtonProps) => {
   return (
     <>
@@ -27,7 +42,7 @@ export const Button = ({
         <button
           id={id}
           type={type}
-          className={`font-md rounded-md bg-slate-700 px-3 py-2 text-slate-50 w-${width} ${className}`}
+          className={`w-${width} ${className} ${style.theme[theme]} ${style.size[size]}`}
           onClick={onClick}
           disabled={disabled}
         >

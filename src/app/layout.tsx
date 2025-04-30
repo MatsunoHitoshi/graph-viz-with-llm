@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="en" className={`${GeistSans.variable} bg-slate-900`}>
       <Analytics />
       <body>
         <TRPCReactProvider>
@@ -28,9 +28,8 @@ export default function RootLayout({
             <div className="fixed top-0 w-full">
               <Header />
             </div>
-            <div>
-              <SPGuardProvider>{children}</SPGuardProvider>
-            </div>
+
+            <SPGuardProvider>{children}</SPGuardProvider>
           </NextAuthProvider>
         </TRPCReactProvider>
       </body>

@@ -18,7 +18,7 @@ import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
-import { LinkButton } from "../button/button copy";
+import { LinkButton } from "../button/link-button";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
   const { data: session } = useSession();

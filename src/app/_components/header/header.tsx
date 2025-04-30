@@ -4,10 +4,14 @@ import { Button } from "../button/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { MixerHorizontalIcon } from "../icons";
+import { loginProhibited } from "@/app/const/page-config";
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+  const isLoginProhibited = loginProhibited(pathname);
   return (
     <div className="z-20 w-full p-2">
       <div className="flex h-14 w-full flex-row items-center justify-between rounded-2xl bg-slate-700 p-2 text-slate-50">
@@ -17,6 +21,8 @@ export const Header = () => {
             onClick={() => {
               if (session) {
                 router.push("/dashboard");
+              } else if (isLoginProhibited) {
+                router.push("/about");
               } else {
                 router.push("/");
               }
@@ -25,48 +31,61 @@ export const Header = () => {
             <div>ArsTraverse</div>
           </Button>
         </div>
-        {!session ? (
-          <Button
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="text-sm underline hover:no-underline"
-          >
-            SignUp/SignIn
-          </Button>
-        ) : (
-          <div className="flex flex-row items-center gap-1">
-            <div className="flex flex-row items-center">
-              <Button
-                onClick={() => {
-                  router.push("/dashboard");
-                }}
-                className="flex !h-10 cursor-pointer flex-row items-center gap-1 rounded-md p-2 hover:bg-slate-50/10"
-              >
-                <MixerHorizontalIcon width={18} height={18} />
-              </Button>
-              <Button
-                onClick={() => {
-                  router.push("/account");
-                }}
-                className="flex cursor-pointer flex-row items-center gap-1 rounded-md p-2 hover:bg-slate-50/10"
-              >
-                <Image
-                  alt=""
-                  src={session.user.image ?? ""}
-                  height={24}
-                  width={24}
-                  className="rounded-full border border-slate-50"
-                />
-                <div>{session.user.name}</div>
-              </Button>
-            </div>
 
-            <Button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="text-sm underline hover:no-underline"
-            >
-              SignOut
-            </Button>
+        {isLoginProhibited ? (
+          <div className="flex flex-row items-center gap-1">
+            <a href="/" target="_blank" rel="noopener noreferrer">
+              <Button theme="transparent" size="small">
+                ツールへ移動
+              </Button>
+            </a>
           </div>
+        ) : (
+          <>
+            {!session ? (
+              <Button
+                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+                className="text-sm underline hover:no-underline"
+              >
+                SignUp/SignIn
+              </Button>
+            ) : (
+              <div className="flex flex-row items-center gap-1">
+                <div className="flex flex-row items-center">
+                  <Button
+                    onClick={() => {
+                      router.push("/dashboard");
+                    }}
+                    className="flex !h-10 cursor-pointer flex-row items-center gap-1 rounded-md p-2 hover:bg-slate-50/10"
+                  >
+                    <MixerHorizontalIcon width={18} height={18} />
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      router.push("/account");
+                    }}
+                    className="flex cursor-pointer flex-row items-center gap-1 rounded-md p-2 hover:bg-slate-50/10"
+                  >
+                    <Image
+                      alt=""
+                      src={session.user.image ?? ""}
+                      height={24}
+                      width={24}
+                      className="rounded-full border border-slate-50"
+                    />
+                    <div>{session.user.name}</div>
+                  </Button>
+                </div>
+
+                <Button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="text-sm underline hover:no-underline"
+                >
+                  SignOut
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
