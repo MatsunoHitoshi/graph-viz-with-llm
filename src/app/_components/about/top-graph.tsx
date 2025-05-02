@@ -1,13 +1,8 @@
-import { useRef } from "react";
+"use client";
+import { useWindowSize } from "../../_hooks/use-window-size";
 
-export const TopGraph = ({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) => {
-  const svgRef = useRef<SVGSVGElement>(null);
+export const TopGraph = ({ height }: { height: number }) => {
+  const [innerWidth = 100] = useWindowSize();
 
   return (
     // <svg
@@ -20,16 +15,16 @@ export const TopGraph = ({
 
     <svg
       id="container"
-      width={width}
+      width={innerWidth}
       height={height}
-      viewBox={`250 250 130 130`}
+      viewBox={`250 230 140 140`}
     >
       <g transform="translate(104.15419733465637, 121.94949546881759)scale(0.651711358430657)">
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="727.0256957335492"
             y1="372.84644726344305"
             x2="296.5915136761937"
@@ -39,8 +34,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="731.0446690587936"
             y1="336.7878460770302"
             x2="296.5915136761937"
@@ -50,8 +45,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="731.0446690587936"
             y1="336.7878460770302"
             x2="727.0256957335492"
@@ -61,8 +56,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="613.6025313626004"
             y1="348.92001715628743"
             x2="296.5915136761937"
@@ -72,8 +67,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="613.6025313626004"
             y1="348.92001715628743"
             x2="727.0256957335492"
@@ -83,8 +78,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="613.6025313626004"
             y1="348.92001715628743"
             x2="731.0446690587936"
@@ -94,8 +89,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="-13.294280121914447"
             y1="619.0545533405018"
             x2="296.5915136761937"
@@ -105,8 +100,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-13.294280121914447"
             y1="619.0545533405018"
             x2="727.0256957335492"
@@ -116,8 +111,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-13.294280121914447"
             y1="619.0545533405018"
             x2="731.0446690587936"
@@ -127,8 +122,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="46.06626263399178"
             y1="715.6794721350805"
             x2="296.5915136761937"
@@ -138,8 +133,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="46.06626263399178"
             y1="715.6794721350805"
             x2="727.0256957335492"
@@ -149,8 +144,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="46.06626263399178"
             y1="715.6794721350805"
             x2="731.0446690587936"
@@ -160,8 +155,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="46.06626263399178"
             y1="715.6794721350805"
             x2="-13.294280121914447"
@@ -171,8 +166,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="-81.60888488307234"
             y1="220.91674659795854"
             x2="296.5915136761937"
@@ -182,8 +177,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-81.60888488307234"
             y1="220.91674659795854"
             x2="727.0256957335492"
@@ -193,8 +188,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-81.60888488307234"
             y1="220.91674659795854"
             x2="731.0446690587936"
@@ -204,8 +199,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-81.60888488307234"
             y1="220.91674659795854"
             x2="-13.294280121914447"
@@ -215,8 +210,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-81.60888488307234"
             y1="220.91674659795854"
             x2="349.98510214165555"
@@ -226,8 +221,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-81.60888488307234"
             y1="220.91674659795854"
             x2="46.06626263399178"
@@ -237,8 +232,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="495.1016395976488"
             y1="790.294329362612"
             x2="296.5915136761937"
@@ -248,8 +243,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="495.1016395976488"
             y1="790.294329362612"
             x2="727.0256957335492"
@@ -259,8 +254,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="495.1016395976488"
             y1="790.294329362612"
             x2="731.0446690587936"
@@ -270,8 +265,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="495.1016395976488"
             y1="790.294329362612"
             x2="-13.294280121914447"
@@ -281,8 +276,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="495.1016395976488"
             y1="790.294329362612"
             x2="46.06626263399178"
@@ -292,8 +287,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="495.1016395976488"
             y1="790.294329362612"
             x2="-81.60888488307234"
@@ -303,8 +298,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-124.7701841171492"
             y1="314.3767918383011"
             x2="296.5915136761937"
@@ -314,8 +309,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="-124.7701841171492"
             y1="314.3767918383011"
             x2="-13.294280121914447"
@@ -325,8 +320,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-124.7701841171492"
             y1="314.3767918383011"
             x2="46.06626263399178"
@@ -336,8 +331,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="-124.7701841171492"
             y1="314.3767918383011"
             x2="-81.60888488307234"
@@ -347,8 +342,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-124.7701841171492"
             y1="314.3767918383011"
             x2="495.1016395976488"
@@ -358,8 +353,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="565.6752794727136"
             y1="-40.110537076854314"
             x2="296.5915136761937"
@@ -369,8 +364,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="565.6752794727136"
             y1="-40.110537076854314"
             x2="727.0256957335492"
@@ -380,8 +375,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="565.6752794727136"
             y1="-40.110537076854314"
             x2="731.0446690587936"
@@ -391,8 +386,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="565.6752794727136"
             y1="-40.110537076854314"
             x2="-13.294280121914447"
@@ -402,8 +397,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="565.6752794727136"
             y1="-40.110537076854314"
             x2="46.06626263399178"
@@ -413,8 +408,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="565.6752794727136"
             y1="-40.110537076854314"
             x2="-81.60888488307234"
@@ -424,8 +419,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="565.6752794727136"
             y1="-40.110537076854314"
             x2="495.1016395976488"
@@ -435,8 +430,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="296.5915136761937"
@@ -446,8 +441,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="727.0256957335492"
@@ -457,8 +452,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="731.0446690587936"
@@ -468,8 +463,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="-13.294280121914447"
@@ -479,8 +474,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="349.98510214165555"
@@ -490,8 +485,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="46.06626263399178"
@@ -501,8 +496,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="-81.60888488307234"
@@ -512,8 +507,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="495.1016395976488"
@@ -523,8 +518,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="276.9771078595176"
             y1="722.6042638960281"
             x2="565.6752794727136"
@@ -534,8 +529,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="296.5915136761937"
@@ -545,8 +540,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="727.0256957335492"
@@ -556,8 +551,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="731.0446690587936"
@@ -567,8 +562,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="-13.294280121914447"
@@ -578,8 +573,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="46.06626263399178"
@@ -589,8 +584,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="-81.60888488307234"
@@ -600,8 +595,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="495.1016395976488"
@@ -611,8 +606,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="565.6752794727136"
@@ -622,8 +617,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-66.61962268189198"
             y1="139.92280602540995"
             x2="276.9771078595176"
@@ -633,8 +628,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="754.200699077529"
             y1="124.56962785630603"
             x2="-81.60888488307234"
@@ -644,8 +639,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="754.200699077529"
             y1="124.56962785630603"
             x2="495.1016395976488"
@@ -655,8 +650,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="754.200699077529"
             y1="124.56962785630603"
             x2="-124.7701841171492"
@@ -666,8 +661,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="754.200699077529"
             y1="124.56962785630603"
             x2="276.9771078595176"
@@ -677,8 +672,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="754.200699077529"
             y1="124.56962785630603"
             x2="-66.61962268189198"
@@ -688,8 +683,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="296.5915136761937"
@@ -699,8 +694,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="727.0256957335492"
@@ -710,8 +705,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="731.0446690587936"
@@ -721,8 +716,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="-13.294280121914447"
@@ -732,8 +727,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="46.06626263399178"
@@ -743,8 +738,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="-81.60888488307234"
@@ -754,8 +749,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="495.1016395976488"
@@ -765,8 +760,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="-124.7701841171492"
@@ -776,8 +771,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="565.6752794727136"
@@ -787,8 +782,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="276.9771078595176"
@@ -798,8 +793,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="-66.61962268189198"
@@ -809,8 +804,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="233.55120094254858"
             y1="427.3920567556326"
             x2="754.200699077529"
@@ -820,8 +815,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="296.5915136761937"
@@ -831,8 +826,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="727.0256957335492"
@@ -842,8 +837,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="731.0446690587936"
@@ -853,8 +848,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="-13.294280121914447"
@@ -864,8 +859,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="46.06626263399178"
@@ -875,8 +870,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="-81.60888488307234"
@@ -886,8 +881,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="495.1016395976488"
@@ -897,8 +892,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="565.6752794727136"
@@ -908,8 +903,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="276.9771078595176"
@@ -919,8 +914,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="-66.61962268189198"
@@ -930,8 +925,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="207.92624109569192"
             y1="38.93128781718781"
             x2="233.55120094254858"
@@ -941,8 +936,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="296.5915136761937"
@@ -952,8 +947,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="727.0256957335492"
@@ -963,8 +958,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="731.0446690587936"
@@ -974,8 +969,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="-13.294280121914447"
@@ -985,8 +980,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="46.06626263399178"
@@ -996,8 +991,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="-81.60888488307234"
@@ -1007,8 +1002,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="495.1016395976488"
@@ -1018,8 +1013,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="565.6752794727136"
@@ -1029,8 +1024,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="276.9771078595176"
@@ -1040,8 +1035,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="-66.61962268189198"
@@ -1051,8 +1046,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="233.55120094254858"
@@ -1062,8 +1057,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="583.3256414522547"
             y1="572.8185723186333"
             x2="207.92624109569192"
@@ -1073,8 +1068,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="692.8214106566757"
             y1="456.0063561300094"
             x2="296.5915136761937"
@@ -1084,8 +1079,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="692.8214106566757"
             y1="456.0063561300094"
             x2="-13.294280121914447"
@@ -1095,8 +1090,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="692.8214106566757"
             y1="456.0063561300094"
             x2="-81.60888488307234"
@@ -1106,8 +1101,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="355.4559005448934"
             y1="120.8415955021821"
             x2="233.55120094254858"
@@ -1117,8 +1112,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="381.9566939081277"
             y1="627.0519087834364"
             x2="296.5915136761937"
@@ -1128,8 +1123,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="381.9566939081277"
             y1="627.0519087834364"
             x2="276.9771078595176"
@@ -1139,8 +1134,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.9566939081277"
             y1="627.0519087834364"
             x2="355.4559005448934"
@@ -1150,8 +1145,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="296.5915136761937"
@@ -1161,8 +1156,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="727.0256957335492"
@@ -1172,8 +1167,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="731.0446690587936"
@@ -1183,8 +1178,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="-13.294280121914447"
@@ -1194,8 +1189,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="46.06626263399178"
@@ -1205,8 +1200,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="-81.60888488307234"
@@ -1216,8 +1211,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="495.1016395976488"
@@ -1227,8 +1222,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="565.6752794727136"
@@ -1238,8 +1233,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="276.9771078595176"
@@ -1249,8 +1244,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="233.55120094254858"
@@ -1260,8 +1255,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="583.3256414522547"
@@ -1271,8 +1266,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="692.8214106566757"
@@ -1282,8 +1277,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="355.4559005448934"
@@ -1293,8 +1288,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="188.60370669981106"
             y1="202.6418898418482"
             x2="381.9566939081277"
@@ -1304,8 +1299,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="296.5915136761937"
@@ -1315,8 +1310,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="727.0256957335492"
@@ -1326,8 +1321,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="731.0446690587936"
@@ -1337,8 +1332,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="-13.294280121914447"
@@ -1348,8 +1343,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="46.06626263399178"
@@ -1359,8 +1354,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="-81.60888488307234"
@@ -1370,8 +1365,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="495.1016395976488"
@@ -1381,8 +1376,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="565.6752794727136"
@@ -1392,8 +1387,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="276.9771078595176"
@@ -1403,8 +1398,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="-66.61962268189198"
@@ -1414,8 +1409,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="233.55120094254858"
@@ -1425,8 +1420,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="207.92624109569192"
@@ -1436,8 +1431,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="583.3256414522547"
@@ -1447,8 +1442,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="381.9566939081277"
@@ -1458,8 +1453,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="588.309463737688"
             y1="131.55614962799214"
             x2="188.60370669981106"
@@ -1469,8 +1464,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="296.5915136761937"
@@ -1480,8 +1475,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="727.0256957335492"
@@ -1491,8 +1486,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="731.0446690587936"
@@ -1502,8 +1497,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="-13.294280121914447"
@@ -1513,8 +1508,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="46.06626263399178"
@@ -1524,8 +1519,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="-81.60888488307234"
@@ -1535,8 +1530,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="495.1016395976488"
@@ -1546,8 +1541,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="565.6752794727136"
@@ -1557,8 +1552,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="276.9771078595176"
@@ -1568,8 +1563,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="-66.61962268189198"
@@ -1579,8 +1574,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="233.55120094254858"
@@ -1590,8 +1585,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="207.92624109569192"
@@ -1601,8 +1596,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="583.3256414522547"
@@ -1612,8 +1607,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="381.9566939081277"
@@ -1623,8 +1618,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="188.60370669981106"
@@ -1634,8 +1629,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="-134.05087906117333"
             y1="426.668246018438"
             x2="588.309463737688"
@@ -1645,8 +1640,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="296.5915136761937"
@@ -1656,8 +1651,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="727.0256957335492"
@@ -1667,8 +1662,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="731.0446690587936"
@@ -1678,8 +1673,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="-13.294280121914447"
@@ -1689,8 +1684,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="46.06626263399178"
@@ -1700,8 +1695,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="-81.60888488307234"
@@ -1711,8 +1706,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="495.1016395976488"
@@ -1722,8 +1717,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="565.6752794727136"
@@ -1733,8 +1728,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="276.9771078595176"
@@ -1744,8 +1739,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="-66.61962268189198"
@@ -1755,8 +1750,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="233.55120094254858"
@@ -1766,8 +1761,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="207.92624109569192"
@@ -1777,8 +1772,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="583.3256414522547"
@@ -1788,8 +1783,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="381.9566939081277"
@@ -1799,8 +1794,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="188.60370669981106"
@@ -1810,8 +1805,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="588.309463737688"
@@ -1821,8 +1816,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="329.24653600433305"
             y1="-105.22565091774214"
             x2="-134.05087906117333"
@@ -1832,8 +1827,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="740.1024094807326"
             y1="435.6586506231637"
             x2="-81.60888488307234"
@@ -1843,8 +1838,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="740.1024094807326"
             y1="435.6586506231637"
             x2="495.1016395976488"
@@ -1854,8 +1849,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="740.1024094807326"
             y1="435.6586506231637"
             x2="-124.7701841171492"
@@ -1865,8 +1860,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="740.1024094807326"
             y1="435.6586506231637"
             x2="276.9771078595176"
@@ -1876,8 +1871,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="740.1024094807326"
             y1="435.6586506231637"
             x2="-66.61962268189198"
@@ -1887,8 +1882,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="740.1024094807326"
             y1="435.6586506231637"
             x2="754.200699077529"
@@ -1898,8 +1893,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="740.1024094807326"
             y1="435.6586506231637"
             x2="233.55120094254858"
@@ -1909,8 +1904,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="-81.60888488307234"
@@ -1920,8 +1915,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="495.1016395976488"
@@ -1931,8 +1926,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="-124.7701841171492"
@@ -1942,8 +1937,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="276.9771078595176"
@@ -1953,8 +1948,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="-66.61962268189198"
@@ -1964,8 +1959,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="754.200699077529"
@@ -1975,8 +1970,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="233.55120094254858"
@@ -1986,8 +1981,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="524.754749987138"
             y1="69.63887343741388"
             x2="740.1024094807326"
@@ -1997,8 +1992,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="-81.60888488307234"
@@ -2008,8 +2003,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="495.1016395976488"
@@ -2019,8 +2014,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="-124.7701841171492"
@@ -2030,8 +2025,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="276.9771078595176"
@@ -2041,8 +2036,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="-66.61962268189198"
@@ -2052,8 +2047,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="754.200699077529"
@@ -2063,8 +2058,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="233.55120094254858"
@@ -2074,8 +2069,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="740.1024094807326"
@@ -2085,8 +2080,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="381.16635282549873"
             y1="-145.53374567670306"
             x2="524.754749987138"
@@ -2096,8 +2091,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="62.404875237995014"
             y1="100.66036806398232"
             x2="296.5915136761937"
@@ -2107,8 +2102,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="62.404875237995014"
             y1="100.66036806398232"
             x2="233.55120094254858"
@@ -2118,8 +2113,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="62.404875237995014"
             y1="100.66036806398232"
             x2="355.4559005448934"
@@ -2129,8 +2124,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="62.404875237995014"
             y1="100.66036806398232"
             x2="188.60370669981106"
@@ -2140,8 +2135,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="158.7126355330748"
             y1="506.2463657730337"
             x2="296.5915136761937"
@@ -2151,8 +2146,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="158.7126355330748"
             y1="506.2463657730337"
             x2="349.98510214165555"
@@ -2162,8 +2157,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="158.7126355330748"
             y1="506.2463657730337"
             x2="-81.60888488307234"
@@ -2173,8 +2168,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="158.7126355330748"
             y1="506.2463657730337"
             x2="-124.7701841171492"
@@ -2184,8 +2179,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.6"
+            strokeWidth="2"
+            strokeOpacity="0.6"
             x1="158.7126355330748"
             y1="506.2463657730337"
             x2="276.9771078595176"
@@ -2195,8 +2190,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="158.7126355330748"
             y1="506.2463657730337"
             x2="-66.61962268189198"
@@ -2206,8 +2201,8 @@ export const TopGraph = ({
         <g className="link cursor-pointer">
           <line
             stroke="white"
-            stroke-width="2"
-            stroke-opacity="0.15"
+            strokeWidth="2"
+            strokeOpacity="0.15"
             x1="158.7126355330748"
             y1="506.2463657730337"
             x2="381.9566939081277"
@@ -2222,7 +2217,7 @@ export const TopGraph = ({
             cx="296.5915136761937"
             cy="347.85030109070794"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2233,7 +2228,7 @@ export const TopGraph = ({
             cx="727.0256957335492"
             cy="372.84644726344305"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2244,7 +2239,7 @@ export const TopGraph = ({
             cx="731.0446690587936"
             cy="336.7878460770302"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2255,7 +2250,7 @@ export const TopGraph = ({
             cx="613.6025313626004"
             cy="348.92001715628743"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2266,7 +2261,7 @@ export const TopGraph = ({
             cx="-13.294280121914447"
             cy="619.0545533405018"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2277,7 +2272,7 @@ export const TopGraph = ({
             cx="349.98510214165555"
             cy="346.4929281122564"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2288,7 +2283,7 @@ export const TopGraph = ({
             cx="46.06626263399178"
             cy="715.6794721350805"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2299,7 +2294,7 @@ export const TopGraph = ({
             cx="-81.60888488307234"
             cy="220.91674659795854"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2310,7 +2305,7 @@ export const TopGraph = ({
             cx="495.1016395976488"
             cy="790.294329362612"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2321,7 +2316,7 @@ export const TopGraph = ({
             cx="-124.7701841171492"
             cy="314.3767918383011"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2332,7 +2327,7 @@ export const TopGraph = ({
             cx="565.6752794727136"
             cy="-40.110537076854314"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2343,7 +2338,7 @@ export const TopGraph = ({
             cx="276.9771078595176"
             cy="722.6042638960281"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2354,7 +2349,7 @@ export const TopGraph = ({
             cx="-66.61962268189198"
             cy="139.92280602540995"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2365,7 +2360,7 @@ export const TopGraph = ({
             cx="754.200699077529"
             cy="124.56962785630603"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2376,7 +2371,7 @@ export const TopGraph = ({
             cx="233.55120094254858"
             cy="427.3920567556326"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2387,7 +2382,7 @@ export const TopGraph = ({
             cx="207.92624109569192"
             cy="38.93128781718781"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2398,7 +2393,7 @@ export const TopGraph = ({
             cx="583.3256414522547"
             cy="572.8185723186333"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2409,7 +2404,7 @@ export const TopGraph = ({
             cx="692.8214106566757"
             cy="456.0063561300094"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2420,7 +2415,7 @@ export const TopGraph = ({
             cx="355.4559005448934"
             cy="120.8415955021821"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2431,7 +2426,7 @@ export const TopGraph = ({
             cx="381.9566939081277"
             cy="627.0519087834364"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2442,7 +2437,7 @@ export const TopGraph = ({
             cx="188.60370669981106"
             cy="202.6418898418482"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2453,7 +2448,7 @@ export const TopGraph = ({
             cx="588.309463737688"
             cy="131.55614962799214"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2464,7 +2459,7 @@ export const TopGraph = ({
             cx="-134.05087906117333"
             cy="426.668246018438"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2475,7 +2470,7 @@ export const TopGraph = ({
             cx="329.24653600433305"
             cy="-105.22565091774214"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2486,7 +2481,7 @@ export const TopGraph = ({
             cx="740.1024094807326"
             cy="435.6586506231637"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2497,7 +2492,7 @@ export const TopGraph = ({
             cx="524.754749987138"
             cy="69.63887343741388"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2508,7 +2503,7 @@ export const TopGraph = ({
             cx="381.16635282549873"
             cy="-145.53374567670306"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2519,7 +2514,7 @@ export const TopGraph = ({
             cx="62.404875237995014"
             cy="100.66036806398232"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
         <g className="node cursor-pointer">
@@ -2530,7 +2525,7 @@ export const TopGraph = ({
             cx="158.7126355330748"
             cy="506.2463657730337"
             stroke="#eae80c"
-            stroke-width="0"
+            strokeWidth="0"
           ></circle>
         </g>
       </g>

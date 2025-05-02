@@ -68,7 +68,7 @@ export const RelationPathSearch = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="text-xs">経路の検索</div>
+      <div className="text-xs">つながりの検索</div>
       <div className="flex flex-row items-center justify-between gap-2">
         <SelectInput
           options={options}
