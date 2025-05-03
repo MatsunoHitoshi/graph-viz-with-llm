@@ -7,7 +7,7 @@ export const OgpScraper = async ({ url }: { url: string }) => {
   return (
     <Link href={url} target="_blank" rel="noopener noreferrer">
       {ogp && (
-        <div className="flex w-max flex-col items-center justify-center gap-6 rounded-2xl bg-black/40 p-8 transition-all duration-300 hover:bg-white/10 md:flex-row">
+        <div className="flex flex-col items-center justify-center gap-6 rounded-2xl bg-black/40 p-8 transition-all duration-300 hover:bg-white/10 md:w-max md:flex-row">
           {ogp?.ogImage && ogp?.ogImage.length > 0 && (
             <Image
               src={ogp?.ogImage[0]?.url ?? ""}
