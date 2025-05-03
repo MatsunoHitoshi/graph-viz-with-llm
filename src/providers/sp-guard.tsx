@@ -16,7 +16,7 @@ export const SPGuardProvider = ({
     <>
       {!isSpAllowed && (
         <div className="flex flex-col gap-8 pt-16 sm:hidden">
-          <div className="flex flex-row items-center justify-center pt-[200px] text-center text-xl font-semibold">
+          <div className="flex flex-row items-center justify-center pt-[200px] text-center text-xl font-semibold text-white">
             このアプリはスマートフォンの
             <br />
             画面サイズに対応していません😖

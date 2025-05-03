@@ -2,6 +2,9 @@ import Image from "next/image";
 import { TopGraph } from "./top-graph";
 
 import { OgpScraper } from "../ogp/ogp-scraper";
+import { FadeIn } from "../animation/fade-in";
+import { Footer } from "./footer";
+import Link from "next/link";
 
 export const About = () => {
   return (
@@ -28,6 +31,8 @@ export const About = () => {
           「つながり（文脈）」
           を見つけ出し、それを図で分かりやすく整理したり、自身の考えを書き加えたりしながら、知識を深め、みんなで共有・議論していくための可視化アーカイブツールです。
         </p>
+
+        <LinkButton href="/">ArsTraverseを試してみる</LinkButton>
       </Section>
 
       <Section className="bg-black/20">
@@ -159,7 +164,7 @@ export const About = () => {
                         <div className="mt-1 flex h-6 w-max min-w-[64px] items-center justify-center rounded-full bg-orange-500 px-2 text-xs text-slate-900">
                           展示事例
                         </div>
-                        <a
+                        <Link
                           className="text-base font-bold underline hover:no-underline"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -167,7 +172,7 @@ export const About = () => {
                         >
                           海にねむる龍 ―働正がのこしたもの　Tadashi Hataraki and
                           Echoes of Kyushu-ha
-                        </a>
+                        </Link>
                       </div>
                       <Image
                         src="/images/about/hataraki-and-kyushu-ha.png"
@@ -180,6 +185,9 @@ export const About = () => {
                         ただし)」や「九州派」を取り巻く関係を視覚的に把握できるインタラクティブなダイアグラムを開発しました。年譜形式ではイメージしづらい同時代の相互作用や関係性、交流や交渉などの接点を、ダイアグラムで視覚的に表現しています。
                       </div>
                     </div>
+                    <LinkButton href="https://docs.google.com/forms/d/e/1FAIpQLSfLwbbr5i3d_lLJ8V2eSqqJ-GGQaEkQa_FehAQ_OCU8kBRQ5g/viewform?usp=pp_url&entry.1186430411=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E5%86%85%E5%AE%B9%EF%BC%9AArsTraverse%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0A--%E4%B8%8B%E8%A8%98%E3%81%AB%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%82%92%E3%81%94%E8%A8%98%E5%85%A5%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84--%0A">
+                      カスタマイズのご相談はこちら
+                    </LinkButton>
                   </MainDescription>
 
                   <div className="flex flex-col gap-6">
@@ -260,12 +268,15 @@ export const About = () => {
                 </div>
               </MainDescription>
               <MainDescription title="開発者">
-                <OgpScraper url="https://matsuno.caric.jp" />
+                <div className="flex flex-col items-center">
+                  <OgpScraper url="https://matsuno.caric.jp" />
+                </div>
               </MainDescription>
             </div>
           </SubSection>
         </div>
       </Section>
+      <Footer />
     </div>
   );
 };
@@ -278,11 +289,13 @@ const Section = ({
   className?: string;
 }) => {
   return (
-    <div
-      className={`flex w-full flex-col gap-4 px-4 py-8 sm:px-8 sm:py-12 ${className}`}
-    >
-      {children}
-    </div>
+    <FadeIn>
+      <div
+        className={`flex w-full flex-col gap-4 px-4 py-8 sm:px-8 sm:py-12 ${className}`}
+      >
+        {children}
+      </div>
+    </FadeIn>
   );
 };
 
@@ -294,7 +307,11 @@ const SubSection = ({
   className?: string;
 }) => {
   return (
-    <div className={`flex w-full flex-col py-10 ${className}`}>{children}</div>
+    <FadeIn>
+      <div className={`flex w-full flex-col py-10 ${className}`}>
+        {children}
+      </div>
+    </FadeIn>
   );
 };
 
@@ -308,17 +325,38 @@ const MainDescription = ({
   developing?: boolean;
 }) => {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-row items-center gap-2 sm:justify-center">
-        {developing && (
-          <div className="flex h-6 min-w-[58px] items-center justify-center rounded-full bg-orange-500 px-2 text-sm text-slate-900">
-            開発中
-          </div>
-        )}
-        <h3 className="text-xl font-bold">{title}</h3>
-      </div>
+    <FadeIn>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row items-center gap-2 sm:justify-center">
+          {developing && (
+            <div className="flex h-6 min-w-[58px] items-center justify-center rounded-full bg-orange-500 px-2 text-sm text-slate-900">
+              開発中
+            </div>
+          )}
+          <h3 className="text-xl font-bold">{title}</h3>
+        </div>
 
-      <div className="flex flex-col gap-3 text-sm">{children}</div>
-    </div>
+        <div className="flex flex-col gap-3 text-sm">{children}</div>
+      </div>
+    </FadeIn>
+  );
+};
+
+const LinkButton = ({
+  children,
+  href,
+}: {
+  children: React.ReactNode;
+  href: string;
+}) => {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex w-max flex-row items-center justify-center rounded-full bg-orange-500 px-4 py-2 text-slate-900 duration-200 hover:bg-orange-400"
+    >
+      {children}
+    </Link>
   );
 };
