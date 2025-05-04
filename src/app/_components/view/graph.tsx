@@ -27,7 +27,8 @@ export const GraphExtraction = () => {
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
   const submitSourceDocumentWithGraph =
-    api.sourceDocument.createWithGraphData.useMutation({});
+    api.sourceDocument.createWithGraphData.useMutation();
+
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -137,8 +138,9 @@ export const GraphExtraction = () => {
         setFile={setFile}
         setGraphDocument={setGraphDocument}
         setDocumentUrl={setDocumentUrl}
+        documentUrl={documentUrl}
       />
-      <div className="flex flex-row items-center gap-2">
+      {/* <div className="flex flex-row items-center gap-2">
         <div className="text-sm">サンプルデータを表示</div>
         <div>
           <Switch
@@ -149,7 +151,7 @@ export const GraphExtraction = () => {
             <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
           </Switch>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

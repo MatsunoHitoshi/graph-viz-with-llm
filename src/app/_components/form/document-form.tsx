@@ -8,12 +8,14 @@ import { api } from "@/trpc/react";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { Switch } from "@headlessui/react";
 import { Textarea } from "../textarea";
+import { Document } from "@langchain/core/documents";
 
 type DocumentFormProps = {
   file: File | null;
   setFile: React.Dispatch<SetStateAction<File | null>>;
   setGraphDocument: React.Dispatch<SetStateAction<GraphDocument | null>>;
   setDocumentUrl: React.Dispatch<SetStateAction<string | null>>;
+  documentUrl: string | null;
 };
 
 export const DocumentForm = ({
@@ -21,13 +23,62 @@ export const DocumentForm = ({
   setFile,
   setGraphDocument,
   setDocumentUrl,
+  documentUrl,
 }: DocumentFormProps) => {
   const [isPlaneTextMode, setIsPlaneTextMode] = useState<boolean>(false);
   const [text, setText] = useState<string>();
   const fileInputRef = useRef(null);
-  const [isExtracting, setIsExtracting] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [inspectResult, setInspectResult] = useState<Document[]>([]);
 
   const extractKG = api.kg.extractKG.useMutation();
+  const textInspect = api.kg.textInspect.useMutation();
+
+  const extract = (fileUrl: string) => {
+    setIsProcessing(true);
+
+    extractKG.mutate(
+      {
+        fileUrl: fileUrl,
+        extractMode: "langChain",
+        isPlaneTextMode: isPlaneTextMode,
+      },
+      {
+        onSuccess: (res) => {
+          console.log("res client", res);
+          setGraphDocument(res.data.graph);
+          setIsProcessing(false);
+        },
+        onError: (e) => {
+          console.log(e);
+          setIsProcessing(false);
+        },
+      },
+    );
+  };
+
+  const inspect = (fileUrl: string) => {
+    setIsProcessing(true);
+    textInspect.mutate(
+      {
+        fileUrl: fileUrl,
+        isPlaneTextMode: isPlaneTextMode,
+      },
+      {
+        onSuccess: (res) => {
+          if (res.data.documents) {
+            setInspectResult(res.data.documents);
+            console.log("inspectResult", res.data.documents);
+          }
+          setIsProcessing(false);
+        },
+        onError: (e) => {
+          console.log(e);
+          setIsProcessing(false);
+        },
+      },
+    );
+  };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,85 +86,74 @@ export const DocumentForm = ({
     let fileUrl: string | undefined;
     const reader = new FileReader();
 
-    const extract = (fileUrl: string) => {
-      console.log("--fileUrl--");
-      console.log(fileUrl);
-      setDocumentUrl(fileUrl);
-
-      extractKG.mutate(
-        {
-          fileUrl: fileUrl,
-          extractMode: "langChain",
-          isPlaneTextMode: isPlaneTextMode,
-        },
-        {
-          onSuccess: (res) => {
-            console.log("res client", res);
-            setGraphDocument(res.data.graph);
-            setIsExtracting(false);
-          },
-          onError: (e) => {
-            console.log(e);
-            setIsExtracting(false);
-          },
-        },
-      );
-    };
-
     if (isPlaneTextMode) {
       if (!text) {
         alert("テキストが入力されていません。");
         return;
       }
-      console.log("planeTextMode");
-      const textBlob = new Blob([text], { type: "text/plain; charset=utf-8" });
-      const textFile = new File([textBlob], `input_${Date.now()}.txt`, {
-        type: "text/plain; charset=utf-8",
-      });
-      setFile(textFile);
-      reader.readAsDataURL(textFile);
-      reader.onload = async () => {
-        setIsExtracting(true);
-        // const base64Text = reader.result?.toString();
-        if (textBlob) {
-          fileUrl = await storageUtils.uploadFromBlob(
-            textBlob,
-            BUCKETS.PATH_TO_INPUT_TXT,
-          );
-          if (fileUrl) {
-            extract(fileUrl);
-          }
-        } else {
-          console.log("Failed to convert");
-          setIsExtracting(false);
-        }
-      };
-    } else {
-      if (!file) {
-        alert("ファイルが選択されていません。");
-        return;
-      }
       try {
-        reader.readAsDataURL(file);
+        setIsProcessing(true);
+        console.log("planeTextMode");
+        const textBlob = new Blob([text], {
+          type: "text/plain; charset=utf-8",
+        });
+        const textFile = new File([textBlob], `input_${Date.now()}.txt`, {
+          type: "text/plain; charset=utf-8",
+        });
+        setFile(textFile);
+        reader.readAsDataURL(textFile);
         reader.onload = async () => {
-          setIsExtracting(true);
-          const base64Data = reader.result?.toString();
-          if (base64Data) {
-            fileUrl = await storageUtils.uploadFromDataURL(
-              base64Data,
-              BUCKETS.PATH_TO_INPUT_PDF,
+          // const base64Text = reader.result?.toString();
+          if (textBlob) {
+            fileUrl = await storageUtils.uploadFromBlob(
+              textBlob,
+              BUCKETS.PATH_TO_INPUT_TXT,
             );
             if (fileUrl) {
               extract(fileUrl);
             }
           } else {
             console.log("Failed to convert");
-            setIsExtracting(false);
+            setIsProcessing(false);
           }
         };
       } catch (error) {
         console.error("アップロード中にエラーが発生しました", error);
         alert("アップロード中にエラーが発生しました。");
+        setIsProcessing(false);
+      }
+    } else {
+      if (!file) {
+        alert("ファイルが選択されていません。");
+        return;
+      }
+      try {
+        setIsProcessing(true);
+        if (documentUrl) {
+          extract(documentUrl);
+        } else {
+          reader.readAsDataURL(file);
+          reader.onload = async () => {
+            const base64Data = reader.result?.toString();
+            if (base64Data) {
+              fileUrl = await storageUtils.uploadFromDataURL(
+                base64Data,
+                BUCKETS.PATH_TO_INPUT_PDF,
+              );
+              if (fileUrl) {
+                setDocumentUrl(fileUrl);
+                inspect(fileUrl);
+              }
+            } else {
+              console.log("Failed to convert");
+              setIsProcessing(false);
+            }
+          };
+        }
+      } catch (error) {
+        console.error("アップロード中にエラーが発生しました", error);
+        alert("アップロード中にエラーが発生しました。");
+        setIsProcessing(false);
       }
     }
   };
@@ -166,7 +206,7 @@ export const DocumentForm = ({
           <div className="text-sm">手入力モード</div>
           <div className="flex flex-row items-center gap-8">
             <Switch
-              disabled={isExtracting}
+              disabled={isProcessing}
               checked={isPlaneTextMode}
               onChange={setIsPlaneTextMode}
               className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
@@ -175,13 +215,32 @@ export const DocumentForm = ({
             </Switch>
             {((!!text && isPlaneTextMode) || (file && !isPlaneTextMode)) && (
               <div className="flex flex-row justify-end">
-                <Button type="submit" isLoading={isExtracting}>
-                  概念グラフを抽出する
-                </Button>
+                {isPlaneTextMode || inspectResult.length > 0 ? (
+                  <Button type="submit" isLoading={isProcessing}>
+                    概念グラフを抽出する
+                  </Button>
+                ) : (
+                  <Button type="submit" isLoading={isProcessing}>
+                    テキストを抽出する
+                  </Button>
+                )}
               </div>
             )}
           </div>
         </div>
+
+        {inspectResult.length > 0 && (
+          <div className="flex flex-col items-center gap-2">
+            <div className="font-semibold">テキスト情報</div>
+            <div className="flex h-96 flex-col items-center gap-2 overflow-y-scroll rounded-xl border border-slate-300">
+              <div className="flex flex-col items-center gap-2 p-8">
+                {inspectResult.map((result, index) => (
+                  <div key={index}>{result.pageContent}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </form>
   );

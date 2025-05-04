@@ -15,10 +15,8 @@ import type {
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 import { ChatOpenAI } from "@langchain/openai";
 import { LLMGraphTransformer } from "@langchain/community/experimental/graph_transformers/llm";
-import { TokenTextSplitter } from "langchain/text_splitter";
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { TextLoader } from "langchain/document_loaders/fs/text";
-import { Document } from "@langchain/core/documents";
+import { textInspect } from "@/app/_utils/text/text-inspector";
+
 import type {
   Node,
   Relationship,
@@ -39,6 +37,11 @@ import { shapeGraphData } from "@/app/_utils/kg/shape";
 const ExtractInputSchema = z.object({
   fileUrl: z.string().url(),
   extractMode: z.string().optional(),
+  isPlaneTextMode: z.boolean(),
+});
+
+const TestInspectInputSchema = z.object({
+  fileUrl: z.string().url(),
   isPlaneTextMode: z.boolean(),
 });
 
@@ -102,34 +105,7 @@ const graphExtractionWithLangChain = async (
   const llm = new ChatOpenAI({ temperature: 0.8, model: "gpt-4o" });
   const llmTransformer = new LLMGraphTransformer({ llm });
 
-  const loader = isPlaneTextMode
-    ? new TextLoader(localFilePath)
-    : new PDFLoader(localFilePath);
-  const rawDocs = await loader.load();
-
-  const textSplitter = new TokenTextSplitter({
-    chunkSize: 1024,
-    chunkOverlap: 32,
-  });
-
-  const documents: Document[] = [];
-  await Promise.all(
-    rawDocs.map(async (rowDoc) => {
-      const chunks = await textSplitter.splitText(rowDoc.pageContent);
-      const processedDocs = chunks.map(
-        (chunk, index) =>
-          new Document({
-            pageContent: chunk,
-            metadata: {
-              a: index + 1,
-              ...rowDoc.metadata,
-            },
-          }),
-      );
-      documents.push(...processedDocs);
-    }),
-  );
-
+  const documents = await textInspect(localFilePath, isPlaneTextMode);
   console.log("documents: ", documents);
 
   const llmGraphDocuments =
@@ -298,6 +274,33 @@ export const kgRouter = createTRPCRouter({
       } catch (error) {
         return {
           data: { graph: null, error: "グラフ抽出エラー" },
+        };
+      }
+    }),
+
+  textInspect: publicProcedure
+    .input(TestInspectInputSchema)
+    .mutation(async ({ input }) => {
+      const { fileUrl, isPlaneTextMode } = input;
+
+      const fileResponse = await fetch(fileUrl);
+      const fileBuffer = await fileResponse.arrayBuffer();
+      const localFilePath = writeFile(
+        Buffer.from(fileBuffer).toString("base64"),
+        `input.${isPlaneTextMode ? "txt" : "pdf"}`,
+      );
+
+      try {
+        const documents = await textInspect(localFilePath, isPlaneTextMode);
+        return {
+          data: { documents: documents },
+        };
+      } catch (error) {
+        return {
+          data: {
+            documents: null,
+            error: `テキスト検査エラー: ${String(error)}`,
+          },
         };
       }
     }),
