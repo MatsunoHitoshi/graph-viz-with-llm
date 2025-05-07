@@ -5,7 +5,6 @@ import { DocumentForm } from "../form/document-form";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { D3ForceGraph } from "../d3/force/graph";
 import EXAMPLE_DATA from "../../const/example-graph.json";
-import { Switch } from "@headlessui/react";
 import { Toolbar } from "../toolbar/toolbar";
 import { useRouter } from "next/navigation";
 import { Button } from "../button/button";

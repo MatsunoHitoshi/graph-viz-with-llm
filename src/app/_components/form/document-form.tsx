@@ -8,7 +8,8 @@ import { api } from "@/trpc/react";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { Switch } from "@headlessui/react";
 import { Textarea } from "../textarea";
-import { Document } from "@langchain/core/documents";
+import type { Document } from "@langchain/core/documents";
+import { DocumentUploadTipsModal } from "../tips/document-upload-tips-modal";
 
 type DocumentFormProps = {
   file: File | null;
@@ -30,6 +31,7 @@ export const DocumentForm = ({
   const fileInputRef = useRef(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [inspectResult, setInspectResult] = useState<Document[]>([]);
+  const [isOpenTips, setIsOpenTips] = useState<boolean>(false);
 
   const extractKG = api.kg.extractKG.useMutation();
   const textInspect = api.kg.textInspect.useMutation();
@@ -159,89 +161,104 @@ export const DocumentForm = ({
   };
 
   return (
-    <form
-      encType="multipart/form-data"
-      onSubmit={submit}
-      className="flex w-full flex-col items-center gap-16"
-    >
-      <div className="flex flex-col items-center gap-8">
-        <div className="text-3xl font-semibold">文書の内容を可視化</div>
-        <div className="flex flex-col items-center gap-1">
-          <div className="text-xl">
-            pdfまたは手入力で文書をアップロードできます
-          </div>
-          <div className="text-sm text-orange-600">
-            注意：機密情報・個人情報を含む文書は絶対にアップロードしないでください
+    <>
+      <form
+        encType="multipart/form-data"
+        onSubmit={submit}
+        className="flex w-full flex-col items-center gap-16"
+      >
+        <div className="flex flex-col items-center gap-8">
+          <div className="text-3xl font-semibold">文書の内容を可視化</div>
+          <div className="flex flex-col items-center gap-1">
+            <div className="text-xl">
+              pdfまたは手入力で文書をアップロードできます
+            </div>
+            <div className="text-sm text-orange-600">
+              注意：機密情報・個人情報を含む文書は絶対にアップロードしないでください
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex w-full flex-col items-center gap-4">
-        {isPlaneTextMode ? (
-          <>
-            <Textarea
-              placeholder="テキストを入力"
-              autoFocus={true}
-              className="min-h-[194px] w-full resize-none rounded-xl bg-slate-500 !p-4 text-base"
-              defaultValue={text}
-              onChange={(e) => {
-                setText(e.target.value);
-              }}
-            />
-          </>
-        ) : (
-          <>
-            <div className="w-full">
-              <FileUploader
-                name="target-file"
-                inputRef={fileInputRef}
-                setFile={setFile}
-                file={file}
+        <div className="flex w-full flex-col items-center gap-8">
+          {isPlaneTextMode ? (
+            <>
+              <Textarea
+                placeholder="テキストを入力"
+                autoFocus={true}
+                className="min-h-[194px] w-full resize-none rounded-xl bg-slate-500 !p-4 text-base"
+                defaultValue={text}
+                onChange={(e) => {
+                  setText(e.target.value);
+                }}
               />
-            </div>
-          </>
-        )}
-
-        <div className="flex flex-row items-center gap-2">
-          <div className="text-sm">手入力モード</div>
-          <div className="flex flex-row items-center gap-8">
-            <Switch
-              disabled={isProcessing}
-              checked={isPlaneTextMode}
-              onChange={setIsPlaneTextMode}
-              className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
-            >
-              <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
-            </Switch>
-            {((!!text && isPlaneTextMode) || (file && !isPlaneTextMode)) && (
-              <div className="flex flex-row justify-end">
-                {isPlaneTextMode || inspectResult.length > 0 ? (
-                  <Button type="submit" isLoading={isProcessing}>
-                    概念グラフを抽出する
-                  </Button>
-                ) : (
-                  <Button type="submit" isLoading={isProcessing}>
-                    テキストを抽出する
-                  </Button>
-                )}
+            </>
+          ) : (
+            <>
+              <div className="flex w-full flex-col items-center gap-3">
+                <FileUploader
+                  name="target-file"
+                  inputRef={fileInputRef}
+                  setFile={setFile}
+                  file={file}
+                />
+                <div className="flex flex-col items-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpenTips(!isOpenTips);
+                    }}
+                  >
+                    <div className="text-xs underline hover:no-underline">
+                      大きなファイルを読み込ませるときのTips
+                    </div>
+                  </button>
+                </div>
               </div>
-            )}
+            </>
+          )}
+
+          <div className="flex flex-row items-center gap-2">
+            <div className="text-sm">手入力モード</div>
+            <div className="flex flex-row items-center gap-8">
+              <Switch
+                disabled={isProcessing}
+                checked={isPlaneTextMode}
+                onChange={setIsPlaneTextMode}
+                className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
+              >
+                <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+              </Switch>
+              {((!!text && isPlaneTextMode) || (file && !isPlaneTextMode)) && (
+                <div className="flex flex-row justify-end">
+                  {isPlaneTextMode || inspectResult.length > 0 ? (
+                    <Button type="submit" isLoading={isProcessing}>
+                      概念グラフを抽出する
+                    </Button>
+                  ) : (
+                    <Button type="submit" isLoading={isProcessing}>
+                      テキストを抽出する
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
+
+          {inspectResult.length > 0 && (
+            <div className="flex flex-col items-center gap-2">
+              <div className="font-semibold">テキスト情報</div>
+              <div className="flex h-96 flex-col items-center gap-2 overflow-y-scroll rounded-xl border border-slate-300">
+                <div className="flex flex-col items-center gap-2 p-8">
+                  {inspectResult.map((result, index) => (
+                    <div key={index}>{result.pageContent}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-
-        {inspectResult.length > 0 && (
-          <div className="flex flex-col items-center gap-2">
-            <div className="font-semibold">テキスト情報</div>
-            <div className="flex h-96 flex-col items-center gap-2 overflow-y-scroll rounded-xl border border-slate-300">
-              <div className="flex flex-col items-center gap-2 p-8">
-                {inspectResult.map((result, index) => (
-                  <div key={index}>{result.pageContent}</div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </form>
+      </form>
+      <DocumentUploadTipsModal isOpen={isOpenTips} setIsOpen={setIsOpenTips} />
+    </>
   );
 };
