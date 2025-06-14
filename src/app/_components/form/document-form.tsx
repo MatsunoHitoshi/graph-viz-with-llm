@@ -112,6 +112,7 @@ export const DocumentForm = ({
               BUCKETS.PATH_TO_INPUT_TXT,
             );
             if (fileUrl) {
+              setDocumentUrl(fileUrl);
               extract(fileUrl);
             }
           } else {
