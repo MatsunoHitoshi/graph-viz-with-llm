@@ -17,7 +17,7 @@ import { DocumentList } from "../list/document-list";
 import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { useState } from "react";
-// import { DocumentAttachModal } from "./document-attach-modal";
+import { DocumentAttachModal } from "./document-attach-modal";
 import { LinkButton } from "../button/link-button";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
@@ -182,12 +182,12 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
         </div>
       </div>
 
-      {/* <DocumentAttachModal
+      <DocumentAttachModal
         isOpen={documentAttachModalOpen}
         setIsOpen={setDocumentAttachModalOpen}
         topicSpaceId={id}
         refetch={refetch}
-      /> */}
+      />
     </TabsContainer>
   );
 };
