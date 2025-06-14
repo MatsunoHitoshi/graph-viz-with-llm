@@ -17,13 +17,14 @@ import { DocumentList } from "../list/document-list";
 import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { useState } from "react";
-import { DocumentAttachModal } from "./document-attach-modal";
+// import { DocumentAttachModal } from "./document-attach-modal";
 import { LinkButton } from "../button/link-button";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
   const { data: session } = useSession();
   const { data: topicSpace, refetch } = api.topicSpaces.getById.useQuery({
     id: id,
+    withDocumentGraph: false,
   });
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth = (innerWidth ?? 100) / 2 - 36;
@@ -180,12 +181,13 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
           )}
         </div>
       </div>
-      <DocumentAttachModal
+
+      {/* <DocumentAttachModal
         isOpen={documentAttachModalOpen}
         setIsOpen={setDocumentAttachModalOpen}
         topicSpaceId={id}
         refetch={refetch}
-      />
+      /> */}
     </TabsContainer>
   );
 };

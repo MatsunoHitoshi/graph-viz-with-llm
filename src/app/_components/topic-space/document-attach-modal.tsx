@@ -51,6 +51,7 @@ export const DocumentAttachModal = ({
 }: DocumentAttachModalProps) => {
   const { data: session } = useSession();
   const { data: documents } = api.sourceDocument.getListBySession.useQuery();
+
   const [selectedDocuments, setSelectedDocuments] = useState<
     DocumentResponse[]
   >([emptyDocument]);

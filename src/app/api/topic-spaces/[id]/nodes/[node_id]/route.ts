@@ -4,11 +4,12 @@ import { NextResponse } from "next/server";
 
 export const GET = async (
   _request: Request,
-  { params }: { params: { node_id: string; id: string } },
+  { params }: { params: Promise<{ node_id: string; id: string }> },
 ) => {
   try {
+    const { id, node_id } = await params;
     const res = await api.topicSpaces.getByIdPublic({
-      id: params.id,
+      id,
       // filterOption: { type: "tag", value: "main", cutOff: "1" },
     });
 
@@ -23,17 +24,17 @@ export const GET = async (
     });
 
     const sourceNode = tagFilteredNodes.find(
-      (node) => node.id === parseInt(params.node_id),
+      (node) => node.id === parseInt(node_id),
     ) ?? {
-      id: parseInt(params.node_id),
+      id: parseInt(node_id),
       name: "",
       label: "",
       properties: {},
     };
     const sourceLinks = graphData.relationships.filter(
       (link) =>
-        link.sourceId === parseInt(params.node_id) ||
-        link.targetId === parseInt(params.node_id),
+        link.sourceId === parseInt(node_id) ||
+        link.targetId === parseInt(node_id),
     );
     const neighborNodes = tagFilteredNodes.filter((node) =>
       sourceLinks?.some(

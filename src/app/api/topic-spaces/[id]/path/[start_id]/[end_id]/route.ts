@@ -3,13 +3,16 @@ import { NextResponse } from "next/server";
 
 export const GET = async (
   _request: Request,
-  { params }: { params: { id: string; start_id: string; end_id: string } },
+  {
+    params,
+  }: { params: Promise<{ id: string; start_id: string; end_id: string }> },
 ) => {
   try {
+    const { id, start_id, end_id } = await params;
     const res = await api.topicSpaces.getPath({
-      id: params.id,
-      startId: params.start_id,
-      endId: params.end_id,
+      id,
+      startId: start_id,
+      endId: end_id,
     });
 
     return NextResponse.json({
