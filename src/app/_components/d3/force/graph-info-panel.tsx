@@ -11,7 +11,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { NodePropertiesForm } from "../../form/node-properties-form";
+import type { GraphDocument } from "@/server/api/routers/kg";
 
 type GraphInfoPanelProps = {
   focusedNode: CustomNodeType | undefined;
@@ -19,11 +19,8 @@ type GraphInfoPanelProps = {
   setFocusNode: React.Dispatch<
     React.SetStateAction<CustomNodeType | undefined>
   >;
-  graphNodes: CustomNodeType[];
-  graphLinks: CustomLinkType[];
+  graphDocument: GraphDocument;
   topicSpaceId?: string;
-  isEditor?: boolean;
-  refetch?: () => void;
   // maxHeight: number;
 };
 
@@ -31,15 +28,13 @@ export const GraphInfoPanel = ({
   focusedNode,
   focusedLink,
   setFocusNode,
-  graphNodes,
-  graphLinks,
+  graphDocument,
   topicSpaceId,
-  isEditor = false,
-  refetch,
   // maxHeight,
 }: GraphInfoPanelProps) => {
   const [isPanelOpen, setIsPanelOpen] = useState<boolean>(true);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const { nodes: graphNodes, relationships: graphLinks } = graphDocument;
+
   const neighborLinks = graphLinks.filter((link) => {
     return (
       link.sourceId === focusedNode?.id || link.targetId === focusedNode?.id
@@ -58,7 +53,7 @@ export const GraphInfoPanel = ({
 
   return (
     <div
-      className={`absolute flex max-h-[500px] flex-row items-start gap-2 overflow-y-scroll rounded-[10px] bg-black/20 p-4 backdrop-blur-sm ${isPanelOpen ? "right-3 w-[400px] pr-14" : "right-6 w-0 pr-12"}`}
+      className={`absolute flex max-h-[500px] flex-row items-start gap-2 overflow-y-scroll rounded-l-lg bg-black/20 p-4 backdrop-blur-sm ${isPanelOpen ? "right-[9px] w-[400px] pr-14" : "right-[9px] w-0 pr-12"}`}
     >
       <Button
         onClick={() => {
@@ -113,7 +108,8 @@ export const GraphInfoPanel = ({
                   <div className="flex flex-row items-center gap-1">
                     <div className="font-semibold">プロパティ</div>
 
-                    {isEditor ? (
+                    {/*　MEMO: Info Panelからの編集は体験として微妙なので一旦編集できないようにする */}
+                    {/* {isEditor ? (
                       <Button
                         className="!p-1 !text-sm"
                         onClick={() => setIsEditing(!isEditing)}
@@ -122,10 +118,16 @@ export const GraphInfoPanel = ({
                       </Button>
                     ) : (
                       <></>
-                    )}
+                    )} */}
                   </div>
 
-                  {isEditor && isEditing && topicSpaceId && refetch ? (
+                  <PropertyInfo
+                    data={focusedNode}
+                    topicSpaceId={topicSpaceId}
+                  />
+
+                  {/*　MEMO: Info Panelからの編集は体験として微妙なので一旦編集できないようにする */}
+                  {/* {isEditor && isEditing && topicSpaceId && refetch ? (
                     <div className="flex flex-col gap-1">
                       <NodePropertiesForm
                         node={focusedNode}
@@ -140,7 +142,7 @@ export const GraphInfoPanel = ({
                       data={focusedNode}
                       topicSpaceId={topicSpaceId}
                     />
-                  )}
+                  )} */}
                 </div>
               )}
 

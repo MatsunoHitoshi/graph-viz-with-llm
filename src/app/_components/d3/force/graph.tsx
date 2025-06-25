@@ -14,18 +14,12 @@ import {
 } from "d3";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GraphInfoPanel } from "./graph-info-panel";
 import { D3ZoomProvider } from "../zoom";
-import {
-  EnterFullScreenIcon,
-  ExitFullScreenIcon,
-  ListBulletIcon,
-  ShareIcon,
-} from "../../icons";
-import { exportSvg } from "@/app/_utils/sys/svg";
 import type { TopicGraphFilterOption } from "@/app/const/types";
-import { type TagOption, TagsInput } from "../../input/tags-input";
-import { NodeLinkList } from "../../list/node-link-list";
+import {
+  dragEditorExtension,
+  type DragState,
+} from "../extension/drag-editor-extension";
 
 export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
 export interface CustomLinkType
@@ -68,45 +62,57 @@ const isNodeFiltered = (
 // };
 
 export const D3ForceGraph = ({
+  svgRef,
   height,
   width,
   graphDocument,
   selectedGraphData,
   selectedPathData,
-  isLinkFiltered = false,
-  tagFilter = false,
+  toolComponent,
   tagFilterOption: filterOption,
   nodeSearchQuery,
-  topicSpaceId,
+  isLinkFiltered = false,
   isClustered = false,
-  graphFullScreen = false,
-  setGraphFullScreen,
+  isGraphFullScreen = false,
   isEditor = false,
-  refetch,
-  tool = true,
+  isLargeGraph,
+  currentScale,
+  setCurrentScale,
+  focusedNode,
+  setFocusedNode,
+  focusedLink,
+  setFocusedLink,
+  onGraphUpdate,
 }: {
+  svgRef: React.RefObject<SVGSVGElement>;
   height: number;
   width: number;
   graphDocument: GraphDocument;
-  selectedGraphData?: GraphDocument | null;
-  selectedPathData?: GraphDocument | null;
-  isLinkFiltered?: boolean;
-  tagFilter?: boolean;
+  selectedGraphData?: GraphDocument;
+  selectedPathData?: GraphDocument;
+  toolComponent?: React.ReactNode;
   tagFilterOption?: TopicGraphFilterOption;
   nodeSearchQuery?: string;
-  topicSpaceId?: string;
+  currentScale: number;
+  setCurrentScale: React.Dispatch<React.SetStateAction<number>>;
+  isLinkFiltered?: boolean;
   isClustered?: boolean;
-  graphFullScreen?: boolean;
-  setGraphFullScreen?: React.Dispatch<React.SetStateAction<boolean>>;
+  isGraphFullScreen?: boolean;
   isEditor?: boolean;
-  refetch?: () => void;
-  tool?: boolean;
+  isLargeGraph: boolean;
+  focusedNode: CustomNodeType | undefined;
+  setFocusedNode: React.Dispatch<
+    React.SetStateAction<CustomNodeType | undefined>
+  >;
+  focusedLink: CustomLinkType | undefined;
+  setFocusedLink: React.Dispatch<
+    React.SetStateAction<CustomLinkType | undefined>
+  >;
+  onGraphUpdate?: (updatedGraph: GraphDocument) => void;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
   const initNodes = isLinkFiltered ? linkFilter(nodes, initLinks) : nodes;
-  const svgRef = useRef<SVGSVGElement>(null);
-  const isLargeGraph = nodes.length > 1300;
 
   const newLinks = useMemo(() => {
     return initLinks.map((d) => {
@@ -120,19 +126,16 @@ export const D3ForceGraph = ({
     });
   }, [initLinks, initNodes]);
 
-  const [currentScale, setCurrentScale] = useState<number>(1);
   const [currentTransformX, setCurrentTransformX] = useState<number>(0);
   const [currentTransformY, setCurrentTransformY] = useState<number>(0);
   const [graphNodes, setGraphNodes] = useState<CustomNodeType[]>(initNodes);
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
-  const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
-  const [focusedLink, setFocusedLink] = useState<CustomLinkType>();
-  const [tags, setTags] = useState<TagOption>();
-  const nodeLabels = Array.from(new Set(graphNodes.map((n) => n.label)));
-  const tagOptions = nodeLabels.map((l, i) => {
-    return { label: l, id: String(i), type: "label" };
-  }) as TagOption[];
-  const [isListOpen, setIsListOpen] = useState<boolean>(false);
+  const tempLineRef = useRef<SVGLineElement>(null);
+  const [dragState, setDragState] = useState<DragState>({
+    isDragging: false,
+    sourceNode: null,
+    targetNode: null,
+  });
 
   const distance = (d: CustomLinkType) => {
     return !!d.properties.distance ? Number(d.properties.distance) : 0;
@@ -203,7 +206,7 @@ export const D3ForceGraph = ({
                       ? 8
                       : 10;
           const nodeVisible =
-            graphFullScreen ||
+            isGraphFullScreen ||
             !(isLargeGraph && (neighborLinkCount ?? 0) <= visibleByScaling);
 
           return {
@@ -216,8 +219,16 @@ export const D3ForceGraph = ({
       setGraphLinks([...newLinks]);
     });
 
-    // dragExtension(simulation);
-    // dragExtension(simulation, setGraphNodes, graphNodes);
+    if (isEditor && !!onGraphUpdate && !!dragState) {
+      dragEditorExtension({
+        tempLineRef,
+        simulation,
+        graphDocument,
+        dragState,
+        setDragState,
+        onGraphUpdate,
+      });
+    }
 
     return () => {
       simulation.stop();
@@ -236,234 +247,119 @@ export const D3ForceGraph = ({
 
   return (
     <div className="flex flex-col">
-      {isListOpen ? (
-        <NodeLinkList
-          graphNodes={graphNodes}
-          setIsListOpen={setIsListOpen}
-          isListOpen={isListOpen}
-          topicSpaceId={topicSpaceId ?? ""}
-          isEditor={isEditor}
-          refetch={refetch}
-          focusedNode={focusedNode}
-          isClustered={isClustered}
-          nodeSearchQuery={nodeSearchQuery}
-        />
-      ) : (
-        <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
-          {tool && (
-            <>
-              <div className="absolute flex flex-row items-center gap-2">
-                {!!setGraphFullScreen ? (
-                  <button
-                    onClick={() => {
-                      setGraphFullScreen(!graphFullScreen);
-                    }}
-                    className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-                  >
-                    {graphFullScreen ? (
-                      <ExitFullScreenIcon
-                        height={16}
-                        width={16}
-                        color="white"
-                      />
-                    ) : (
-                      <EnterFullScreenIcon
-                        height={16}
-                        width={16}
-                        color="white"
-                      />
-                    )}
-                  </button>
-                ) : (
-                  <></>
-                )}
-                <button
-                  className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-                  onClick={() => {
-                    if (svgRef.current) {
-                      exportSvg(svgRef.current, 4 / currentScale);
-                    }
-                  }}
-                >
-                  <ShareIcon height={16} width={16} color="white" />
-                </button>
-                {tagFilter ? (
-                  <div className="rounded-lg bg-black/20 p-2 text-sm backdrop-blur-sm">
-                    <TagsInput
-                      selected={tags}
-                      setSelected={setTags}
-                      options={tagOptions}
-                      placeholder="ラベル・タグで絞り込む"
-                      defaultOption={
-                        filterOption?.value && filterOption?.type
-                          ? {
-                              id: "0",
-                              label: filterOption.value,
-                              type: filterOption.type,
-                            }
-                          : undefined
-                      }
-                    />
-                  </div>
-                ) : (
-                  <></>
-                )}
-
-                <button
-                  className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-                  onClick={() => {
-                    setIsListOpen(!isListOpen);
-                  }}
-                >
-                  <ListBulletIcon width={16} height={16} color="white" />
-                </button>
-              </div>
-
-              {!!isLargeGraph && !graphFullScreen && (
-                <div className="absolute bottom-4 flex flex-row items-center gap-1 text-xs">
-                  <div className="text-orange-500">
-                    ノード数が多いため一部のみが表示されています
-                  </div>
-                  {!!setGraphFullScreen ? (
-                    <button
-                      onClick={() => {
-                        setGraphFullScreen(true);
-                      }}
-                      className="underline hover:no-underline"
-                    >
-                      全て表示
-                    </button>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              )}
-
-              <GraphInfoPanel
-                focusedNode={focusedNode}
-                focusedLink={focusedLink}
-                graphNodes={graphNodes}
-                graphLinks={graphLinks}
-                topicSpaceId={topicSpaceId}
-                isEditor={isEditor}
-                refetch={refetch}
-                // maxHeight={height}
-                setFocusNode={setFocusedNode}
-              />
-            </>
-          )}
-
-          {nodes.length === 0 && relationships.length === 0 ? (
-            <div className="mt-60 flex flex-col items-center">
-              <div>グラフデータがありません</div>
-            </div>
-          ) : (
-            <svg
-              ref={svgRef}
-              id="container"
-              width={width}
-              height={height}
-              viewBox={`0 0 ${String(width)} ${String(height)}`}
+      <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
+        {toolComponent}
+        {nodes.length === 0 && relationships.length === 0 ? (
+          <div className="mt-60 flex flex-col items-center">
+            <div>グラフデータがありません</div>
+          </div>
+        ) : (
+          // TODO: ここより上は他コンポーネントに切り出す（D3ForceGraphが持っているべきは核となるsvg要素のみ）
+          <svg
+            ref={svgRef}
+            id="container"
+            width={width}
+            height={height}
+            viewBox={`0 0 ${String(width)} ${String(height)}`}
+          >
+            <D3ZoomProvider
+              setCurrentScale={setCurrentScale}
+              setCurrentTransformX={setCurrentTransformX}
+              setCurrentTransformY={setCurrentTransformY}
+              currentScale={currentScale}
+              currentTransformX={currentTransformX}
+              currentTransformY={currentTransformY}
             >
-              <D3ZoomProvider
-                setCurrentScale={setCurrentScale}
-                setCurrentTransformX={setCurrentTransformX}
-                setCurrentTransformY={setCurrentTransformY}
-                currentScale={currentScale}
-                currentTransformX={currentTransformX}
-                currentTransformY={currentTransformY}
-              >
-                {graphLinks.map((graphLink) => {
-                  const { source, target, type } = graphLink;
-                  const modSource = source as CustomNodeType;
-                  const modTarget = target as CustomNodeType;
-                  const isFocused = graphLink.id === focusedLink?.id;
-                  const isPathLink = selectedPathData?.relationships
-                    .map((relationship) => relationship.id)
-                    .includes(graphLink.id);
+              {graphLinks.map((graphLink) => {
+                const { source, target, type } = graphLink;
+                const modSource = source as CustomNodeType;
+                const modTarget = target as CustomNodeType;
+                const isFocused = graphLink.id === focusedLink?.id;
+                const isPathLink = selectedPathData?.relationships
+                  .map((relationship) => relationship.id)
+                  .includes(graphLink.id);
 
-                  const sourceNode = getNodeById(modSource.id, graphNodes);
-                  const targetNode = getNodeById(modTarget.id, graphNodes);
-                  const sourceNodeVisible = sourceNode?.visible ?? false;
-                  const targetNodeVisible = targetNode?.visible ?? false;
+                const sourceNode = getNodeById(modSource.id, graphNodes);
+                const targetNode = getNodeById(modTarget.id, graphNodes);
+                const sourceNodeVisible = sourceNode?.visible ?? false;
+                const targetNodeVisible = targetNode?.visible ?? false;
 
-                  if (
-                    (sourceNodeVisible || targetNodeVisible) &&
-                    modSource.x !== undefined &&
-                    modTarget.x !== undefined &&
-                    modSource.y !== undefined &&
-                    modTarget.y !== undefined
-                  ) {
-                    const isGradient = sourceNodeVisible !== targetNodeVisible;
-                    const gradientTo: number | undefined =
-                      isGradient && targetNodeVisible
-                        ? sourceNode?.id
-                        : targetNode?.id;
+                if (
+                  (sourceNodeVisible || targetNodeVisible) &&
+                  modSource.x !== undefined &&
+                  modTarget.x !== undefined &&
+                  modSource.y !== undefined &&
+                  modTarget.y !== undefined
+                ) {
+                  const isGradient = sourceNodeVisible !== targetNodeVisible;
+                  // const gradientTo: number | undefined =
+                  //   isGradient && targetNodeVisible
+                  //     ? sourceNode?.id
+                  //     : targetNode?.id;
 
-                    const gradientFrom: number | undefined =
-                      gradientTo === sourceNode?.id
-                        ? targetNode?.id
-                        : sourceNode?.id;
+                  // const gradientFrom: number | undefined =
+                  //   gradientTo === sourceNode?.id
+                  //     ? targetNode?.id
+                  //     : sourceNode?.id;
 
-                    // console.log("-----");
-                    // console.log(
-                    //   "sourceNode: ",
-                    //   sourceNode?.id,
-                    //   sourceNode?.visible,
-                    // );
-                    // console.log(
-                    //   "targetNode: ",
-                    //   targetNode?.id,
-                    //   targetNode?.visible,
-                    // );
-                    // console.log(gradientFrom, " -> ", gradientTo);
+                  // console.log("-----");
+                  // console.log(
+                  //   "sourceNode: ",
+                  //   sourceNode?.id,
+                  //   sourceNode?.visible,
+                  // );
+                  // console.log(
+                  //   "targetNode: ",
+                  //   targetNode?.id,
+                  //   targetNode?.visible,
+                  // );
+                  // console.log(gradientFrom, " -> ", gradientTo);
 
-                    return (
-                      <g
-                        className="link cursor-pointer"
-                        key={`${modSource.id}-${type}-${modTarget.id}`}
-                        onClick={() => {
-                          if (graphLink.id === focusedLink?.id) {
-                            setFocusedLink(undefined);
-                          } else {
-                            setFocusedLink(graphLink);
-                          }
-                        }}
-                      >
-                        <line
-                          stroke={
-                            isFocused
-                              ? "#ef7234"
-                              : isPathLink
-                                ? "#eae80c"
-                                : "white"
-                          }
-                          // stroke={
-                          //   isFocused
-                          //     ? "#ef7234"
-                          //     : isPathLink
-                          //       ? "#eae80c"
-                          //       : isGradient
-                          //         ? `url(#gradient-${graphLink.id})`
-                          //         : "white"
-                          // }
-                          strokeWidth={isFocused ? 3 : 2}
-                          strokeOpacity={
-                            isFocused
-                              ? 1
-                              : isGradient
-                                ? 0.04
-                                : (distance(graphLink) ? 0.6 : 0.4) /
-                                  (distance(graphLink) * distance(graphLink) ||
-                                    1)
-                          }
-                          // strokeOpacity={isFocused ? 1 : isGradient ? 0.3 : 0.4}
-                          x1={modSource.x}
-                          y1={modSource.y}
-                          x2={modTarget.x}
-                          y2={modTarget.y}
-                        />
-                        {/* <defs>
+                  return (
+                    <g
+                      className="link cursor-pointer"
+                      key={`${modSource.id}-${type}-${modTarget.id}`}
+                      onClick={() => {
+                        if (graphLink.id === focusedLink?.id) {
+                          setFocusedLink(undefined);
+                        } else {
+                          setFocusedLink(graphLink);
+                        }
+                      }}
+                    >
+                      <line
+                        stroke={
+                          isFocused
+                            ? "#ef7234"
+                            : isPathLink
+                              ? "#eae80c"
+                              : "white"
+                        }
+                        // stroke={
+                        //   isFocused
+                        //     ? "#ef7234"
+                        //     : isPathLink
+                        //       ? "#eae80c"
+                        //       : isGradient
+                        //         ? `url(#gradient-${graphLink.id})`
+                        //         : "white"
+                        // }
+                        strokeWidth={isFocused ? 3 : 2}
+                        strokeOpacity={
+                          isFocused
+                            ? 1
+                            : isGradient
+                              ? 0.04
+                              : (distance(graphLink) ? 0.6 : 0.4) /
+                                (distance(graphLink) * distance(graphLink) || 1)
+                        }
+                        // strokeOpacity={isFocused ? 1 : isGradient ? 0.3 : 0.4}
+                        x1={modSource.x}
+                        y1={modSource.y}
+                        x2={modTarget.x}
+                        y2={modTarget.y}
+                      />
+                      {/* <defs>
                       <linearGradient
                         id={`gradient-${graphLink.id}`}
                         x1={gradientTo === modSource.id ? "0%" : "100%"}
@@ -479,111 +375,125 @@ export const D3ForceGraph = ({
                         />
                       </linearGradient>
                     </defs> */}
-                        {currentScale > 3.5 && (
-                          <text
-                            x={(modSource.x + modTarget.x) / 2}
-                            y={(modSource.y + modTarget.y) / 2}
-                            textAnchor="middle"
-                            fill={"darkgray"}
-                            fontSize={2.5}
-                          >
-                            {graphLink.type}
-                          </text>
-                        )}
-                      </g>
-                    );
-                  }
-                })}
-                {graphNodes.map((graphNode) => {
-                  const isFocused = graphNode.id === focusedNode?.id;
-                  const isPathNode = selectedPathData?.nodes
-                    .map((node) => node.id)
-                    .includes(graphNode.id);
-                  const graphUnselected = selectedGraphData
-                    ? !selectedGraphData.nodes.some((node) => {
-                        return node.name === graphNode.name;
-                      })
-                    : false;
-                  const queryFiltered =
-                    !!nodeSearchQuery &&
-                    nodeSearchQuery !== "" &&
-                    graphNode.name
-                      .toLowerCase()
-                      .includes(nodeSearchQuery.toLowerCase());
+                      {currentScale > 3.5 && (
+                        <text
+                          x={(modSource.x + modTarget.x) / 2}
+                          y={(modSource.y + modTarget.y) / 2}
+                          textAnchor="middle"
+                          fill={"darkgray"}
+                          fontSize={2.5}
+                        >
+                          {graphLink.type}
+                        </text>
+                      )}
+                    </g>
+                  );
+                }
+              })}
+              {graphNodes.map((graphNode) => {
+                const isFocused = graphNode.id === focusedNode?.id;
+                const isPathNode = selectedPathData?.nodes
+                  .map((node) => node.id)
+                  .includes(graphNode.id);
+                const graphUnselected = selectedGraphData
+                  ? !selectedGraphData.nodes.some((node) => {
+                      return node.name === graphNode.name;
+                    })
+                  : false;
+                const queryFiltered =
+                  !!nodeSearchQuery &&
+                  nodeSearchQuery !== "" &&
+                  graphNode.name
+                    .toLowerCase()
+                    .includes(nodeSearchQuery.toLowerCase());
 
-                  if (
-                    (graphNode.visible ?? false) ||
-                    queryFiltered ||
-                    isFocused ||
-                    isPathNode
-                  ) {
-                    return (
-                      <g
-                        key={graphNode.id}
-                        className="node cursor-pointer"
-                        onClick={() => {
-                          if (graphNode.id === focusedNode?.id) {
-                            setFocusedNode(undefined);
-                          } else {
-                            setFocusedNode(graphNode);
-                          }
-                        }}
-                      >
-                        <circle
-                          r={
-                            1.6 *
-                            ((graphNode.neighborLinkCount ?? 0) * 0.1 + 3.6) *
-                            (isNodeFiltered(graphNode, filterOption) ? 1 : 0.5)
-                          }
+                const isDragEditorTarget =
+                  dragState.isDragging &&
+                  (dragState.targetNode?.id === graphNode.id ||
+                    dragState.sourceNode?.id === graphNode.id);
+
+                if (
+                  (graphNode.visible ?? false) ||
+                  queryFiltered ||
+                  isFocused ||
+                  isPathNode
+                ) {
+                  return (
+                    <g
+                      key={graphNode.id}
+                      className="node cursor-pointer"
+                      onClick={() => {
+                        if (graphNode.id === focusedNode?.id) {
+                          setFocusedNode(undefined);
+                        } else {
+                          setFocusedNode(graphNode);
+                        }
+                      }}
+                    >
+                      <circle
+                        r={
+                          1.6 *
+                          ((graphNode.neighborLinkCount ?? 0) * 0.1 + 3.6) *
+                          (isNodeFiltered(graphNode, filterOption) ? 1 : 0.5)
+                        }
+                        fill={
+                          isFocused || isDragEditorTarget
+                            ? "#ef7234"
+                            : isPathNode
+                              ? "#eae80c"
+                              : graphUnselected
+                                ? "#324557"
+                                : isClustered && graphNode.nodeColor
+                                  ? graphNode.nodeColor
+                                  : "whitesmoke"
+                        }
+                        opacity={
+                          isNodeFiltered(graphNode, filterOption) ? 0.95 : 0.6
+                        }
+                        cx={graphNode.x}
+                        cy={graphNode.y}
+                        stroke="#eae80c"
+                        strokeWidth={queryFiltered ? 2.5 : 0}
+                      />
+                      {(currentScale > 0.7 || isGraphFullScreen) && (
+                        <text
+                          x={graphNode.x}
+                          y={graphNode.y}
+                          textAnchor="middle"
                           fill={
-                            isFocused
-                              ? "#ef7234"
-                              : isPathNode
-                                ? "#eae80c"
-                                : graphUnselected
-                                  ? "#324557"
-                                  : isClustered && graphNode.nodeColor
-                                    ? graphNode.nodeColor
-                                    : "whitesmoke"
+                            queryFiltered
+                              ? "#eab000"
+                              : isClustered
+                                ? "whitesmoke"
+                                : "dimgray"
                           }
-                          opacity={
-                            isNodeFiltered(graphNode, filterOption) ? 0.95 : 0.6
+                          fontSize={
+                            currentScale > 4 ? 4 : currentScale > 3 ? 6 : 8
                           }
-                          cx={graphNode.x}
-                          cy={graphNode.y}
-                          stroke="#eae80c"
-                          strokeWidth={queryFiltered ? 2.5 : 0}
-                        />
-                        {(currentScale > 0.7 || graphFullScreen) && (
-                          <text
-                            x={graphNode.x}
-                            y={graphNode.y}
-                            textAnchor="middle"
-                            fill={
-                              queryFiltered
-                                ? "#eab000"
-                                : isClustered
-                                  ? "whitesmoke"
-                                  : "dimgray"
-                            }
-                            fontSize={
-                              currentScale > 4 ? 4 : currentScale > 3 ? 6 : 8
-                            }
-                          >
-                            {graphNode.name}
-                          </text>
-                        )}
-                      </g>
-                    );
-                  } else {
-                    return;
-                  }
-                })}
-              </D3ZoomProvider>
-            </svg>
-          )}
-        </div>
-      )}
+                        >
+                          {graphNode.name}
+                        </text>
+                      )}
+                    </g>
+                  );
+                } else {
+                  return;
+                }
+              })}
+              <line
+                ref={tempLineRef}
+                style={{
+                  display: "none",
+                  stroke: "#ef7234",
+                  strokeWidth: 2,
+                  strokeDasharray: "5,5",
+                  pointerEvents: "none",
+                }}
+              />
+            </D3ZoomProvider>
+          </svg>
+        )}
+      </div>
     </div>
   );
 };

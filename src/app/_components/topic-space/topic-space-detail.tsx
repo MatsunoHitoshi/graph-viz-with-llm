@@ -2,8 +2,6 @@
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
 import { TabsContainer } from "../tab/tab";
-import { D3ForceGraph } from "../d3/force/graph";
-import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import {
   FileTextIcon,
@@ -19,6 +17,7 @@ import { Button } from "../button/button";
 import { useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
 import { LinkButton } from "../button/link-button";
+import { MultiDocumentGraphViewer } from "../view/graph-view/multi-document-graph-viewer";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
   const { data: session } = useSession();
@@ -26,9 +25,6 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
     id: id,
     withDocumentGraph: false,
   });
-  const [innerWidth, innerHeight] = useWindowSize();
-  const graphAreaWidth = (innerWidth ?? 100) / 2 - 36;
-  const graphAreaHeight = (innerHeight ?? 300) - 160;
   const detachDocument = api.topicSpaces.detachDocument.useMutation();
 
   const [documentAttachModalOpen, setDocumentAttachModalOpen] =
@@ -37,8 +33,8 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
   if (!session || !topicSpace) return null;
   return (
     <TabsContainer>
-      <div className="grid  grid-flow-row grid-cols-2 gap-8 p-4">
-        <div className="flex flex-col gap-8">
+      <div className="grid  grid-flow-row grid-cols-2 gap-8 ">
+        <div className="flex flex-col gap-8 p-4">
           <a href={`/topic-spaces/${id}`} className="w-max">
             <div className="text-lg font-semibold">{topicSpace.name}</div>
           </a>
@@ -167,9 +163,7 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
         </div>
         <div>
           {topicSpace.graphData ? (
-            <D3ForceGraph
-              width={graphAreaWidth}
-              height={graphAreaHeight}
+            <MultiDocumentGraphViewer
               graphDocument={topicSpace.graphData as GraphDocument}
               topicSpaceId={id}
             />

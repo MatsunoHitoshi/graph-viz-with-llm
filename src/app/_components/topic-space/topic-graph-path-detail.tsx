@@ -1,8 +1,6 @@
 "use client";
 import { api } from "@/trpc/react";
 import { TabsContainer } from "../tab/tab";
-import { D3ForceGraph } from "../d3/force/graph";
-import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type { DocumentResponse } from "@/app/const/types";
 import { useEffect, useState } from "react";
@@ -10,7 +8,7 @@ import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
 import { GraphSummaryGenerator } from "../summary-generator/graph-smmary-generator";
-import { useSession } from "next-auth/react";
+import { MultiDocumentGraphDetailViewer } from "../view/graph-view/multi-document-graph-detail-viewer";
 
 export const TopicGraphPathDetail = ({
   id,
@@ -26,10 +24,6 @@ export const TopicGraphPathDetail = ({
     startId: startId,
     endId: endId,
   });
-  const [innerWidth, innerHeight] = useWindowSize();
-  const graphAreaWidth = (2 * (innerWidth ?? 100)) / 3 - 36;
-  const { data: session } = useSession();
-  const graphAreaHeight = (innerHeight ?? 300) - (session ? 160 : 108);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);
@@ -97,15 +91,12 @@ export const TopicGraphPathDetail = ({
           />
         </div>
 
-        <div className="col-span-2 py-4">
+        <div className="col-span-2">
           {topicSpace.graphData ? (
-            <D3ForceGraph
-              width={graphAreaWidth}
-              height={graphAreaHeight}
+            <MultiDocumentGraphDetailViewer
               graphDocument={topicSpace.graphData as GraphDocument}
-              selectedGraphData={selectedGraphData}
-              selectedPathData={pathData}
-              nodeSearchQuery={nodeSearchQuery}
+              selectedGraphData={selectedGraphData ?? undefined}
+              selectedPathData={pathData ?? undefined}
               topicSpaceId={id}
             />
           ) : (

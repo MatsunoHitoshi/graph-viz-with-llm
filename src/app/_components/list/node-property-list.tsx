@@ -1,6 +1,10 @@
-import { D3ForceGraph, type CustomNodeType } from "../d3/force/graph";
+import {
+  CustomLinkType,
+  D3ForceGraph,
+  type CustomNodeType,
+} from "../d3/force/graph";
 import { Button } from "../button/button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NodePropertiesForm } from "../form/node-properties-form";
 import { PropertyInfo } from "../d3/force/graph-info-panel";
 import { api } from "@/trpc/react";
@@ -76,6 +80,16 @@ export const NodePropertyList = ({
     );
   };
 
+  // graph用の変数
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [currentScale, setCurrentScale] = useState<number>(1);
+  const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
+  const [focusedLink, setFocusedLink] = useState<CustomLinkType>();
+
+  const onGraphUpdate = (updatedGraph: GraphDocument) => {
+    setGraphDocument(updatedGraph);
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row items-center gap-2">
@@ -137,10 +151,20 @@ export const NodePropertyList = ({
 
           <div className="flex w-max flex-col gap-1 rounded-md border border-gray-300 p-2">
             <D3ForceGraph
+              svgRef={svgRef}
+              currentScale={currentScale}
+              setCurrentScale={setCurrentScale}
+              focusedNode={focusedNode}
+              setFocusedNode={setFocusedNode}
+              focusedLink={focusedLink}
               width={500}
               height={500}
               graphDocument={graphDocument}
-              tool={false}
+              isEditor={true}
+              isLargeGraph={false}
+              setFocusedLink={setFocusedLink}
+              toolComponent={<></>}
+              onGraphUpdate={onGraphUpdate}
             />
           </div>
         </>

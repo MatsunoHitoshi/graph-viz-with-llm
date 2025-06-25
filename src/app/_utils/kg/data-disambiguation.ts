@@ -4,14 +4,14 @@ import type {
   RelationshipType,
 } from "./get-nodes-and-relationships-from-result";
 
-const generateSystemMessageForNodes = () => {
-  return `
-Your task is to identify if there are duplicated nodes and if so merge them into one node. Only merge the nodes that refer to the same entity.
-You will be given different datasets of nodes and some of these nodes may be duplicated or refer to the same entity. 
-The datasets contains nodes in the form [ENTITY_ID, TYPE, PROPERTIES]. When you have completed your task please give me the 
-resulting nodes in the same format. Only return the nodes and relationships no other text. If there is no duplicated nodes return the original nodes.
-  `;
-};
+// const generateSystemMessageForNodes = () => {
+//   return `
+// Your task is to identify if there are duplicated nodes and if so merge them into one node. Only merge the nodes that refer to the same entity.
+// You will be given different datasets of nodes and some of these nodes may be duplicated or refer to the same entity.
+// The datasets contains nodes in the form [ENTITY_ID, TYPE, PROPERTIES]. When you have completed your task please give me the
+// resulting nodes in the same format. Only return the nodes and relationships no other text. If there is no duplicated nodes return the original nodes.
+//   `;
+// };
 
 const deleteDuplicatedRelationships = (relationships: RelationshipType[]) => {
   const filteredRelationships = relationships.filter((relationship, index) => {

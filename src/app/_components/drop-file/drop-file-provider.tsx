@@ -18,7 +18,7 @@ export const DropFileProvider = ({
     }
   };
 
-  const onDragLeave = (e: DragEvent<HTMLDivElement>) => {
+  const onDragLeave = (_e: DragEvent<HTMLDivElement>) => {
     setIsDragActive(false);
   };
 

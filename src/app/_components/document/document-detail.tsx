@@ -4,11 +4,16 @@ import { FileTextIcon, GraphIcon, Link2Icon } from "../icons";
 import { useRouter } from "next/navigation";
 import { UrlCopy } from "../url-copy/url-copy";
 import { env } from "@/env";
-import { D3ForceGraph } from "../d3/force/graph";
+import {
+  type CustomLinkType,
+  type CustomNodeType,
+  D3ForceGraph,
+} from "../d3/force/graph";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import { api } from "@/trpc/react";
 import { exportTxt } from "@/app/_utils/sys/svg";
+import { useRef, useState } from "react";
 export const DocumentDetail = ({ documentId }: { documentId: string }) => {
   const router = useRouter();
   const [innerWidth, innerHeight] = useWindowSize();
@@ -17,6 +22,14 @@ export const DocumentDetail = ({ documentId }: { documentId: string }) => {
   const { data: document } = api.sourceDocument.getById.useQuery({
     id: documentId,
   });
+  const [currentScale, setCurrentScale] = useState<number>(1);
+  const [focusedNode, setFocusedNode] = useState<CustomNodeType | undefined>(
+    undefined,
+  );
+  const [focusedLink, setFocusedLink] = useState<CustomLinkType | undefined>(
+    undefined,
+  );
+  const svgRef = useRef<SVGSVGElement>(null);
 
   if (!document) return null;
   return (
@@ -66,9 +79,17 @@ export const DocumentDetail = ({ documentId }: { documentId: string }) => {
         </div>
       </div>
       <D3ForceGraph
+        svgRef={svgRef}
         width={graphAreaWidth}
         height={graphAreaHeight}
         graphDocument={document.graph?.dataJson as GraphDocument}
+        currentScale={currentScale}
+        setCurrentScale={setCurrentScale}
+        isLargeGraph={false}
+        focusedNode={focusedNode}
+        setFocusedNode={setFocusedNode}
+        focusedLink={focusedLink}
+        setFocusedLink={setFocusedLink}
       />
     </div>
   );

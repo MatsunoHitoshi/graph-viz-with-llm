@@ -5,27 +5,30 @@ import { Button } from "../button/button";
 import { CheckboxInput } from "../input/checkbox-input";
 import { NodePropertyList } from "./node-property-list";
 import { MergeNodesForm } from "../form/merge-nodes-form";
+import type { GraphDocument } from "@/server/api/routers/kg";
 
 export const NodeLinkList = ({
-  graphNodes,
+  graphDocument,
   setIsListOpen,
   focusedNode,
   isListOpen,
   topicSpaceId,
-  isEditor,
+  isEditor = false,
   refetch,
-  isClustered,
+  isClustered = false,
   nodeSearchQuery,
+  toolComponent,
 }: {
-  graphNodes: CustomNodeType[];
+  graphDocument: GraphDocument;
   setIsListOpen: (isListOpen: boolean) => void;
-  isListOpen: boolean;
-  topicSpaceId: string | undefined;
-  isEditor: boolean;
-  refetch: (() => void) | undefined;
+  topicSpaceId: string;
   focusedNode: CustomNodeType | undefined;
-  isClustered: boolean;
-  nodeSearchQuery: string | undefined;
+  nodeSearchQuery?: string;
+  toolComponent?: React.ReactNode;
+  isListOpen: boolean;
+  isClustered?: boolean;
+  isEditor?: boolean;
+  refetch?: () => void;
 }) => {
   const [isNodeMergeMode, setIsNodeMergeMode] = useState<boolean>(false);
   const [mergeNodes, setMergeNodes] = useState<CustomNodeType[]>();
@@ -33,6 +36,7 @@ export const NodeLinkList = ({
     useState<boolean>(false);
   const [isNameSorted, setIsNameSorted] = useState<boolean>(false);
   const [isCentralitySorted, setIsCentralitySorted] = useState<boolean>(false);
+  const graphNodes = graphDocument.nodes;
 
   const nameSortedGraphNodes = useMemo(() => {
     if (isNameSorted) {
@@ -55,6 +59,7 @@ export const NodeLinkList = ({
   return (
     <div className="flex h-screen flex-col gap-2">
       <div className="flex flex-row items-center gap-2">
+        {toolComponent}
         <button
           className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
           onClick={() => {

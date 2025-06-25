@@ -27,8 +27,8 @@ export const TreeViewer = ({
     isSource: sourceTargetSwitch,
   });
   const [innerWidth, innerHeight] = useWindowSize();
-  const graphAreaWidth = (2 * (innerWidth ?? 100)) / 3 - 36;
-  const graphAreaHeight = (innerHeight ?? 300) - 160;
+  const graphAreaWidth = (2 * (innerWidth ?? 100)) / 3 - 22;
+  const graphAreaHeight = (innerHeight ?? 300) - 128;
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);

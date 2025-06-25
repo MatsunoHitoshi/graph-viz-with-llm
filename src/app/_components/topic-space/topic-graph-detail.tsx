@@ -1,7 +1,7 @@
 "use client";
 import { api } from "@/trpc/react";
 import { TabsContainer } from "../tab/tab";
-import { D3ForceGraph } from "../d3/force/graph";
+import { CustomLinkType, CustomNodeType } from "../d3/force/graph";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type {
@@ -9,7 +9,7 @@ import type {
   DocumentResponseWithGraphData,
   TopicGraphFilterOption,
 } from "@/app/const/types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
@@ -17,6 +17,7 @@ import { interpolateRainbow } from "d3";
 import { useSearchParams } from "next/navigation";
 import { Switch } from "@headlessui/react";
 import { useSession } from "next-auth/react";
+import { MultiDocumentGraphDetailViewer } from "../view/graph-view/multi-document-graph-detail-viewer";
 
 export const circlePosition = (
   index: number,
@@ -112,7 +113,14 @@ export const TopicGraphDetail = ({
   const [pathData, setPathData] = useState<GraphDocument>();
   const [isClustered, setIsClustered] = useState<boolean>(false);
   const [graphData, setGraphData] = useState<GraphDocument>();
-
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [currentScale, setCurrentScale] = useState<number>(1);
+  const [focusedNode, setFocusedNode] = useState<CustomNodeType | undefined>(
+    undefined,
+  );
+  const [focusedLink, setFocusedLink] = useState<CustomLinkType | undefined>(
+    undefined,
+  );
   useEffect(() => {
     setGraphData(topicSpace?.graphData as GraphDocument);
   }, [topicSpace]);
@@ -236,22 +244,16 @@ export const TopicGraphDetail = ({
           </div>
         )}
 
-        <div className="col-span-2 py-4">
+        <div className="col-span-2">
           {graphData ? (
-            <D3ForceGraph
-              width={graphAreaWidth}
-              height={graphAreaHeight}
-              graphDocument={graphData}
-              selectedGraphData={selectedGraphData}
-              selectedPathData={pathData}
-              isLinkFiltered={isLinkFiltered}
-              nodeSearchQuery={nodeSearchQuery}
+            <MultiDocumentGraphDetailViewer
               topicSpaceId={id}
+              graphDocument={graphData}
+              isGraphFullScreen={graphFullScreen}
+              setIsGraphFullScreen={setGraphFullScreen}
               isClustered={isClustered}
-              graphFullScreen={graphFullScreen}
-              setGraphFullScreen={setGraphFullScreen}
-              tagFilter
-              tagFilterOption={filterOption}
+              selectedPathData={pathData}
+              selectedGraphData={selectedGraphData ?? undefined}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

@@ -1,7 +1,6 @@
 "use client";
 import { api } from "@/trpc/react";
 import { TabsContainer } from "../tab/tab";
-import { D3ForceGraph } from "../d3/force/graph";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type {
@@ -9,7 +8,6 @@ import type {
   TopicGraphFilterOption,
 } from "@/app/const/types";
 import { useEffect, useState } from "react";
-import { DocumentAttachModal } from "./document-attach-modal";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { RelationPathSearch } from "../toolbar/relation-path-search";
@@ -17,6 +15,7 @@ import { circleColor } from "./topic-graph-detail";
 import { useSession } from "next-auth/react";
 import { Switch } from "@headlessui/react";
 import { useSearchParams } from "next/navigation";
+import { MultiDocumentGraphEditor } from "../view/graph-edit/multi-document-graph-editor";
 
 type TopicGraphDetailProps = {
   id: string;
@@ -47,14 +46,10 @@ export const TopicGraphEditor = ({
   );
   const [innerWidth, innerHeight] = useWindowSize();
   const [graphFullScreen, setGraphFullScreen] = useState<boolean>(false);
-  const graphAreaWidth =
-    (2 * (innerWidth ?? 100)) / (graphFullScreen ? 2 : 3) - 36;
-  const graphAreaHeight = (innerHeight ?? 300) - 160;
+
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);
-  const [documentAttachModalOpen, setDocumentAttachModalOpen] =
-    useState<boolean>(false);
   const [isLinkFiltered, setIsLinkFiltered] = useState<boolean>(false);
   const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
   const [pathData, setPathData] = useState<GraphDocument>();
@@ -184,24 +179,17 @@ export const TopicGraphEditor = ({
           </div>
         )}
 
-        <div className="col-span-2 py-4">
+        <div className="col-span-2">
           {graphData ? (
-            <D3ForceGraph
-              width={graphAreaWidth}
-              height={graphAreaHeight}
+            <MultiDocumentGraphEditor
               graphDocument={graphData}
-              selectedGraphData={selectedGraphData}
-              selectedPathData={pathData}
-              isLinkFiltered={isLinkFiltered}
-              nodeSearchQuery={nodeSearchQuery}
               topicSpaceId={id}
-              isClustered={isClustered}
-              graphFullScreen={graphFullScreen}
-              setGraphFullScreen={setGraphFullScreen}
-              tagFilter
-              tagFilterOption={filterOption}
-              isEditor={true}
               refetch={refetch}
+              isGraphFullScreen={graphFullScreen}
+              setIsGraphFullScreen={setGraphFullScreen}
+              isClustered={isClustered}
+              selectedGraphData={selectedGraphData ?? undefined}
+              selectedPathData={pathData}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">
@@ -211,12 +199,6 @@ export const TopicGraphEditor = ({
           )}
         </div>
       </div>
-      <DocumentAttachModal
-        isOpen={documentAttachModalOpen}
-        setIsOpen={setDocumentAttachModalOpen}
-        topicSpaceId={id}
-        refetch={refetch}
-      />
     </TabsContainer>
   );
 };

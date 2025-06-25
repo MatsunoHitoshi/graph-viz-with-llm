@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { GraphExtraction } from "./_components/view/graph";
+import { ExtractedGraphViewer } from "@/app/_components/view/graph-view/extracted-graph-viewer";
 import { Suspense } from "react";
 
 const Page: NextPage = async () => {
@@ -8,7 +8,7 @@ const Page: NextPage = async () => {
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-900">
       <div className="container flex flex-col items-center justify-center gap-12 pt-16">
         <Suspense>
-          <GraphExtraction />
+          <ExtractedGraphViewer />
         </Suspense>
       </div>
     </main>

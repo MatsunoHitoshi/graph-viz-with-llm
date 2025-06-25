@@ -24,7 +24,7 @@ const TextToSpeechSchema = z.object({
 export const assistantRouter = createTRPCRouter({
   graphSummary: protectedProcedure
     .input(GenerateGraphSummarySchema)
-    .mutation(async function* ({ ctx, input }) {
+    .mutation(async function* ({ input }) {
       const sanitizedGraphData = {
         nodes: input.graphData.nodes as NodeType[],
         relationships: input.graphData.relationships as RelationshipType[],
@@ -109,7 +109,7 @@ export const assistantRouter = createTRPCRouter({
 
   graphOutline: protectedProcedure
     .input(GenerateGraphSummarySchema)
-    .mutation(async function* ({ ctx, input }) {
+    .mutation(async function* ({ input }) {
       const sanitizedGraphData = {
         nodes: input.graphData.nodes as NodeType[],
         relationships: input.graphData.relationships as RelationshipType[],
@@ -179,7 +179,7 @@ export const assistantRouter = createTRPCRouter({
 
   textToSpeech: protectedProcedure
     .input(TextToSpeechSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const openai = new OpenAI();
 
       try {
