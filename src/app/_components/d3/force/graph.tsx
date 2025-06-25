@@ -108,7 +108,7 @@ export const D3ForceGraph = ({
   setFocusedLink: React.Dispatch<
     React.SetStateAction<CustomLinkType | undefined>
   >;
-  onGraphUpdate?: (updatedGraph: GraphDocument) => void;
+  onGraphUpdate?: (additionalGraph: GraphDocument) => void;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];

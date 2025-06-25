@@ -27,7 +27,7 @@ export const dragEditorExtension = ({
   graphDocument: GraphDocument;
   dragState: DragState;
   setDragState: React.Dispatch<React.SetStateAction<DragState>>;
-  onGraphUpdate?: (updatedGraph: GraphDocument) => void;
+  onGraphUpdate?: (additionalGraph: GraphDocument) => void;
 }) => {
   let dragStateInExtension = dragState;
   const dragReset = () => {
@@ -51,29 +51,31 @@ export const dragEditorExtension = ({
     const newRelationshipId =
       Math.max(...graphDocument.relationships.map((r) => r.id)) + 1;
 
-    const newNode: NodeType = {
+    const newNode: CustomNodeType = {
       id: newNodeId,
       name: `新しいノード${newNodeId}`,
       label: "Entity",
       properties: {},
+      x: sourceNode.x,
+      y: sourceNode.y,
     };
 
     const newRelationship: RelationshipType = {
       id: newRelationshipId,
       sourceName: sourceNode.name,
       sourceId: sourceNode.id,
-      type: "connects",
+      type: "CONNECTS",
       targetName: newNode.name,
       targetId: newNode.id,
       properties: {},
     };
 
-    const updatedGraph: GraphDocument = {
-      nodes: [...graphDocument.nodes, newNode],
-      relationships: [...graphDocument.relationships, newRelationship],
+    const additionalGraph: GraphDocument = {
+      nodes: [newNode],
+      relationships: [newRelationship],
     };
 
-    onGraphUpdate(updatedGraph);
+    onGraphUpdate(additionalGraph);
   };
 
   // 既存のノードに接続する関数
@@ -82,9 +84,6 @@ export const dragEditorExtension = ({
     targetNode: CustomNodeType,
   ) => {
     if (!onGraphUpdate) return;
-
-    console.log("sourceNode", sourceNode);
-    console.log("targetNode", targetNode);
 
     const newRelationshipId =
       Math.max(...graphDocument.relationships.map((r) => r.id)) + 1;
@@ -99,14 +98,12 @@ export const dragEditorExtension = ({
       properties: {},
     };
 
-    const updatedGraph: GraphDocument = {
-      nodes: graphDocument.nodes,
-      relationships: [...graphDocument.relationships, newRelationship],
+    const additionalGraph: GraphDocument = {
+      nodes: [],
+      relationships: [newRelationship],
     };
 
-    console.log("connectToExistingNode", newRelationship);
-
-    onGraphUpdate(updatedGraph);
+    onGraphUpdate(additionalGraph);
   };
 
   function dragStarted(
@@ -185,6 +182,12 @@ export const dragEditorExtension = ({
         isDragging: true,
         sourceNode: dragStateInExtension.sourceNode,
         targetNode: targetNode,
+      });
+    } else {
+      dragSet({
+        isDragging: true,
+        sourceNode: dragStateInExtension.sourceNode,
+        targetNode: null,
       });
     }
 

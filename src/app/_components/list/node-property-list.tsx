@@ -11,6 +11,7 @@ import { api } from "@/trpc/react";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { Loading } from "../loading/loading";
 import { CrossLargeIcon } from "../icons";
+import { NodeLinkEditModal } from "../modal/node-link-edit-modal";
 export const NodePropertyList = ({
   node,
   isEditor,
@@ -86,8 +87,17 @@ export const NodePropertyList = ({
   const [focusedNode, setFocusedNode] = useState<CustomNodeType>();
   const [focusedLink, setFocusedLink] = useState<CustomLinkType>();
 
-  const onGraphUpdate = (updatedGraph: GraphDocument) => {
-    setGraphDocument(updatedGraph);
+  // graph編集用の変数
+  const [additionalGraph, setAdditionalGraph] = useState<
+    GraphDocument | undefined
+  >();
+  const [isNodeLinkAttachModalOpen, setIsNodeLinkAttachModalOpen] =
+    useState<boolean>(false);
+
+  const onGraphUpdate = (additionalGraph: GraphDocument) => {
+    console.log("onGraphUpdate", additionalGraph);
+    setAdditionalGraph(additionalGraph);
+    setIsNodeLinkAttachModalOpen(true);
   };
 
   return (
@@ -167,6 +177,14 @@ export const NodePropertyList = ({
               onGraphUpdate={onGraphUpdate}
             />
           </div>
+          <NodeLinkEditModal
+            isOpen={isNodeLinkAttachModalOpen}
+            setIsOpen={setIsNodeLinkAttachModalOpen}
+            graphDocument={graphDocument}
+            setGraphDocument={setGraphDocument}
+            additionalGraph={additionalGraph}
+            setAdditionalGraph={setAdditionalGraph}
+          />
         </>
       )}
     </div>
