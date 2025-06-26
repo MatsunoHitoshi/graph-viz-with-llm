@@ -1,7 +1,4 @@
-import type {
-  NodeType,
-  RelationshipType,
-} from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
+import type { NodeType } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import {
   forceSimulation,
@@ -12,7 +9,6 @@ import {
   forceY,
   forceCollide,
 } from "d3";
-import type { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { D3ZoomProvider } from "../zoom";
 import type { TopicGraphFilterOption } from "@/app/const/types";
@@ -21,10 +17,12 @@ import {
   type DragState,
 } from "../extension/drag-editor-extension";
 
-export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
-export interface CustomLinkType
-  extends SimulationLinkDatum<CustomNodeType>,
-    RelationshipType {}
+import type { CustomNodeType, CustomLinkType } from "@/app/const/types";
+
+// export interface CustomNodeType extends SimulationNodeDatum, NodeType {}
+// export interface CustomLinkType
+//   extends SimulationLinkDatum<CustomNodeType>,
+//     RelationshipType {}
 
 const getNodeById = (id: number, nodes: NodeType[]) => {
   return nodes.find((node) => {
@@ -131,6 +129,7 @@ export const D3ForceGraph = ({
   const [graphNodes, setGraphNodes] = useState<CustomNodeType[]>(initNodes);
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
   const tempLineRef = useRef<SVGLineElement>(null);
+  const tempCircleRef = useRef<SVGCircleElement>(null);
   const [dragState, setDragState] = useState<DragState>({
     isDragging: false,
     sourceNode: null,
@@ -190,9 +189,9 @@ export const D3ForceGraph = ({
     simulation.on("tick", () => {
       setGraphNodes([
         ...initNodes.map((d) => {
-          const neighborLinkCount = initLinks.filter((link) => {
-            return link.sourceId === d.id || link.targetId === d.id;
-          }).length;
+          // const neighborLinkCount = initLinks.filter((link) => {
+          //   return link.sourceId === d.id || link.targetId === d.id;
+          // }).length;
           const visibleByScaling =
             currentScale > 4
               ? 0
@@ -207,11 +206,11 @@ export const D3ForceGraph = ({
                       : 10;
           const nodeVisible =
             isGraphFullScreen ||
-            !(isLargeGraph && (neighborLinkCount ?? 0) <= visibleByScaling);
+            !(isLargeGraph && (d.neighborLinkCount ?? 0) <= visibleByScaling);
 
           return {
             ...d,
-            neighborLinkCount: neighborLinkCount,
+            // neighborLinkCount: neighborLinkCount,
             visible: nodeVisible,
           };
         }),
@@ -222,6 +221,7 @@ export const D3ForceGraph = ({
     if (isEditor && !!onGraphUpdate && !!dragState) {
       dragEditorExtension({
         tempLineRef,
+        tempCircleRef,
         simulation,
         graphDocument,
         dragState,
@@ -488,8 +488,10 @@ export const D3ForceGraph = ({
                   strokeWidth: 2,
                   strokeDasharray: "5,5",
                   pointerEvents: "none",
+                  opacity: 0.5,
                 }}
               />
+              <circle ref={tempCircleRef} r={5} fill="#ef7234" opacity={0.5} />
             </D3ZoomProvider>
           </svg>
         )}

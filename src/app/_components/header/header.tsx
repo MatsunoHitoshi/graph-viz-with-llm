@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "../button/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { MixerHorizontalIcon } from "../icons";
+import { DashboardIcon, MixerHorizontalIcon } from "../icons";
 import { loginProhibited } from "@/app/const/page-config";
 import { usePathname } from "next/navigation";
 
@@ -58,7 +58,7 @@ export const Header = () => {
                     }}
                     className="flex !h-10 cursor-pointer flex-row items-center gap-1 rounded-md p-2 hover:bg-slate-50/10"
                   >
-                    <MixerHorizontalIcon width={18} height={18} />
+                    <DashboardIcon width={18} height={18} />
                   </Button>
                   <Button
                     onClick={() => {

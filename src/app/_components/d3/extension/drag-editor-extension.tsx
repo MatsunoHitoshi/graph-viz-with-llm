@@ -1,12 +1,9 @@
 import { drag, type Simulation } from "d3";
 import type { D3DragEvent } from "d3";
 import * as d3 from "d3";
-import type { CustomLinkType, CustomNodeType } from "../force/graph";
+import type { CustomLinkType, CustomNodeType } from "@/app/const/types";
 import type { GraphDocument } from "@/server/api/routers/kg";
-import type {
-  NodeType,
-  RelationshipType,
-} from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
+import type { RelationshipType } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 
 export interface DragState {
   isDragging: boolean;
@@ -16,6 +13,7 @@ export interface DragState {
 
 export const dragEditorExtension = ({
   tempLineRef,
+  tempCircleRef,
   simulation,
   graphDocument,
   dragState,
@@ -23,6 +21,7 @@ export const dragEditorExtension = ({
   onGraphUpdate,
 }: {
   tempLineRef: React.RefObject<SVGLineElement>;
+  tempCircleRef: React.RefObject<SVGCircleElement>;
   simulation: Simulation<CustomNodeType, CustomLinkType>;
   graphDocument: GraphDocument;
   dragState: DragState;
@@ -31,6 +30,14 @@ export const dragEditorExtension = ({
 }) => {
   let dragStateInExtension = dragState;
   const dragReset = () => {
+    if (tempLineRef.current) {
+      tempLineRef.current.style.display = "none";
+    }
+    if (tempCircleRef.current) {
+      tempCircleRef.current.style.display = "none";
+    }
+
+    simulation.restart();
     dragStateInExtension = {
       isDragging: false,
       sourceNode: null,
@@ -43,8 +50,16 @@ export const dragEditorExtension = ({
     setDragState(dragStateInExtension);
   };
 
+  const distance = (x1: number, y1: number, x2: number, y2: number) => {
+    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+  };
+
   // 新しいノードを追加する関数
-  const addNewNode = (x: number, y: number, sourceNode: CustomNodeType) => {
+  const addNewNode = (
+    targetX: number,
+    targetY: number,
+    sourceNode: CustomNodeType,
+  ) => {
     if (!onGraphUpdate) return;
 
     const newNodeId = Math.max(...graphDocument.nodes.map((n) => n.id)) + 1;
@@ -56,8 +71,8 @@ export const dragEditorExtension = ({
       name: `新しいノード${newNodeId}`,
       label: "Entity",
       properties: {},
-      x: sourceNode.x,
-      y: sourceNode.y,
+      x: targetX,
+      y: targetY,
     };
 
     const newRelationship: RelationshipType = {
@@ -109,10 +124,7 @@ export const dragEditorExtension = ({
   function dragStarted(
     event: D3DragEvent<SVGCircleElement, CustomNodeType, CustomNodeType>,
   ) {
-    console.log("dragStarted");
     simulation.stop();
-
-    console.log("event", event);
 
     // ドラッグ開始時のノードを特定
     const sourceNode = graphDocument.nodes.find((node) => {
@@ -123,17 +135,12 @@ export const dragEditorExtension = ({
 
       const nodeX = (node as CustomNodeType).x ?? 0;
       const nodeY = (node as CustomNodeType).y ?? 0;
-      const distance = Math.sqrt(
-        (event.x - nodeX) ** 2 + (event.y - nodeY) ** 2,
-      );
-      return distance < 5;
+      return distance(event.x, event.y, nodeX, nodeY) < 5;
     });
 
     if (!sourceNode) {
       return;
     }
-
-    console.log("sourceNode", sourceNode);
 
     dragSet({
       isDragging: true,
@@ -152,12 +159,16 @@ export const dragEditorExtension = ({
       tempLineRef.current.setAttribute("x2", String(event.subject.x));
       tempLineRef.current.setAttribute("y2", String(event.subject.y));
     }
+    if (tempCircleRef.current) {
+      tempCircleRef.current.style.display = "block";
+      tempCircleRef.current.setAttribute("cx", String(event.subject.x));
+      tempCircleRef.current.setAttribute("cy", String(event.subject.y));
+    }
   }
 
   function dragged(
     event: D3DragEvent<SVGCircleElement, CustomNodeType, CustomNodeType>,
   ) {
-    console.log("dragged");
     event.subject.fx = event.x;
     event.subject.fy = event.y;
 
@@ -172,10 +183,7 @@ export const dragEditorExtension = ({
 
       const nodeX = (node as CustomNodeType).x ?? 0;
       const nodeY = (node as CustomNodeType).y ?? 0;
-      const distance = Math.sqrt(
-        (event.x - nodeX) ** 2 + (event.y - nodeY) ** 2,
-      );
-      return distance < 10;
+      return distance(event.x, event.y, nodeX, nodeY) < 10;
     });
     if (targetNode) {
       dragSet({
@@ -183,12 +191,20 @@ export const dragEditorExtension = ({
         sourceNode: dragStateInExtension.sourceNode,
         targetNode: targetNode,
       });
+      if (tempCircleRef.current) {
+        tempCircleRef.current.style.display = "none";
+      }
     } else {
       dragSet({
         isDragging: true,
         sourceNode: dragStateInExtension.sourceNode,
         targetNode: null,
       });
+      if (tempCircleRef.current) {
+        tempCircleRef.current.style.display = "block";
+        tempCircleRef.current.setAttribute("cx", String(event.x));
+        tempCircleRef.current.setAttribute("cy", String(event.y));
+      }
     }
 
     // 一時的な線を更新
@@ -201,16 +217,6 @@ export const dragEditorExtension = ({
   function dragEnded(
     event: D3DragEvent<SVGCircleElement, CustomNodeType, CustomNodeType>,
   ) {
-    console.log("dragEnded");
-
-    // 一時的な線を非表示
-    if (tempLineRef.current) {
-      console.log("to none");
-      tempLineRef.current.style.display = "none";
-    }
-
-    simulation.restart();
-
     if (!dragStateInExtension.isDragging || !dragStateInExtension.sourceNode) {
       // ドラッグ状態をリセット
       dragReset();
@@ -223,7 +229,16 @@ export const dragEditorExtension = ({
         dragStateInExtension.sourceNode,
         dragStateInExtension.targetNode,
       );
-    } else {
+    } else if (
+      dragStateInExtension.sourceNode.x &&
+      dragStateInExtension.sourceNode.y &&
+      distance(
+        dragStateInExtension.sourceNode.x,
+        dragStateInExtension.sourceNode.y,
+        event.x,
+        event.y,
+      ) > 10
+    ) {
       // 新しいノードを作成
       addNewNode(event.x, event.y, dragStateInExtension.sourceNode);
     }

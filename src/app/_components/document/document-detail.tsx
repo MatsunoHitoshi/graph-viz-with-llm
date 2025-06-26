@@ -4,16 +4,13 @@ import { FileTextIcon, GraphIcon, Link2Icon } from "../icons";
 import { useRouter } from "next/navigation";
 import { UrlCopy } from "../url-copy/url-copy";
 import { env } from "@/env";
-import {
-  type CustomLinkType,
-  type CustomNodeType,
-  D3ForceGraph,
-} from "../d3/force/graph";
+import { D3ForceGraph } from "../d3/force/graph";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import { api } from "@/trpc/react";
 import { exportTxt } from "@/app/_utils/sys/svg";
 import { useRef, useState } from "react";
+import type { CustomNodeType, CustomLinkType } from "@/app/const/types";
 export const DocumentDetail = ({ documentId }: { documentId: string }) => {
   const router = useRouter();
   const [innerWidth, innerHeight] = useWindowSize();

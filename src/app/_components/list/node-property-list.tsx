@@ -1,17 +1,15 @@
-import {
-  CustomLinkType,
-  D3ForceGraph,
-  type CustomNodeType,
-} from "../d3/force/graph";
+import { D3ForceGraph } from "@/app/_components/d3/force/graph";
 import { Button } from "../button/button";
 import { useRef, useState } from "react";
 import { NodePropertiesForm } from "../form/node-properties-form";
-import { PropertyInfo } from "../d3/force/graph-info-panel";
+import { PropertyInfo } from "@/app/_components/d3/force/graph-info-panel";
 import { api } from "@/trpc/react";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import { Loading } from "../loading/loading";
 import { CrossLargeIcon } from "../icons";
 import { NodeLinkEditModal } from "../modal/node-link-edit-modal";
+import type { CustomNodeType } from "@/app/const/types";
+import type { CustomLinkType } from "@/app/const/types";
 export const NodePropertyList = ({
   node,
   isEditor,

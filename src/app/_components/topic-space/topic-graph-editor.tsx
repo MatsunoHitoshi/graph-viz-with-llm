@@ -57,12 +57,13 @@ export const TopicGraphEditor = ({
   const [graphData, setGraphData] = useState<GraphDocument>();
 
   useEffect(() => {
+    console.log("graphData: ", topicSpace?.graphData);
     setGraphData(topicSpace?.graphData as GraphDocument);
   }, [topicSpace]);
 
   useEffect(() => {
     setSelectedGraphData(
-      (topicSpace?.sourceDocuments.find((document) => {
+      (topicSpace?.sourceDocuments?.find((document) => {
         return document.id === selectedDocumentId;
       })?.graph?.dataJson as GraphDocument) ?? null,
     );
@@ -73,7 +74,7 @@ export const TopicGraphEditor = ({
       ...(topicSpace?.graphData as GraphDocument),
     };
     if (isClustered) {
-      const documents = topicSpace!.sourceDocuments;
+      const documents = topicSpace?.sourceDocuments ?? [];
       setGraphData(circleColor(clusteredGraphData, documents));
     } else if (graphData?.nodes) {
       clusteredGraphData.nodes.forEach((node) => {

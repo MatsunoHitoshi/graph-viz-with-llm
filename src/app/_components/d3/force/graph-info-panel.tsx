@@ -5,7 +5,7 @@ import {
   ChevronRightIcon,
   TriangleRightIcon,
 } from "../../icons";
-import type { CustomLinkType, CustomNodeType } from "./graph";
+import type { CustomLinkType, CustomNodeType } from "@/app/const/types";
 import {
   Disclosure,
   DisclosureButton,

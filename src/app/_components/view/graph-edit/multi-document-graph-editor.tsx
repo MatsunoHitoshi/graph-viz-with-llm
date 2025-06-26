@@ -1,17 +1,13 @@
 import { NodeLinkList } from "@/app/_components/list/node-link-list";
 import { useRef, useState } from "react";
 import type { GraphDocument } from "@/server/api/routers/kg";
-import type {
-  CustomLinkType,
-  CustomNodeType,
-} from "@/app/_components/d3/force/graph";
+import type { CustomNodeType, CustomLinkType } from "@/app/const/types";
 import { D3ForceGraph } from "@/app/_components/d3/force/graph";
 import { GraphInfoPanel } from "../../d3/force/graph-info-panel";
 import { GraphTool } from "../graph-view/graph-tool";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { TopicGraphFilterOption } from "@/app/const/types";
 import type { TagOption } from "../../input/tags-input";
-import { useSession } from "next-auth/react";
 
 export const MultiDocumentGraphEditor = ({
   graphDocument,

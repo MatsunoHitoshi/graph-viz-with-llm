@@ -1,17 +1,15 @@
 "use client";
 import { useRef, useState } from "react";
 import type { GraphDocument } from "@/server/api/routers/kg";
-import {
-  CustomLinkType,
-  CustomNodeType,
-  D3ForceGraph,
-} from "@/app/_components/d3/force/graph";
+import { D3ForceGraph } from "@/app/_components/d3/force/graph";
+import type { CustomNodeType, CustomLinkType } from "@/app/const/types";
 import { Toolbar } from "@/app/_components/toolbar/toolbar";
 import { api } from "@/trpc/react";
 import { Link2Icon } from "@/app/_components/icons";
 import { UrlCopy } from "@/app/_components/url-copy/url-copy";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import { exportTxt } from "@/app/_utils/sys/svg";
+import { GraphInfoPanel } from "../../d3/force/graph-info-panel";
 
 export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
   const { data: graphDocument } = api.documentGraph.getById.useQuery({
@@ -100,6 +98,10 @@ export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
               setFocusedLink={setFocusedLink}
               focusedLink={focusedLink}
               isLargeGraph={false}
+              isEditor={true}
+              onGraphUpdate={(updatedGraph) => {
+                console.log("updatedGraph: ", updatedGraph);
+              }}
             />
           ) : (
             <D3ForceGraph
@@ -116,10 +118,14 @@ export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
               setFocusedLink={setFocusedLink}
               focusedLink={focusedLink}
               isLargeGraph={false}
-              isEditor={true}
-              onGraphUpdate={(updatedGraph) => {
-                console.log("updatedGraph: ", updatedGraph);
-              }}
+              toolComponent={
+                <GraphInfoPanel
+                  focusedNode={focusedNode}
+                  focusedLink={focusedLink}
+                  graphDocument={graphDocument.dataJson as GraphDocument}
+                  setFocusNode={setFocusedNode}
+                />
+              }
             />
           )}
         </div>

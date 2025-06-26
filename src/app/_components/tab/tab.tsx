@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { FileTextIcon, GearIcon, PlusIcon, StackIcon } from "../icons";
+import {
+  DashboardIcon,
+  FileTextIcon,
+  GearIcon,
+  PlusIcon,
+  StackIcon,
+} from "../icons";
 import { Button } from "../button/button";
 import { useRouter } from "next/navigation";
 import { TopicSpaceCreateModal } from "../topic-space/topic-space-create-modal";
@@ -36,12 +42,15 @@ const Tab = ({
 export const Tabs = ({ session }: { session: Session | null }) => {
   if (!!session) {
     return (
-      <div className="flex flex-row items-end gap-4">
+      <div className="flex h-[46px] flex-row items-end gap-4">
         <Link href="/dashboard">
           <Button
-            className={`rounded-none border-b-2 border-transparent bg-transparent !px-4 py-2 text-xl font-semibold ${location.pathname === "/dashboard" && "!border-slate-50"}`}
+            className={`flex flex-row items-center gap-1 rounded-none border-b-2 border-transparent bg-transparent !px-4 py-2 text-sm font-semibold ${location.pathname === "/dashboard" && "!border-slate-50"}`}
           >
-            Dashboard
+            <div className="h-4 w-4">
+              <DashboardIcon width={14} height={14} color="white" />
+            </div>
+            ダッシュボード
           </Button>
         </Link>
 

@@ -5,7 +5,7 @@ import {
   ListBulletIcon,
   ShareIcon,
 } from "../../icons";
-import { TagOption, TagsInput } from "../../input/tags-input";
+import { type TagOption, TagsInput } from "../../input/tags-input";
 import { exportSvg } from "@/app/_utils/sys/svg";
 
 export const GraphTool = ({
@@ -37,7 +37,15 @@ export const GraphTool = ({
 }) => {
   return (
     <>
-      <div className="absolute flex flex-row items-center gap-2">
+      <div className="absolute mt-2 flex flex-row items-center gap-2">
+        <button
+          className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
+          onClick={() => {
+            setIsListOpen(!isListOpen);
+          }}
+        >
+          <ListBulletIcon width={16} height={16} color="white" />
+        </button>
         {!!setIsGraphFullScreen ? (
           <button
             onClick={() => {
@@ -89,15 +97,6 @@ export const GraphTool = ({
         ) : (
           <></>
         )}
-
-        <button
-          className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-          onClick={() => {
-            setIsListOpen(!isListOpen);
-          }}
-        >
-          <ListBulletIcon width={16} height={16} color="white" />
-        </button>
       </div>
 
       {!!isLargeGraph && !isGraphFullScreen && (

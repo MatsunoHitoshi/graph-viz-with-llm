@@ -1,11 +1,13 @@
 import { GraphIcon } from "@/app/_components/icons";
-import type { CustomNodeType } from "../d3/force/graph";
+import type { CustomNodeType } from "@/app/const/types";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "../button/button";
 import { CheckboxInput } from "../input/checkbox-input";
 import { NodePropertyList } from "./node-property-list";
 import { MergeNodesForm } from "../form/merge-nodes-form";
 import type { GraphDocument } from "@/server/api/routers/kg";
+
+type NodesSortType = "name" | "centrality" | "none";
 
 export const NodeLinkList = ({
   graphDocument,
@@ -34,31 +36,25 @@ export const NodeLinkList = ({
   const [mergeNodes, setMergeNodes] = useState<CustomNodeType[]>();
   const [isMergeNodesEditModalOpen, setIsMergeNodesEditModalOpen] =
     useState<boolean>(false);
-  const [isNameSorted, setIsNameSorted] = useState<boolean>(false);
-  const [isCentralitySorted, setIsCentralitySorted] = useState<boolean>(false);
+
+  const [sortType, setSortType] = useState<NodesSortType>("none");
   const graphNodes = graphDocument.nodes;
 
-  const nameSortedGraphNodes = useMemo(() => {
-    if (isNameSorted) {
+  const sortedGraphNodes = useMemo(() => {
+    if (sortType === "name") {
       return graphNodes.sort((a, b) => a.name.localeCompare(b.name));
-    } else {
-      return graphNodes;
-    }
-  }, [graphNodes, isNameSorted]);
-
-  const centralitySortedGraphNodes = useMemo(() => {
-    if (isCentralitySorted) {
-      return nameSortedGraphNodes.sort(
+    } else if (sortType === "centrality") {
+      return graphNodes.sort(
         (a, b) => (b.neighborLinkCount ?? 0) - (a.neighborLinkCount ?? 0),
       );
     } else {
-      return nameSortedGraphNodes;
+      return graphNodes.sort((a, b) => a.id - b.id);
     }
-  }, [nameSortedGraphNodes, isCentralitySorted]);
+  }, [sortType, graphDocument]);
 
   return (
     <div className="flex h-screen flex-col gap-2">
-      <div className="flex flex-row items-center gap-2">
+      <div className="mt-2 flex flex-row items-center gap-2">
         {toolComponent}
         <button
           className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
@@ -90,26 +86,25 @@ export const NodeLinkList = ({
         )}
 
         <Button
-          className="!text-xs"
-          onClick={() => setIsNameSorted(!isNameSorted)}
+          onClick={() =>
+            setSortType(
+              sortType === "name"
+                ? "centrality"
+                : sortType === "centrality"
+                  ? "none"
+                  : "name",
+            )
+          }
+          className={`!text-xs ${sortType === "none" ? "" : "!text-orange-500"}`}
         >
-          <div className={isNameSorted ? "text-orange-500" : ""}>
-            名称ソート
-          </div>
-        </Button>
-
-        <Button
-          className="!text-xs"
-          onClick={() => setIsCentralitySorted(!isCentralitySorted)}
-        >
-          <div className={isCentralitySorted ? "text-orange-500" : ""}>
-            中心性ソート
-          </div>
+          {sortType === "name" && "名称順"}
+          {sortType === "centrality" && "中心度順"}
+          {sortType === "none" && "並び替え"}
         </Button>
       </div>
 
       <div className="flex w-full flex-col divide-y divide-slate-400 overflow-scroll">
-        {centralitySortedGraphNodes.map((node) => {
+        {sortedGraphNodes.map((node) => {
           const queryFiltered =
             !!nodeSearchQuery &&
             nodeSearchQuery !== "" &&

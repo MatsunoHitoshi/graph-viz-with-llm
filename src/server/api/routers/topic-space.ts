@@ -27,7 +27,8 @@ import type {
 import { filterGraph, updateKgProperties } from "@/app/_utils/kg/filter";
 import { GraphChangeEntityType, GraphChangeRecordType } from "@prisma/client";
 import { diffNodes, diffRelationships } from "@/app/_utils/kg/diff";
-import type { CustomNodeType } from "@/app/_components/d3/force/graph";
+import type { CustomNodeType } from "@/app/const/types";
+import { addStaticPropertiesForFrontend } from "@/app/_utils/kg/frontend-properties";
 
 const TopicSpaceCreateSchema = z.object({
   name: z.string(),
@@ -98,6 +99,26 @@ const mergeGraphData = async (updatedTopicSpace: TopicSpaceResponse) => {
   return shapedGraphData;
 };
 
+const formTopicSpaceForFrontend = (topicSpace: TopicSpaceResponse) => {
+  return {
+    ...topicSpace,
+    graphData: addStaticPropertiesForFrontend(
+      topicSpace.graphData as GraphDocument,
+    ),
+  };
+};
+
+const formTopicSpaceForFrontendPublic = (
+  topicSpace: Omit<TopicSpaceResponse, "admins">,
+) => {
+  return {
+    ...topicSpace,
+    graphData: addStaticPropertiesForFrontend(
+      topicSpace.graphData as GraphDocument,
+    ),
+  };
+};
+
 export const topicSpaceRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(TopicSpaceGetSchema)
@@ -135,9 +156,9 @@ export const topicSpaceRouter = createTRPCRouter({
           ...topicSpace,
           graphData: filteredGraph,
         };
-        return graphFilteredTopicSpace;
+        return formTopicSpaceForFrontend(graphFilteredTopicSpace);
       } else {
-        return topicSpace;
+        return formTopicSpaceForFrontend(topicSpace);
       }
     }),
 
@@ -174,9 +195,9 @@ export const topicSpaceRouter = createTRPCRouter({
           ...topicSpace,
           graphData: filteredGraph,
         };
-        return graphFilteredTopicSpace;
+        return formTopicSpaceForFrontendPublic(graphFilteredTopicSpace);
       } else {
-        return topicSpace;
+        return formTopicSpaceForFrontendPublic(topicSpace);
       }
     }),
 

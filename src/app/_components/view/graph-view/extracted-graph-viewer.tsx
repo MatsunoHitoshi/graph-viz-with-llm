@@ -3,11 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { DocumentForm } from "@/app/_components/form/document-form";
 import type { GraphDocument } from "@/server/api/routers/kg";
-import {
-  type CustomLinkType,
-  type CustomNodeType,
-  D3ForceGraph,
-} from "@/app/_components/d3/force/graph";
+import { D3ForceGraph } from "@/app/_components/d3/force/graph";
+import type { CustomNodeType, CustomLinkType } from "@/app/const/types";
 import EXAMPLE_DATA from "@/app/const/example-graph.json";
 import { Toolbar } from "@/app/_components/toolbar/toolbar";
 import { useRouter } from "next/navigation";

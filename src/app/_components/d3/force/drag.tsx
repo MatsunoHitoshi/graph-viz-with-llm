@@ -1,7 +1,7 @@
 import { drag } from "d3";
 import type { Simulation, D3DragEvent } from "d3";
 import * as d3 from "d3";
-import type { CustomLinkType, CustomNodeType } from "./graph";
+import type { CustomLinkType, CustomNodeType } from "@/app/const/types";
 
 export const dragExtension = (
   simulation: Simulation<CustomNodeType, CustomLinkType>,

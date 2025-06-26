@@ -1,5 +1,5 @@
 import type { PropertyType } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
-import type { CustomNodeType } from "../d3/force/graph";
+import type { CustomNodeType } from "@/app/const/types";
 import React, { useState } from "react";
 import { Button } from "../button/button";
 import { api } from "@/trpc/react";

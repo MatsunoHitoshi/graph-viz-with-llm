@@ -1,6 +1,6 @@
 import { api } from "@/trpc/react";
 import { Button } from "../button/button";
-import type { CustomNodeType } from "../d3/force/graph";
+import type { CustomNodeType } from "@/app/const/types";
 import { NodePropertyList } from "../list/node-property-list";
 import { Modal } from "../modal/modal";
 

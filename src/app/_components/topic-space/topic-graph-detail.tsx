@@ -1,7 +1,7 @@
 "use client";
 import { api } from "@/trpc/react";
 import { TabsContainer } from "../tab/tab";
-import { CustomLinkType, CustomNodeType } from "../d3/force/graph";
+import type { CustomLinkType, CustomNodeType } from "@/app/const/types";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type {
@@ -127,7 +127,7 @@ export const TopicGraphDetail = ({
 
   useEffect(() => {
     setSelectedGraphData(
-      (topicSpace?.sourceDocuments.find((document) => {
+      (topicSpace?.sourceDocuments?.find((document) => {
         return document.id === selectedDocumentId;
       })?.graph?.dataJson as GraphDocument) ?? null,
     );
@@ -138,7 +138,7 @@ export const TopicGraphDetail = ({
       ...(topicSpace?.graphData as GraphDocument),
     };
     if (isClustered) {
-      const documents = topicSpace!.sourceDocuments;
+      const documents = topicSpace?.sourceDocuments ?? [];
       setGraphData(circleColor(clusteredGraphData, documents));
     } else if (graphData?.nodes) {
       clusteredGraphData.nodes.forEach((node) => {

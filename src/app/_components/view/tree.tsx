@@ -41,7 +41,7 @@ export const TreeViewer = ({
 
   useEffect(() => {
     setSelectedGraphData(
-      (topicSpace?.sourceDocuments.find((document) => {
+      (topicSpace?.sourceDocuments?.find((document) => {
         return document.id === selectedDocumentId;
       })?.graph?.dataJson as GraphDocument) ?? null,
     );
