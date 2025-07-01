@@ -10,7 +10,10 @@ import { CrossLargeIcon } from "../icons";
 import { NodeLinkEditModal } from "../modal/node-link-edit-modal";
 import type { CustomNodeType } from "@/app/const/types";
 import type { CustomLinkType } from "@/app/const/types";
-import { NodePropertyEditModal } from "../modal/node-link-property-edit-modal";
+import {
+  LinkPropertyEditModal,
+  NodePropertyEditModal,
+} from "../modal/node-link-property-edit-modal";
 export const NodePropertyList = ({
   node,
   isEditor,
@@ -94,10 +97,24 @@ export const NodePropertyList = ({
     useState<boolean>(false);
   const [isNodePropertyEditModalOpen, setIsNodePropertyEditModalOpen] =
     useState<boolean>(false);
+  const [isLinkPropertyEditModalOpen, setIsLinkPropertyEditModalOpen] =
+    useState<boolean>(false);
   const onGraphUpdate = (additionalGraph: GraphDocument) => {
     console.log("onGraphUpdate", additionalGraph);
     setAdditionalGraph(additionalGraph);
     setIsNodeLinkAttachModalOpen(true);
+  };
+
+  const onNodeContextMenu = (graphNode: CustomNodeType) => {
+    console.log("onNodeContextMenu", graphNode);
+    setFocusedNode(graphNode);
+    setIsNodePropertyEditModalOpen(true);
+  };
+
+  const onLinkContextMenu = (graphLink: CustomLinkType) => {
+    console.log("onLinkContextMenu", graphLink);
+    setFocusedLink(graphLink);
+    setIsLinkPropertyEditModalOpen(true);
   };
 
   return (
@@ -175,10 +192,8 @@ export const NodePropertyList = ({
               setFocusedLink={setFocusedLink}
               toolComponent={<></>}
               onGraphUpdate={onGraphUpdate}
-              onNodeContextMenu={() => {
-                setIsNodePropertyEditModalOpen(true);
-                setFocusedNode(focusedNode);
-              }}
+              onNodeContextMenu={onNodeContextMenu}
+              onLinkContextMenu={onLinkContextMenu}
             />
           </div>
           <NodeLinkEditModal
@@ -195,6 +210,13 @@ export const NodePropertyList = ({
             graphDocument={graphDocument}
             setGraphDocument={setGraphDocument}
             graphNode={focusedNode}
+          />
+          <LinkPropertyEditModal
+            isOpen={isLinkPropertyEditModalOpen}
+            setIsOpen={setIsLinkPropertyEditModalOpen}
+            graphDocument={graphDocument}
+            setGraphDocument={setGraphDocument}
+            graphLink={focusedLink}
           />
         </>
       )}
