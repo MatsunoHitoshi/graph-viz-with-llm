@@ -11,7 +11,7 @@ type DeleteModalProps = {
   refetch: () => void;
 };
 
-export const DeleteModal = ({
+export const DeleteRecordModal = ({
   isOpen,
   setIsOpen,
   type,

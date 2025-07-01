@@ -107,7 +107,7 @@ export const dragEditorExtension = ({
       id: newRelationshipId,
       sourceName: sourceNode.name,
       sourceId: sourceNode.id,
-      type: "connects",
+      type: "CONNECTS",
       targetName: targetNode.name,
       targetId: targetNode.id,
       properties: {},

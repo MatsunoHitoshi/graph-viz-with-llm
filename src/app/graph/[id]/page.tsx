@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { SingleDocumentGraphViewer } from "@/app/_components/view/graph-view/sigle-document-graph-viewer";
+import { SingleDocumentGraphViewer } from "@/app/_components/view/graph-view/single-document-graph-viewer";
 
 type PageParams = { params: Promise<{ id: string }> };
 

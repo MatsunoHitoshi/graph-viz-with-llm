@@ -10,6 +10,7 @@ import { CrossLargeIcon } from "../icons";
 import { NodeLinkEditModal } from "../modal/node-link-edit-modal";
 import type { CustomNodeType } from "@/app/const/types";
 import type { CustomLinkType } from "@/app/const/types";
+import { NodePropertyEditModal } from "../modal/node-link-property-edit-modal";
 export const NodePropertyList = ({
   node,
   isEditor,
@@ -91,7 +92,8 @@ export const NodePropertyList = ({
   >();
   const [isNodeLinkAttachModalOpen, setIsNodeLinkAttachModalOpen] =
     useState<boolean>(false);
-
+  const [isNodePropertyEditModalOpen, setIsNodePropertyEditModalOpen] =
+    useState<boolean>(false);
   const onGraphUpdate = (additionalGraph: GraphDocument) => {
     console.log("onGraphUpdate", additionalGraph);
     setAdditionalGraph(additionalGraph);
@@ -173,6 +175,10 @@ export const NodePropertyList = ({
               setFocusedLink={setFocusedLink}
               toolComponent={<></>}
               onGraphUpdate={onGraphUpdate}
+              onNodeContextMenu={() => {
+                setIsNodePropertyEditModalOpen(true);
+                setFocusedNode(focusedNode);
+              }}
             />
           </div>
           <NodeLinkEditModal
@@ -182,6 +188,13 @@ export const NodePropertyList = ({
             setGraphDocument={setGraphDocument}
             additionalGraph={additionalGraph}
             setAdditionalGraph={setAdditionalGraph}
+          />
+          <NodePropertyEditModal
+            isOpen={isNodePropertyEditModalOpen}
+            setIsOpen={setIsNodePropertyEditModalOpen}
+            graphDocument={graphDocument}
+            setGraphDocument={setGraphDocument}
+            graphNode={focusedNode}
           />
         </>
       )}

@@ -80,6 +80,8 @@ export const D3ForceGraph = ({
   setFocusedNode,
   focusedLink,
   setFocusedLink,
+  onLinkContextMenu,
+  onNodeContextMenu,
   onGraphUpdate,
 }: {
   svgRef: React.RefObject<SVGSVGElement>;
@@ -106,6 +108,8 @@ export const D3ForceGraph = ({
   setFocusedLink: React.Dispatch<
     React.SetStateAction<CustomLinkType | undefined>
   >;
+  onNodeContextMenu?: (node: CustomNodeType) => void;
+  onLinkContextMenu?: (link: CustomLinkType) => void;
   onGraphUpdate?: (additionalGraph: GraphDocument) => void;
 }) => {
   const { nodes, relationships } = graphDocument;
@@ -254,7 +258,6 @@ export const D3ForceGraph = ({
             <div>グラフデータがありません</div>
           </div>
         ) : (
-          // TODO: ここより上は他コンポーネントに切り出す（D3ForceGraphが持っているべきは核となるsvg要素のみ）
           <svg
             ref={svgRef}
             id="container"
@@ -325,6 +328,10 @@ export const D3ForceGraph = ({
                         } else {
                           setFocusedLink(graphLink);
                         }
+                      }}
+                      onContextMenu={(event) => {
+                        event.preventDefault();
+                        onLinkContextMenu?.(graphLink);
                       }}
                     >
                       <line
@@ -408,6 +415,7 @@ export const D3ForceGraph = ({
                     .includes(nodeSearchQuery.toLowerCase());
 
                 const isDragEditorTarget =
+                  isEditor &&
                   dragState.isDragging &&
                   (dragState.targetNode?.id === graphNode.id ||
                     dragState.sourceNode?.id === graphNode.id);
@@ -428,6 +436,10 @@ export const D3ForceGraph = ({
                         } else {
                           setFocusedNode(graphNode);
                         }
+                      }}
+                      onContextMenu={(event) => {
+                        event.preventDefault();
+                        onNodeContextMenu?.(graphNode);
                       }}
                     >
                       <circle
@@ -480,18 +492,30 @@ export const D3ForceGraph = ({
                   return;
                 }
               })}
-              <line
-                ref={tempLineRef}
-                style={{
-                  display: "none",
-                  stroke: "#ef7234",
-                  strokeWidth: 2,
-                  strokeDasharray: "5,5",
-                  pointerEvents: "none",
-                  opacity: 0.5,
-                }}
-              />
-              <circle ref={tempCircleRef} r={5} fill="#ef7234" opacity={0.5} />
+              {isEditor && (
+                <>
+                  <line
+                    ref={tempLineRef}
+                    style={{
+                      display: "none",
+                      stroke: "#ef7234",
+                      strokeWidth: 2,
+                      strokeDasharray: "5,5",
+                      pointerEvents: "none",
+                      opacity: 0.5,
+                    }}
+                  />
+                  <circle
+                    ref={tempCircleRef}
+                    r={5}
+                    style={{
+                      display: "none",
+                      fill: "#ef7234",
+                      opacity: 0.5,
+                    }}
+                  />
+                </>
+              )}
             </D3ZoomProvider>
           </svg>
         )}

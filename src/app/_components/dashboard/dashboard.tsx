@@ -9,7 +9,10 @@ import { TopicSpaceList } from "../list/topic-space-list";
 import type { TopicSpaceResponse } from "@/app/const/types";
 import { TopicSpaceCreateModal } from "../topic-space/topic-space-create-modal";
 import { useState } from "react";
-import { DeleteModal, type DeleteRecordType } from "../modal/delete-modal";
+import {
+  DeleteRecordModal,
+  type DeleteRecordType,
+} from "../modal/delete-record-modal";
 import Link from "next/link";
 
 export const Dashboard = () => {
@@ -140,7 +143,7 @@ export const Dashboard = () => {
         setIsOpen={setTopicSpaceCreateModalOpen}
       />
       {deleteIntent && (
-        <DeleteModal
+        <DeleteRecordModal
           id={deleteIntent.id}
           type={deleteIntent.type}
           isOpen={deleteModalOpen}

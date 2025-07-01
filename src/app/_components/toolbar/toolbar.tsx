@@ -6,7 +6,7 @@ type ToolbarProps = {
   setIsLinkFiltered?: React.Dispatch<React.SetStateAction<boolean>>;
   isUseExample?: boolean;
   setIsUseExample?: React.Dispatch<React.SetStateAction<boolean>>;
-  isEditing?: boolean;
+  isEditor?: boolean;
   setIsEditing?: React.Dispatch<React.SetStateAction<boolean>>;
   setNodeSearchQuery?: React.Dispatch<React.SetStateAction<string>>;
   rightArea?: React.ReactNode;
@@ -18,7 +18,7 @@ export const Toolbar = ({
   setIsLinkFiltered,
   isUseExample,
   setIsUseExample,
-  isEditing,
+  isEditor = false,
   setIsEditing,
   setNodeSearchQuery,
   rightArea,
@@ -33,10 +33,9 @@ export const Toolbar = ({
             <div className="text-sm">編集モード</div>
             <div>
               <Switch
-                checked={isEditing}
+                checked={isEditor}
                 onChange={setIsEditing}
-                disabled={true}
-                className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-500 transition data-[checked]:bg-orange-400 data-[disabled]:bg-slate-700"
+                className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400 data-[disabled]:bg-slate-700"
               >
                 <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
               </Switch>

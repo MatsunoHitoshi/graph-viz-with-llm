@@ -10,12 +10,20 @@ import type {
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
 
-const DocumentGraphSchema = z.object({
+const CreateDocumentGraphSchema = z.object({
   dataJson: z.object({
     nodes: z.array(z.any()),
     relationships: z.array(z.any()),
   }),
   sourceDocumentId: z.string(),
+});
+
+const UpdateDocumentGraphSchema = z.object({
+  id: z.string(),
+  dataJson: z.object({
+    nodes: z.array(z.any()),
+    relationships: z.array(z.any()),
+  }),
 });
 
 export const documentGraphRouter = createTRPCRouter({
@@ -30,7 +38,7 @@ export const documentGraphRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(DocumentGraphSchema)
+    .input(CreateDocumentGraphSchema)
     .mutation(async ({ ctx, input }) => {
       const sanitizedGraphData = {
         nodes: input.dataJson.nodes as NodeType[],
@@ -42,6 +50,29 @@ export const documentGraphRouter = createTRPCRouter({
           user: { connect: { id: ctx.session.user.id } },
           sourceDocument: { connect: { id: input.sourceDocumentId } },
         },
+      });
+      return graph;
+    }),
+
+  updateGraph: protectedProcedure
+    .input(UpdateDocumentGraphSchema)
+    .mutation(async ({ ctx, input }) => {
+      console.log("@@@@updateGraph", input);
+      const documentGraph = await ctx.db.documentGraph.findFirst({
+        where: { id: input.id, sourceDocument: { isDeleted: false } },
+      });
+
+      if (!documentGraph || documentGraph.userId !== ctx.session.user.id) {
+        throw new Error("DocumentGraph not found");
+      }
+
+      const sanitizedGraphData = {
+        nodes: input.dataJson.nodes as NodeType[],
+        relationships: input.dataJson.relationships as RelationshipType[],
+      };
+      const graph = await ctx.db.documentGraph.update({
+        where: { id: input.id },
+        data: { dataJson: sanitizedGraphData },
       });
       return graph;
     }),

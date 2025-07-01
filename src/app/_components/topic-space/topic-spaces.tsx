@@ -7,7 +7,7 @@ import { TopicSpaceList } from "../list/topic-space-list";
 import { useState } from "react";
 import { TopicSpaceCreateModal } from "./topic-space-create-modal";
 import { TrashIcon } from "../icons";
-import { DeleteModal } from "../modal/delete-modal";
+import { DeleteRecordModal } from "../modal/delete-record-modal";
 
 export const TopicSpaces = () => {
   const { data: session } = useSession();
@@ -63,7 +63,7 @@ export const TopicSpaces = () => {
       )}
 
       {deleteIntentId && (
-        <DeleteModal
+        <DeleteRecordModal
           id={deleteIntentId}
           type="topicSpace"
           isOpen={deleteModalOpen}

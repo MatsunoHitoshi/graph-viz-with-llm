@@ -39,6 +39,7 @@ export const NodeLinkEditModal = ({
                     <Input
                       type="text"
                       placeholder="ノードの名前"
+                      autoFocus
                       className={clsx(
                         "block w-full rounded-lg border-none bg-white/5 px-3 py-1.5 text-sm/6",
                         "focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400",
@@ -102,7 +103,7 @@ export const NodeLinkEditModal = ({
               {additionalGraph.relationships.map((relationship) => (
                 <div
                   key={relationship.id}
-                  className="flex flex-row items-center py-2"
+                  className="flex flex-row items-center rounded-xl bg-slate-900 p-2"
                 >
                   <div className="rounded-xl border border-slate-500 p-2 text-xs text-gray-400">
                     {relationship.sourceName}
@@ -122,6 +123,7 @@ export const NodeLinkEditModal = ({
                   </svg>
                   <Input
                     type="text"
+                    autoFocus
                     placeholder="リンクのタイプ"
                     className={clsx(
                       "block !max-w-32 rounded-lg border-none bg-white/5 px-3 py-1.5 text-sm/6",

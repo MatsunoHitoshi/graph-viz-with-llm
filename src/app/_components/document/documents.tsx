@@ -8,7 +8,7 @@ import { Button } from "../button/button";
 import { PlusIcon, TrashIcon } from "../icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { DeleteModal } from "../modal/delete-modal";
+import { DeleteRecordModal } from "../modal/delete-record-modal";
 export const Documents = ({ id }: { id?: string }) => {
   const { data: session } = useSession();
   const { data: documents, refetch } =
@@ -23,8 +23,8 @@ export const Documents = ({ id }: { id?: string }) => {
   if (!session) return null;
   return (
     <TabsContainer>
-      <div className="grid  grid-flow-row grid-cols-2 gap-8 p-4">
-        <div className="flex flex-col gap-8">
+      <div className="grid h-full grid-flow-row grid-cols-2 gap-8">
+        <div className="flex flex-col gap-8 overflow-scroll p-4">
           <div className="flex flex-col gap-1 ">
             <div className="flex w-full flex-row items-center justify-between">
               <div className="text-lg font-semibold">ドキュメント</div>
@@ -79,7 +79,7 @@ export const Documents = ({ id }: { id?: string }) => {
         </div>
       </div>
       {deleteIntentId && (
-        <DeleteModal
+        <DeleteRecordModal
           id={deleteIntentId}
           type="sourceDocument"
           isOpen={deleteModalOpen}
