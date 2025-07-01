@@ -191,6 +191,7 @@ export const TopicGraphEditor = ({
               isClustered={isClustered}
               selectedGraphData={selectedGraphData ?? undefined}
               selectedPathData={pathData}
+              isLinkFiltered={isLinkFiltered}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">
