@@ -132,7 +132,7 @@ export const NodePropertyEditModal = ({
                 setIsOpen(false);
               }}
             >
-              保存する
+              保存
             </Button>
           </div>
         </div>
@@ -276,7 +276,7 @@ export const LinkPropertyEditModal = ({
                 setIsOpen(false);
               }}
             >
-              保存する
+              保存
             </Button>
           </div>
         </div>

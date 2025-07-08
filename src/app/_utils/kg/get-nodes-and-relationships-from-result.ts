@@ -59,8 +59,8 @@ export type RelationshipDiffType = {
 export const createExtraNode = (
   targetName: string,
   nodesJson: NodeType[] | undefined,
-) => {
-  const newNode = {
+): NodeType => {
+  const newNode: NodeType = {
     id: nodesJson?.length ?? 0,
     name: targetName,
     label: "ExtraNode",
@@ -136,7 +136,7 @@ export const getNodesAndRelationshipsFromResult = (result: string) => {
   console.log("relationshipsJson: ", relationshipsJson);
 
   return {
-    nodes: nodesJson,
-    relationships: relationshipsJson,
-  } as GraphDocument;
+    nodes: nodesJson ?? [],
+    relationships: relationshipsJson ?? [],
+  };
 };

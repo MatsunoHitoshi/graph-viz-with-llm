@@ -141,4 +141,15 @@ export const sourceDocumentRouter = createTRPCRouter({
       });
       return graph;
     }),
+
+  update: protectedProcedure
+    .input(z.object({ id: z.string(), name: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const document = await ctx.db.sourceDocument.update({
+        where: { id: input.id },
+        data: { name: input.name },
+      });
+
+      return document;
+    }),
 });

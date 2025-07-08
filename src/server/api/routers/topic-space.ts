@@ -132,6 +132,7 @@ export const topicSpaceRouter = createTRPCRouter({
           sourceDocuments: {
             where: { isDeleted: false },
             include: { graph: input.withDocumentGraph },
+            orderBy: { createdAt: "desc" },
           },
           admins: true,
           tags: true,

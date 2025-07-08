@@ -111,3 +111,22 @@ export const DocumentList = ({
     </div>
   );
 };
+
+export const DocumentListMenuButton = ({
+  icon,
+  onClick,
+  children,
+}: {
+  icon: React.ReactNode;
+  onClick: () => void;
+  children: React.ReactNode;
+}) => {
+  return (
+    <button className="w-full px-2 py-1 hover:bg-slate-50/10" onClick={onClick}>
+      <div className="flex flex-row items-center gap-1">
+        <div className="h-4 w-4">{icon}</div>
+        {children}
+      </div>
+    </button>
+  );
+};

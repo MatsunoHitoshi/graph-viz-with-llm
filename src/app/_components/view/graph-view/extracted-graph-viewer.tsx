@@ -119,7 +119,7 @@ export const ExtractedGraphViewer = () => {
                         }
                       }}
                     >
-                      保存して共有する
+                      保存して共有
                     </Button>
                   )}
                 </div>

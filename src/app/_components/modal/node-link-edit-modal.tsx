@@ -202,7 +202,7 @@ export const NodeLinkEditModal = ({
             setIsOpen(false);
           }}
         >
-          保存する
+          保存
         </Button>
       </div>
     </Modal>

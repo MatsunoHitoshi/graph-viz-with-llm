@@ -6,18 +6,20 @@ import type { GraphDocument } from "@/server/api/routers/kg";
 import {
   FileTextIcon,
   GraphIcon,
+  Pencil2Icon,
   PersonIcon,
   PlusIcon,
   StarIcon,
   TrashIcon,
 } from "../icons";
-import { DocumentList } from "../list/document-list";
+import { DocumentList, DocumentListMenuButton } from "../list/document-list";
 import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
 import { useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
 import { LinkButton } from "../button/link-button";
 import { MultiDocumentGraphViewer } from "../view/graph-view/multi-document-graph-viewer";
+import { DocumentEditModal } from "../document/document-edit-modal";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
   const { data: session } = useSession();
@@ -27,8 +29,28 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
   });
   const detachDocument = api.topicSpaces.detachDocument.useMutation();
 
+  const onDetachDocument = (documentId: string) => {
+    detachDocument.mutate(
+      { id: id, documentId },
+      {
+        onSuccess: (res) => {
+          console.log("res: ", res);
+          refetch().catch((error) => {
+            console.error("Refetch error: ", error);
+          });
+        },
+        onError: (e) => {
+          console.log(e);
+        },
+      },
+    );
+  };
+
   const [documentAttachModalOpen, setDocumentAttachModalOpen] =
     useState<boolean>(false);
+  const [documentEditModalOpen, setDocumentEditModalOpen] =
+    useState<boolean>(false);
+  const [documentId, setDocumentId] = useState<string | null>(null);
 
   if (!session || !topicSpace) return null;
   return (
@@ -127,34 +149,27 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
               menu={(document) => {
                 return (
                   <div className="flex min-w-[150px] flex-col">
-                    <button
-                      className="w-full px-2 py-1 hover:bg-slate-50/10"
-                      onClick={() =>
-                        detachDocument.mutate(
-                          { id: id, documentId: document.id },
-                          {
-                            onSuccess: (res) => {
-                              console.log("res: ", res);
-                              refetch().catch((error) => {
-                                console.error("Refetch error: ", error);
-                              });
-                            },
-                            onError: (e) => {
-                              console.log(e);
-                            },
-                          },
-                        )
+                    <DocumentListMenuButton
+                      icon={
+                        <TrashIcon width={16} height={16} color="#ea1c0c" />
                       }
+                      onClick={() => onDetachDocument(document.id)}
                     >
-                      <div className="flex flex-row items-center gap-1">
-                        <div className="h-4 w-4">
-                          <TrashIcon width={16} height={16} color="#ea1c0c" />
-                        </div>
-                        <div className="text-error-red">
-                          ドキュメントマップから削除
-                        </div>
+                      <div className="text-error-red">
+                        ドキュメントマップから削除
                       </div>
-                    </button>
+                    </DocumentListMenuButton>
+                    <DocumentListMenuButton
+                      icon={
+                        <Pencil2Icon width={16} height={16} color="white" />
+                      }
+                      onClick={() => {
+                        setDocumentId(document.id);
+                        setDocumentEditModalOpen(true);
+                      }}
+                    >
+                      <div className="text-white">名前を編集</div>
+                    </DocumentListMenuButton>
                   </div>
                 );
               }}
@@ -180,6 +195,12 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
         isOpen={documentAttachModalOpen}
         setIsOpen={setDocumentAttachModalOpen}
         topicSpaceId={id}
+        refetch={refetch}
+      />
+      <DocumentEditModal
+        isOpen={documentEditModalOpen}
+        setIsOpen={setDocumentEditModalOpen}
+        documentId={documentId}
         refetch={refetch}
       />
     </TabsContainer>
