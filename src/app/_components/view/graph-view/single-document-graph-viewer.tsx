@@ -5,7 +5,11 @@ import { D3ForceGraph } from "@/app/_components/d3/force/graph";
 import type { CustomNodeType, CustomLinkType } from "@/app/const/types";
 import { Toolbar } from "@/app/_components/toolbar/toolbar";
 import { api } from "@/trpc/react";
-import { Link2Icon } from "@/app/_components/icons";
+import {
+  Link2Icon,
+  TriangleDownIcon,
+  TriangleRightIcon,
+} from "@/app/_components/icons";
 import { UrlCopy } from "@/app/_components/url-copy/url-copy";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import { exportTxt } from "@/app/_utils/sys/svg";
@@ -80,6 +84,8 @@ export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
   const [isLinkPropertyEditModalOpen, setIsLinkPropertyEditModalOpen] =
     useState<boolean>(false);
 
+  const [textPanelFull, setTextPanelFull] = useState<boolean>(false);
+
   const onGraphFormUpdate = (additionalGraph: GraphDocument) => {
     console.log("onGraphUpdate", additionalGraph);
     if (isEditor) {
@@ -110,7 +116,10 @@ export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
   if (!graphData) return null;
   return (
     <div>
-      <div className="h-full w-full p-2">
+      <div className="flex h-full w-full flex-row p-2">
+        {/* <div className="w-1/3 overflow-y-hidden text-sm text-white">
+          <div className="text-sm">{graphData.sourceDocument.text}</div>
+        </div> */}
         <div className="flex h-full w-full flex-col divide-y divide-slate-400 overflow-hidden rounded-md border border-slate-400  text-slate-50">
           <div className="px-4">
             <Toolbar
@@ -201,6 +210,35 @@ export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
                     graphDocument={graphDocument}
                     setFocusNode={setFocusedNode}
                   />
+
+                  <div className="absolute flex w-1/3 flex-row gap-2 rounded-r-lg bg-black/20 px-4 py-3 text-sm text-white backdrop-blur-sm">
+                    <div>
+                      <button
+                        onClick={() => {
+                          setTextPanelFull(!textPanelFull);
+                        }}
+                      >
+                        {textPanelFull ? (
+                          <TriangleDownIcon
+                            height={18}
+                            width={18}
+                            color="white"
+                          />
+                        ) : (
+                          <TriangleRightIcon
+                            height={18}
+                            width={18}
+                            color="white"
+                          />
+                        )}
+                      </button>
+                    </div>
+                    <div
+                      className={`overflow-y-scroll whitespace-pre-wrap text-sm ${textPanelFull ? "max-h-[500px]" : "max-h-[60px]"}`}
+                    >
+                      {graphData.sourceDocument.text}
+                    </div>
+                  </div>
                 </>
               }
             />

@@ -31,10 +31,31 @@ export const documentGraphRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       console.log(input.id);
-      return ctx.db.documentGraph.findFirst({
+      const graph = await ctx.db.documentGraph.findFirst({
         where: { id: input.id, sourceDocument: { isDeleted: false } },
         include: { sourceDocument: true },
       });
+
+      if (!graph) {
+        throw new Error("DocumentGraph not found");
+      }
+
+      let text: string;
+      if (graph?.sourceDocument?.documentType === "INPUT_PDF") {
+        text = "";
+      } else {
+        text = await fetch(graph?.sourceDocument?.url ?? "").then((res) =>
+          res.text(),
+        );
+      }
+
+      return {
+        ...graph,
+        sourceDocument: {
+          ...graph.sourceDocument,
+          text: text,
+        },
+      };
     }),
 
   create: protectedProcedure

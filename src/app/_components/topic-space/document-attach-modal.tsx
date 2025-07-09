@@ -41,6 +41,7 @@ const emptyDocument: DocumentResponse = {
   createdAt: new Date(),
   updatedAt: new Date(),
   isDeleted: false,
+  documentType: "INPUT_TXT",
 };
 
 export const DocumentAttachModal = ({
@@ -80,7 +81,6 @@ export const DocumentAttachModal = ({
       { id: topicSpaceId, documents: filteredData },
       {
         onSuccess: (res) => {
-          console.log("res: ", res);
           setIsOpen(false);
           refetch();
           setSelectedDocuments([emptyDocument]);

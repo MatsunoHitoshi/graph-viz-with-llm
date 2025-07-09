@@ -80,6 +80,7 @@ model SourceDocument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
+  documentType DocumentType @default(INPUT_TXT)
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -87,6 +88,11 @@ model SourceDocument {
   graph       DocumentGraph?
   topicSpaces TopicSpace[]
   tags        Tag[]
+}
+
+enum DocumentType {
+  INPUT_PDF
+  INPUT_TXT
 }
 
 model DocumentGraph {
