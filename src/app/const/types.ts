@@ -48,3 +48,14 @@ export type TopicGraphFilterOption = {
   cutOff?: number;
   withBetweenNodes?: boolean;
 };
+
+export const ChangeTypeMap = {
+  ADD: "追加",
+  REMOVE: "削除",
+  UPDATE: "更新",
+};
+
+export const EntityTypeMap = {
+  NODE: "ノード",
+  EDGE: "エッジ",
+};
