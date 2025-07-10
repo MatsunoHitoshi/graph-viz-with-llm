@@ -126,10 +126,7 @@ const routeHandler = async (
   if (!topicSpaceInfo) {
     return new Response("Topic space not found", { status: 404 });
   }
-  const handler = await createHandlerForTopicSpace(
-    topicSpaceId,
-    topicSpaceInfo.name,
-  );
+  const handler = createHandlerForTopicSpace(topicSpaceId, topicSpaceInfo.name);
   return handler(request);
 };
 
