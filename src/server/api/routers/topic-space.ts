@@ -163,6 +163,26 @@ export const topicSpaceRouter = createTRPCRouter({
       }
     }),
 
+  getSummaryByIdPublic: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: { id: input.id, isDeleted: false },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          tags: true,
+        },
+      });
+
+      if (!topicSpace) {
+        throw new Error("TopicSpace not found");
+      }
+
+      return topicSpace;
+    }),
+
   getByIdPublic: publicProcedure
     .input(TopicSpaceGetSchema)
     .query(async ({ ctx, input }) => {

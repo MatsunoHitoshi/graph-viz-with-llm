@@ -7,6 +7,7 @@ import { topicSpaceRouter } from "./routers/topic-space";
 import { treeGraphRouter } from "./routers/tree-graph";
 import { assistantRouter } from "./routers/assistant";
 import { topicSpaceChangeHistoryRouter } from "./routers/topic-space-change-history";
+import { mcpRouter } from "./routers/mcp";
 
 /**
  * This is the primary router for your server.
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   treeGraph: treeGraphRouter,
   assistant: assistantRouter,
   topicSpaceChangeHistory: topicSpaceChangeHistoryRouter,
+  mcp: mcpRouter,
 });
 
 // export type definition of API
