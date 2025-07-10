@@ -98,6 +98,7 @@ export const TopicGraphPathDetail = ({
               selectedGraphData={selectedGraphData ?? undefined}
               selectedPathData={pathData ?? undefined}
               topicSpaceId={id}
+              nodeSearchQuery={nodeSearchQuery}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

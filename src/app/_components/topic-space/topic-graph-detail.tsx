@@ -254,6 +254,7 @@ export const TopicGraphDetail = ({
               isClustered={isClustered}
               selectedPathData={pathData}
               selectedGraphData={selectedGraphData ?? undefined}
+              nodeSearchQuery={nodeSearchQuery}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

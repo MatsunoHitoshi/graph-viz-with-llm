@@ -19,6 +19,7 @@ export const MultiDocumentGraphEditor = ({
   selectedPathData,
   selectedGraphData,
   isLinkFiltered,
+  nodeSearchQuery,
 }: {
   graphDocument: GraphDocument;
   topicSpaceId: string;
@@ -29,6 +30,7 @@ export const MultiDocumentGraphEditor = ({
   selectedPathData?: GraphDocument;
   selectedGraphData?: GraphDocument;
   isLinkFiltered: boolean;
+  nodeSearchQuery: string;
 }) => {
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth =
@@ -86,6 +88,7 @@ export const MultiDocumentGraphEditor = ({
             selectedPathData={selectedPathData}
             selectedGraphData={selectedGraphData}
             isLinkFiltered={isLinkFiltered}
+            nodeSearchQuery={nodeSearchQuery}
             toolComponent={
               <>
                 <GraphTool

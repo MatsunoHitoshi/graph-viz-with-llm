@@ -192,6 +192,7 @@ export const TopicGraphEditor = ({
               selectedGraphData={selectedGraphData ?? undefined}
               selectedPathData={pathData}
               isLinkFiltered={isLinkFiltered}
+              nodeSearchQuery={nodeSearchQuery}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

@@ -6,6 +6,7 @@ import type { GraphDocument } from "@/server/api/routers/kg";
 import {
   FileTextIcon,
   GraphIcon,
+  LayersIcon,
   Pencil2Icon,
   PersonIcon,
   PlusIcon,
@@ -15,11 +16,13 @@ import {
 import { DocumentList, DocumentListMenuButton } from "../list/document-list";
 import type { DocumentResponse } from "@/app/const/types";
 import { Button } from "../button/button";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { DocumentAttachModal } from "./document-attach-modal";
 import { LinkButton } from "../button/link-button";
 import { MultiDocumentGraphViewer } from "../view/graph-view/multi-document-graph-viewer";
 import { DocumentEditModal } from "../document/document-edit-modal";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import { TopicSpaceChangeHistory } from "./topic-space-change-history";
 
 export const TopicSpaceDetail = ({ id }: { id: string }) => {
   const { data: session } = useSession();
@@ -55,8 +58,8 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
   if (!session || !topicSpace) return null;
   return (
     <TabsContainer>
-      <div className="grid  grid-flow-row grid-cols-2 gap-8 ">
-        <div className="flex flex-col gap-8 p-4">
+      <div className="grid h-full grid-flow-row grid-cols-2 gap-8">
+        <div className="flex h-full flex-col gap-8 overflow-hidden p-4">
           <a href={`/topic-spaces/${id}`} className="w-max">
             <div className="text-lg font-semibold">{topicSpace.name}</div>
           </a>
@@ -128,53 +131,99 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <div className="flex w-full flex-row items-center justify-between">
-              <div className="font-semibold">ドキュメント</div>
-              <Button
-                onClick={() => {
-                  setDocumentAttachModalOpen(true);
-                }}
-                className="!h-8 !w-8 !p-2"
-              >
-                <div className="h-4 w-4">
-                  <PlusIcon width={16} height={16} color="white" />
-                </div>
-              </Button>
-            </div>
-
-            <DocumentList
-              documents={topicSpace.sourceDocuments as DocumentResponse[]}
-              type="topic"
-              menu={(document) => {
-                return (
-                  <div className="flex min-w-[150px] flex-col">
-                    <DocumentListMenuButton
-                      icon={
-                        <TrashIcon width={16} height={16} color="#ea1c0c" />
-                      }
-                      onClick={() => onDetachDocument(document.id)}
-                    >
-                      <div className="text-error-red">
-                        ドキュメントマップから削除
-                      </div>
-                    </DocumentListMenuButton>
-                    <DocumentListMenuButton
-                      icon={
-                        <Pencil2Icon width={16} height={16} color="white" />
-                      }
-                      onClick={() => {
-                        setDocumentId(document.id);
-                        setDocumentEditModalOpen(true);
-                      }}
-                    >
-                      <div className="text-white">名前を編集</div>
-                    </DocumentListMenuButton>
+          <TabGroup className="h-max overflow-y-scroll" defaultIndex={0}>
+            <TabList className="sticky top-0 flex flex-row items-center gap-2 border-b border-slate-600 bg-slate-900 text-sm">
+              <Tab as={Fragment}>
+                {({ hover, selected }) => (
+                  <div
+                    className={`flex cursor-pointer flex-row items-center gap-1 rounded-t-sm px-3 py-2 text-sm font-semibold ${
+                      selected ? "border-b-2 border-white" : ""
+                    } ${hover ? "bg-white/10" : ""}`}
+                  >
+                    <div className="h-4 w-4">
+                      <FileTextIcon width={16} height={16} color="white" />
+                    </div>
+                    <div className="text-sm">ドキュメント</div>
                   </div>
-                );
-              }}
-            />
-          </div>
+                )}
+              </Tab>
+              <Tab as={Fragment}>
+                {({ hover, selected }) => (
+                  <div
+                    className={`flex cursor-pointer flex-row items-center gap-1 rounded-t-sm px-3 py-2 text-sm font-semibold ${
+                      selected ? "border-b-2 border-white" : ""
+                    } ${hover ? "bg-white/10" : ""}`}
+                  >
+                    <div className="h-4 w-4">
+                      <LayersIcon width={16} height={16} color="white" />
+                    </div>
+                    <div className="text-sm">変更履歴</div>
+                  </div>
+                )}
+              </Tab>
+            </TabList>
+            <TabPanels className="py-2">
+              <TabPanel>
+                <div className="flex flex-col gap-1">
+                  <div className="flex w-full flex-row items-center justify-end">
+                    <Button
+                      onClick={() => {
+                        setDocumentAttachModalOpen(true);
+                      }}
+                      className="flex flex-row items-center"
+                    >
+                      <div className="h-4 w-4">
+                        <PlusIcon width={16} height={16} color="white" />
+                      </div>
+                      <div className="text-sm">ドキュメントを追加</div>
+                    </Button>
+                  </div>
+                  <DocumentList
+                    documents={topicSpace.sourceDocuments as DocumentResponse[]}
+                    type="topic"
+                    menu={(document) => {
+                      return (
+                        <div className="flex min-w-[150px] flex-col">
+                          <DocumentListMenuButton
+                            icon={
+                              <TrashIcon
+                                width={16}
+                                height={16}
+                                color="#ea1c0c"
+                              />
+                            }
+                            onClick={() => onDetachDocument(document.id)}
+                          >
+                            <div className="text-error-red">
+                              ドキュメントマップから削除
+                            </div>
+                          </DocumentListMenuButton>
+                          <DocumentListMenuButton
+                            icon={
+                              <Pencil2Icon
+                                width={16}
+                                height={16}
+                                color="white"
+                              />
+                            }
+                            onClick={() => {
+                              setDocumentId(document.id);
+                              setDocumentEditModalOpen(true);
+                            }}
+                          >
+                            <div className="text-white">名前を編集</div>
+                          </DocumentListMenuButton>
+                        </div>
+                      );
+                    }}
+                  />
+                </div>
+              </TabPanel>
+              <TabPanel>
+                <TopicSpaceChangeHistory topicSpaceId={id} />
+              </TabPanel>
+            </TabPanels>
+          </TabGroup>
         </div>
         <div>
           {topicSpace.graphData ? (

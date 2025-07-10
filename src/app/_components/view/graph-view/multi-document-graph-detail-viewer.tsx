@@ -18,6 +18,7 @@ export const MultiDocumentGraphDetailViewer = ({
   isClustered,
   selectedPathData,
   selectedGraphData,
+  nodeSearchQuery,
 }: {
   graphDocument: GraphDocument;
   topicSpaceId: string;
@@ -26,6 +27,7 @@ export const MultiDocumentGraphDetailViewer = ({
   isClustered?: boolean;
   selectedPathData?: GraphDocument;
   selectedGraphData?: GraphDocument;
+  nodeSearchQuery: string;
 }) => {
   const [innerWidth, innerHeight] = useWindowSize();
   const { data: session } = useSession();
@@ -82,6 +84,7 @@ export const MultiDocumentGraphDetailViewer = ({
             isEditor={true}
             selectedPathData={selectedPathData}
             selectedGraphData={selectedGraphData}
+            nodeSearchQuery={nodeSearchQuery}
             toolComponent={
               <>
                 <GraphTool
