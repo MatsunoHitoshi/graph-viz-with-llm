@@ -12,6 +12,7 @@ const createHandlerForTopicSpace = (
   return createMcpHandler(
     (server) => {
       const searchToolName = `search_topics_for_${topicSpaceMcpToolIdentifier.toLowerCase()}`;
+      const getContextToolName = `get_context_from_${topicSpaceMcpToolIdentifier.toLowerCase()}`;
       server.tool(
         searchToolName,
         `ユーザーが${topicSpaceName}、について質問したり調査を依頼した際に必ず使用してください。情報源「${topicSpaceName}」からキーワードに一致する情報を検索し、ユーザーの質問に答えるための基礎情報を提供します。`,
@@ -60,7 +61,7 @@ const createHandlerForTopicSpace = (
       );
 
       server.tool(
-        `get_context_from_${searchToolName}`,
+        getContextToolName,
         `${searchToolName}で検索した特定のトピックについて、より詳細な情報を取得する際に使用します。ユーザーが検索結果の中から一つを選んで『もっと詳しく』と依頼した場合などに呼び出してください。`,
         {
           nodeId: z
