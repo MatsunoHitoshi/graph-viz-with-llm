@@ -124,6 +124,8 @@ model TopicSpace {
   updatedAt       DateTime        @updatedAt
   isDeleted       Boolean         @default(false)
 
+  mcpToolIdentifier String?
+
   sourceDocuments  SourceDocument[]
   admins           User[]
   tags             Tag[]

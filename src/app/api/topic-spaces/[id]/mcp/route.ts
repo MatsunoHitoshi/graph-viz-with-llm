@@ -7,18 +7,18 @@ import type { NextRequest } from "next/server";
 const createHandlerForTopicSpace = (
   topicSpaceId: string,
   topicSpaceName: string,
+  topicSpaceMcpToolIdentifier: string,
 ) => {
   return createMcpHandler(
     (server) => {
+      const searchToolName = `search_topics_for_${topicSpaceMcpToolIdentifier.toLowerCase()}`;
       server.tool(
-        "search_art_topics",
-        `ユーザーが${topicSpaceName}、について質問したり調査を依頼した際に必ず使用してください。情報源「${topicSpaceName}」からキーワードに一致する情報を検索し、ユーザーの質問に答えるための基礎情報を提供します。例えば『ピカソについて教えて』『シュルレアリスムとは？』のようなプロンプトで呼び出します。`,
+        searchToolName,
+        `ユーザーが${topicSpaceName}、について質問したり調査を依頼した際に必ず使用してください。情報源「${topicSpaceName}」からキーワードに一致する情報を検索し、ユーザーの質問に答えるための基礎情報を提供します。`,
         {
           query: z
             .string()
-            .describe(
-              "ユーザーの質問から抽出した、検索の核となるキーワード。例：『ピカソについて教えて』という質問なら 'ピカソ' を設定します。",
-            ),
+            .describe("ユーザーの質問から抽出した、検索の核となるキーワード。"),
         },
         async ({ query }) => {
           try {
@@ -60,13 +60,13 @@ const createHandlerForTopicSpace = (
       );
 
       server.tool(
-        "get_context_knowledge_for_node",
-        `search_art_topicsで検索した特定のトピックについて、より詳細な情報を取得する際に使用します。ユーザーが検索結果の中から一つを選んで『もっと詳しく』と依頼した場合などに呼び出してください。`,
+        `get_context_from_${searchToolName}`,
+        `${searchToolName}で検索した特定のトピックについて、より詳細な情報を取得する際に使用します。ユーザーが検索結果の中から一つを選んで『もっと詳しく』と依頼した場合などに呼び出してください。`,
         {
           nodeId: z
             .string()
             .describe(
-              "search_art_topicsで見つかったトピックのID。このツールを呼ぶ前に、必ずsearch_art_topicsを実行してIDを取得している必要があります。",
+              `${searchToolName}で見つかったトピックのID。このツールを呼ぶ前に、必ず${searchToolName}を実行してIDを取得している必要があります。`,
             ),
         },
         async ({ nodeId }) => {
@@ -126,7 +126,11 @@ const routeHandler = async (
   if (!topicSpaceInfo) {
     return new Response("Topic space not found", { status: 404 });
   }
-  const handler = createHandlerForTopicSpace(topicSpaceId, topicSpaceInfo.name);
+  const handler = createHandlerForTopicSpace(
+    topicSpaceId,
+    topicSpaceInfo.name,
+    topicSpaceInfo.mcpToolIdentifier ?? "",
+  );
   return handler(request);
 };
 

@@ -173,6 +173,7 @@ export const topicSpaceRouter = createTRPCRouter({
           name: true,
           description: true,
           tags: true,
+          mcpToolIdentifier: true,
         },
       });
 
