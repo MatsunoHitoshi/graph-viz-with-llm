@@ -15,6 +15,7 @@ import type { GraphDocument } from "@/server/api/routers/kg";
 import { useRouter } from "next/navigation";
 
 type D3RadialTreeProps = {
+  bgMode: "dark" | "light";
   svgRef: React.RefObject<SVGSVGElement>;
   width: number;
   height: number;
@@ -28,6 +29,7 @@ type D3RadialTreeProps = {
 };
 
 export const D3RadialTree = ({
+  bgMode,
   svgRef,
   width,
   height,
@@ -50,6 +52,27 @@ export const D3RadialTree = ({
     .join("/");
   // const [focusedLink, setFocusedLink] = useState<>();
 
+  const colors = {
+    dark: {
+      nodeFocused: "#ef7234",
+      nodeSelected: "whitesmoke",
+      nodeUnselected: "#324557",
+      nodeHasChildren: "whitesmoke",
+      nodeNoChildren: "#aaa",
+      linkSelected: "whitesmoke",
+      linkUnselected: "#777",
+    },
+    light: {
+      nodeFocused: "#ef7234",
+      nodeSelected: "#0f172a",
+      nodeUnselected: "#aaa",
+      nodeHasChildren: "#0f172a",
+      nodeNoChildren: "#777",
+      linkSelected: "#777",
+      linkUnselected: "#bbb",
+    },
+  };
+
   useEffect(() => {
     const radius = Math.min(width, height) / 2;
 
@@ -61,11 +84,11 @@ export const D3RadialTree = ({
     const inSelected = (d: HierarchyPointNode<TreeNode>) =>
       selectedGraphData
         ? isSelected(d.data.name)
-          ? "whitesmoke"
-          : "#324557"
+          ? colors[bgMode].nodeSelected
+          : colors[bgMode].nodeUnselected
         : d.children
-          ? "whitesmoke"
-          : "#aaa";
+          ? colors[bgMode].nodeHasChildren
+          : colors[bgMode].nodeNoChildren;
 
     const d3Tree = tree<TreeNode>()
       .size([2 * Math.PI, radius])
@@ -88,9 +111,9 @@ export const D3RadialTree = ({
       .attr("fill", "none")
       .attr("stroke", (d) => {
         if (isSelected(d.source.data.name) && isSelected(d.target.data.name)) {
-          return "whitesmoke";
+          return colors[bgMode].linkSelected;
         } else {
-          return "#777";
+          return colors[bgMode].linkUnselected;
         }
       })
       .attr("stroke-opacity", (d) => {
@@ -131,7 +154,7 @@ export const D3RadialTree = ({
           ? "yellow"
           : "none";
       })
-      .attr("stroke-width", 2.5)
+      .attr("stroke-width", 3)
       .attr(
         "transform",
         (d) =>
@@ -139,9 +162,9 @@ export const D3RadialTree = ({
       )
       .attr("fill", (d) => {
         const isFocused = focusedNode?.id === d.data.id;
-        return isFocused ? "#ef7234" : inSelected(d);
+        return isFocused || d.depth === 0 ? "#ef7234" : inSelected(d);
       })
-      .attr("r", (d) => 16 - 3 * (d.depth + 1))
+      .attr("r", (d) => 20 - 5 * (d.depth + 1))
       .on("click", (e, d) => {
         console.log(focusedNode);
         if (d.data.id === focusedNode?.id) {
@@ -166,7 +189,7 @@ export const D3RadialTree = ({
       .attr(
         "transform",
         (d) =>
-          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeRadius * d.depth + 1},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
+          `rotate(${(d.x * 180) / Math.PI - (d.depth !== 0 ? 90 : 0)}) translate(${d.y + treeRadius * d.depth + 1},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
       )
       .attr("dy", "0.31em")
       .attr("x", (d) => (d.x < Math.PI === !d.children ? 15 : -15))
@@ -176,7 +199,10 @@ export const D3RadialTree = ({
       .attr("paint-order", "stroke")
       .attr("fill", "currentColor")
       .attr("color", (d) => {
-        return inSelected(d);
+        return d.depth === 0 ? "#ef7234" : inSelected(d);
+      })
+      .style("font-size", (d) => {
+        return d.depth === 0 ? "32px" : "16px";
       })
       .text((d) => d.data.name);
 
@@ -184,7 +210,14 @@ export const D3RadialTree = ({
       const svg = select("#radial-tree");
       svg.selectAll("*").remove();
     };
-  }, [nodeSearchQuery, focusedNode, selectedGraphData, data, treeRadius]);
+  }, [
+    nodeSearchQuery,
+    focusedNode,
+    selectedGraphData,
+    data,
+    treeRadius,
+    bgMode,
+  ]);
 
   useEffect(() => {
     if (currentScale > 3) {

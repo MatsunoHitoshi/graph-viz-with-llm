@@ -10,6 +10,7 @@ import { Toolbar } from "../toolbar/toolbar";
 import { D3RadialTree } from "../d3/tree/radial-tree";
 import Slider from "react-input-slider";
 import { ExportGraphButton } from "../d3/export-graph-button";
+import { Switch } from "@headlessui/react";
 
 export const TreeViewer = ({
   topicSpaceId,
@@ -37,6 +38,7 @@ export const TreeViewer = ({
   const [treeRadius, setTreeRadius] = useState<number>(80);
   const [currentScale, setCurrentScale] = useState<number>(1);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [bgLight, setBgLight] = useState<boolean>(false);
 
   useEffect(() => {
     refetch;
@@ -116,9 +118,10 @@ export const TreeViewer = ({
             />
           </div>
         </div>
-        <div className="col-span-2 py-4">
+        <div className={`col-span-2 ${bgLight ? "bg-white" : ""}`}>
           {topicSpace.graphData && treeData ? (
             <D3RadialTree
+              bgMode={bgLight ? "light" : "dark"}
               svgRef={svgRef}
               width={graphAreaWidth}
               height={graphAreaHeight}
@@ -129,11 +132,26 @@ export const TreeViewer = ({
               setCurrentScale={setCurrentScale}
               currentScale={currentScale}
               toolComponent={
-                <div className="absolute">
+                <div className="absolute flex flex-row items-center gap-2">
                   <ExportGraphButton
                     svgRef={svgRef}
                     currentScale={currentScale}
                   />
+
+                  <div className="flex flex-row items-center gap-2">
+                    <div
+                      className={`text-xs ${bgLight ? "text-slate-900" : ""}`}
+                    >
+                      背景色
+                    </div>
+                    <Switch
+                      checked={bgLight}
+                      onChange={setBgLight}
+                      className="group inline-flex h-4 w-7 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
+                    >
+                      <span className="size-3 translate-x-1/3 rounded-full bg-white transition group-data-[checked]:translate-x-3" />
+                    </Switch>
+                  </div>
                 </div>
               }
             />
