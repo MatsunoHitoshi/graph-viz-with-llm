@@ -186,10 +186,10 @@ export const D3RadialTree = ({
       .data(root.descendants())
       .join("text")
       .attr("class", "label")
-      .attr(
-        "transform",
-        (d) =>
-          `rotate(${(d.x * 180) / Math.PI - (d.depth !== 0 ? 90 : 0)}) translate(${d.y + treeRadius * d.depth + 1},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
+      .attr("transform", (d) =>
+        d.depth === 0
+          ? `rotate(0) translate(${d.y + treeRadius * d.depth + 1},0)`
+          : `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeRadius * d.depth + 1},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
       )
       .attr("dy", "0.31em")
       .attr("x", (d) => (d.x < Math.PI === !d.children ? 15 : -15))
