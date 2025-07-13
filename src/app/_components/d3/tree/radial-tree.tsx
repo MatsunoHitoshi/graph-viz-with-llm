@@ -15,23 +15,30 @@ import type { GraphDocument } from "@/server/api/routers/kg";
 import { useRouter } from "next/navigation";
 
 type D3RadialTreeProps = {
+  svgRef: React.RefObject<SVGSVGElement>;
   width: number;
   height: number;
   data: TreeNode;
   nodeSearchQuery: string;
   selectedGraphData?: GraphDocument | null;
-  treeScale: number;
+  treeRadius: number;
+  toolComponent?: React.ReactNode;
+  setCurrentScale: React.Dispatch<React.SetStateAction<number>>;
+  currentScale: number;
 };
 
 export const D3RadialTree = ({
+  svgRef,
   width,
   height,
   data,
   nodeSearchQuery,
   selectedGraphData,
-  treeScale,
+  treeRadius,
+  toolComponent,
+  setCurrentScale,
+  currentScale,
 }: D3RadialTreeProps) => {
-  const [currentScale, setCurrentScale] = useState<number>(1);
   const [currentTransformX, setCurrentTransformX] = useState<number>(0);
   const [currentTransformY, setCurrentTransformY] = useState<number>(0);
   const [labelFontSize, setLabelFontSize] = useState<number>(15);
@@ -104,7 +111,7 @@ export const D3RadialTree = ({
           })
           .radius((d) => {
             const data = d as unknown as HierarchyPointNode<TreeNode>;
-            return data.y + treeScale * data.depth + 1;
+            return data.y + treeRadius * data.depth + 1;
           }) as unknown as [number, number],
       );
 
@@ -128,7 +135,7 @@ export const D3RadialTree = ({
       .attr(
         "transform",
         (d) =>
-          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeScale * d.depth + 1},0)`,
+          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeRadius * d.depth + 1},0)`,
       )
       .attr("fill", (d) => {
         const isFocused = focusedNode?.id === d.data.id;
@@ -159,7 +166,7 @@ export const D3RadialTree = ({
       .attr(
         "transform",
         (d) =>
-          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeScale * d.depth + 1},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
+          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y + treeRadius * d.depth + 1},0) rotate(${d.x >= Math.PI ? 180 : 0})`,
       )
       .attr("dy", "0.31em")
       .attr("x", (d) => (d.x < Math.PI === !d.children ? 15 : -15))
@@ -177,7 +184,7 @@ export const D3RadialTree = ({
       const svg = select("#radial-tree");
       svg.selectAll("*").remove();
     };
-  }, [nodeSearchQuery, focusedNode, selectedGraphData, data, treeScale]);
+  }, [nodeSearchQuery, focusedNode, selectedGraphData, data, treeRadius]);
 
   useEffect(() => {
     if (currentScale > 3) {
@@ -195,7 +202,9 @@ export const D3RadialTree = ({
   return (
     <div className="flex flex-col">
       <div className={`h-[${String(height)}px] w-[${String(width)}px]`}>
+        {toolComponent}
         <svg
+          ref={svgRef}
           id="container"
           width={width}
           height={height}

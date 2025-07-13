@@ -7,6 +7,7 @@ import {
 } from "../../icons";
 import { type TagOption, TagsInput } from "../../input/tags-input";
 import { exportSvg } from "@/app/_utils/sys/svg";
+import { ExportGraphButton } from "../../d3/export-graph-button";
 
 export const GraphTool = ({
   svgRef,
@@ -62,16 +63,7 @@ export const GraphTool = ({
         ) : (
           <></>
         )}
-        <button
-          className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
-          onClick={() => {
-            if (svgRef.current) {
-              exportSvg(svgRef.current, 4 / currentScale);
-            }
-          }}
-        >
-          <ShareIcon height={16} width={16} color="white" />
-        </button>
+        <ExportGraphButton svgRef={svgRef} currentScale={currentScale} />
         {hasTagFilter &&
         !!setTags &&
         !!tagOptions &&

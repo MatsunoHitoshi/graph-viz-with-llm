@@ -4,11 +4,12 @@ import { TabsContainer } from "../tab/tab";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type { DocumentResponse } from "@/app/const/types";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { D3RadialTree } from "../d3/tree/radial-tree";
 import Slider from "react-input-slider";
+import { ExportGraphButton } from "../d3/export-graph-button";
 
 export const TreeViewer = ({
   topicSpaceId,
@@ -33,7 +34,9 @@ export const TreeViewer = ({
   const [selectedGraphData, setSelectedGraphData] =
     useState<GraphDocument | null>(null);
   const [nodeSearchQuery, setNodeSearchQuery] = useState<string>("");
-  const [treeScale, setTreeScale] = useState<number>(80);
+  const [treeRadius, setTreeRadius] = useState<number>(80);
+  const [currentScale, setCurrentScale] = useState<number>(1);
+  const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     refetch;
@@ -91,9 +94,9 @@ export const TreeViewer = ({
                   },
                 }}
                 axis="x"
-                x={treeScale}
+                x={treeRadius}
                 onChange={(d) => {
-                  setTreeScale(d.x);
+                  setTreeRadius(d.x);
                 }}
                 xmin={10}
                 xmax={500}
@@ -116,12 +119,23 @@ export const TreeViewer = ({
         <div className="col-span-2 py-4">
           {topicSpace.graphData && treeData ? (
             <D3RadialTree
+              svgRef={svgRef}
               width={graphAreaWidth}
               height={graphAreaHeight}
               nodeSearchQuery={nodeSearchQuery}
               data={treeData}
               selectedGraphData={selectedGraphData}
-              treeScale={treeScale}
+              treeRadius={treeRadius}
+              setCurrentScale={setCurrentScale}
+              currentScale={currentScale}
+              toolComponent={
+                <div className="absolute">
+                  <ExportGraphButton
+                    svgRef={svgRef}
+                    currentScale={currentScale}
+                  />
+                </div>
+              }
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

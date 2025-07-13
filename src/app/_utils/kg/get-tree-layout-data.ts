@@ -14,26 +14,7 @@ export const getTreeLayoutData = (
   if (!centerNode) return null;
   let treeData: TreeNode = centerNode;
 
-  treeData = {
-    ...treeData,
-    children: neighborNodes(graphData, nodeId, isSource).map((child) => {
-      if (child) {
-        return {
-          ...child,
-          children: neighborNodes(graphData, child.id, isSource).map(
-            (grandchild) => {
-              if (grandchild) {
-                return {
-                  ...grandchild,
-                  children: neighborNodes(graphData, grandchild.id, isSource),
-                };
-              }
-            },
-          ) as TreeNode[],
-        };
-      }
-    }) as TreeNode[],
-  };
+  treeData = buildTreeNode(graphData, centerNode, isSource, 2);
 
   return treeData;
 };
@@ -91,4 +72,19 @@ export const neighborNodes = (
     });
     return filteredNodes;
   }
+};
+
+export const buildTreeNode = (
+  graphData: GraphDocument,
+  node: NodeType,
+  isSource: boolean,
+  depth: number,
+): TreeNode => {
+  if (depth === 0) return { ...node, children: [] };
+  return {
+    ...node,
+    children: neighborNodes(graphData, node.id, isSource)
+      .filter((child): child is NodeType => Boolean(child))
+      .map((child) => buildTreeNode(graphData, child, isSource, depth - 1)),
+  };
 };
