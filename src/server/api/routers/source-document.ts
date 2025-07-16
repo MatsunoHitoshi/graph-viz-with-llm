@@ -13,6 +13,7 @@ import { shapeGraphData } from "@/app/_utils/kg/shape";
 import { BUCKETS } from "@/app/_utils/supabase/const";
 import { storageUtils } from "@/app/_utils/supabase/supabase";
 import { env } from "@/env";
+import { getTextFromDocumentFile } from "@/app/_utils/text/text";
 
 const SourceDocumentSchema = z.object({
   name: z.string(),
@@ -69,7 +70,14 @@ export const sourceDocumentRouter = createTRPCRouter({
       if (document?.user.id !== ctx.session?.user.id) {
         throw new Error("Document not found");
       }
-      return document;
+
+      return {
+        ...document,
+        text: await getTextFromDocumentFile(
+          document.url,
+          document.documentType,
+        ),
+      };
     }),
 
   getByIdPublic: publicProcedure

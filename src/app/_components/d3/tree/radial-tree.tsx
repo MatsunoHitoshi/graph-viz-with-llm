@@ -162,7 +162,9 @@ export const D3RadialTree = ({
       )
       .attr("fill", (d) => {
         const isFocused = focusedNode?.id === d.data.id;
-        return isFocused || d.depth === 0 ? "#ef7234" : inSelected(d);
+        return isFocused || d.depth === 0
+          ? colors[bgMode].nodeFocused
+          : inSelected(d);
       })
       .attr("r", (d) => 20 - 5 * (d.depth + 1))
       .on("click", (e, d) => {
@@ -199,7 +201,7 @@ export const D3RadialTree = ({
       .attr("paint-order", "stroke")
       .attr("fill", "currentColor")
       .attr("color", (d) => {
-        return d.depth === 0 ? "#ef7234" : inSelected(d);
+        return d.depth === 0 ? colors[bgMode].nodeFocused : inSelected(d);
       })
       .style("font-size", (d) => {
         return d.depth === 0 ? "32px" : "16px";

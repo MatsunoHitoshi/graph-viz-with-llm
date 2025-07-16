@@ -3,8 +3,8 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import OpenAI from "openai";
-import { GraphDocument } from "./kg";
-import {
+import type { GraphDocument } from "./kg";
+import type {
   NodeType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
@@ -172,7 +172,7 @@ export const mcpRouter = createTRPCRouter({
         mainNode.properties,
       )})\n`;
       context += "関連情報:\n";
-      responseData.relatedNodes.forEach(({ node, relationship }) => {
+      responseData.relatedNodes.forEach(({ relationship }) => {
         const sourceNode = responseData.graphSubset.nodes.find(
           (n) => n.id === relationship.sourceId,
         );

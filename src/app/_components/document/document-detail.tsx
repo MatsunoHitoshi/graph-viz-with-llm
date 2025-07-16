@@ -44,54 +44,67 @@ export const DocumentDetail = ({ documentId }: { documentId: string }) => {
         focusedLink={focusedLink}
         setFocusedLink={setFocusedLink}
         toolComponent={
-          <div
-            className={`absolute !w-[${graphAreaWidth}px] bg-slate-950/20 p-2 backdrop-blur-sm`}
-          >
-            <div className="flex w-full flex-row items-center justify-between gap-2">
-              <div className="flex flex-row items-center gap-2">
-                {document.url.includes("/input-txt/") ? (
+          <>
+            <div
+              className={`absolute !w-[${graphAreaWidth}px] bg-slate-950/20 p-2 backdrop-blur-sm`}
+            >
+              <div className="flex w-full flex-row items-center justify-between gap-2">
+                <div className="flex flex-row items-center gap-2">
+                  {document.url.includes("/input-txt/") ? (
+                    <Button
+                      className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10"
+                      onClick={() => {
+                        exportTxt(document.url, document.name);
+                      }}
+                    >
+                      <FileTextIcon height={16} width={16} color="white" />
+                    </Button>
+                  ) : (
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="z-10 truncate no-underline hover:underline"
+                      href={document.url}
+                    >
+                      <Button className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10">
+                        <FileTextIcon height={16} width={16} color="white" />
+                      </Button>
+                    </a>
+                  )}
+
                   <Button
                     className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10"
                     onClick={() => {
-                      exportTxt(document.url, document.name);
+                      router.push(`/graph/${document.graph?.id}`);
                     }}
                   >
-                    <FileTextIcon height={16} width={16} color="white" />
+                    <GraphIcon height={16} width={16} color="white" />
                   </Button>
-                ) : (
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="z-10 truncate no-underline hover:underline"
-                    href={document.url}
+                  <UrlCopy
+                    messagePosition="inButton"
+                    className="z-10 flex !h-8 !w-8 flex-row items-center justify-center bg-transparent px-0 py-0 hover:bg-slate-50/10"
+                    url={`${env.NEXT_PUBLIC_BASE_URL}/graph/${document.graph?.id}`}
                   >
-                    <Button className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10">
-                      <FileTextIcon height={16} width={16} color="white" />
-                    </Button>
-                  </a>
-                )}
-
-                <Button
-                  className="z-10 !h-8 !w-8 bg-transparent !p-2 text-sm hover:bg-slate-50/10"
-                  onClick={() => {
-                    router.push(`/graph/${document.graph?.id}`);
-                  }}
-                >
-                  <GraphIcon height={16} width={16} color="white" />
-                </Button>
-                <UrlCopy
-                  messagePosition="inButton"
-                  className="z-10 flex !h-8 !w-8 flex-row items-center justify-center bg-transparent px-0 py-0 hover:bg-slate-50/10"
-                  url={`${env.NEXT_PUBLIC_BASE_URL}/graph/${document.graph?.id}`}
-                >
-                  <div className="h-4 w-4">
-                    <Link2Icon height={16} width={16} color="white" />
-                  </div>
-                </UrlCopy>
+                    <div className="h-4 w-4">
+                      <Link2Icon height={16} width={16} color="white" />
+                    </div>
+                  </UrlCopy>
+                </div>
+                <div className="text-lg">{document.name}</div>
               </div>
-              <div className="text-lg">{document.name}</div>
             </div>
-          </div>
+
+            <div
+              className={`absolute bottom-3 flex w-1/3 flex-row gap-2 rounded-lg bg-black/20 px-4 py-3 text-sm text-white backdrop-blur-sm`}
+            >
+              <div></div>
+              <div
+                className={`max-h-[250px] overflow-y-scroll whitespace-pre-wrap text-sm`}
+              >
+                {document.text}
+              </div>
+            </div>
+          </>
         }
       />
     </div>

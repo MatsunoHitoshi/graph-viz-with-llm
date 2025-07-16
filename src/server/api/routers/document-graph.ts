@@ -9,6 +9,7 @@ import type {
   NodeType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
+import { getTextFromDocumentFile } from "@/app/_utils/text/text";
 
 const CreateDocumentGraphSchema = z.object({
   dataJson: z.object({
@@ -40,20 +41,14 @@ export const documentGraphRouter = createTRPCRouter({
         throw new Error("DocumentGraph not found");
       }
 
-      let text: string;
-      if (graph?.sourceDocument?.documentType === "INPUT_PDF") {
-        text = "";
-      } else {
-        text = await fetch(graph?.sourceDocument?.url ?? "").then((res) =>
-          res.text(),
-        );
-      }
-
       return {
         ...graph,
         sourceDocument: {
           ...graph.sourceDocument,
-          text: text,
+          text: await getTextFromDocumentFile(
+            graph.sourceDocument.url,
+            graph.sourceDocument.documentType,
+          ),
         },
       };
     }),
