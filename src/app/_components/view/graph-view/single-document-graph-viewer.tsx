@@ -21,6 +21,7 @@ import {
 import { NodeLinkEditModal } from "../../modal/node-link-edit-modal";
 import { Button } from "../../button/button";
 import { diffNodes, diffRelationships } from "@/app/_utils/kg/diff";
+import { GraphSyncedText } from "../../document/graph-synced-text";
 
 export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
   const { data: graphData, refetch } = api.documentGraph.getById.useQuery({
@@ -236,7 +237,11 @@ export const SingleDocumentGraphViewer = ({ graphId }: { graphId: string }) => {
                     <div
                       className={`overflow-y-scroll whitespace-pre-wrap text-sm ${textPanelFull ? "max-h-[500px]" : "max-h-[60px]"}`}
                     >
-                      {graphData.sourceDocument.text}
+                      <GraphSyncedText
+                        focusedLink={focusedLink}
+                        focusedNode={focusedNode}
+                        text={graphData.sourceDocument.text}
+                      />
                     </div>
                   </div>
                 </>

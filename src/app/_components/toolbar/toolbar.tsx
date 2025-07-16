@@ -12,8 +12,8 @@ type ToolbarProps = {
   setIsEditing?: React.Dispatch<React.SetStateAction<boolean>>;
   setNodeSearchQuery?: React.Dispatch<React.SetStateAction<string>>;
   rightArea?: React.ReactNode;
-  edgeType: EdgeType;
-  setEdgeType: React.Dispatch<React.SetStateAction<EdgeType>>;
+  edgeType?: EdgeType;
+  setEdgeType?: React.Dispatch<React.SetStateAction<EdgeType>>;
 };
 export const Toolbar = ({
   isLinkFiltered,
