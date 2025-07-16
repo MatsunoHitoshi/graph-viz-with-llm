@@ -146,7 +146,7 @@ const getOptimalPath = (graphData: GraphDocument, nodes: NodeType[]) => {
       console.log("skip");
     } else {
       const reachedNodes = reverseNodes.slice(index + 1);
-      const neighbors = neighborNodes(graphData, node.id, false) as NodeType[];
+      const neighbors = neighborNodes(graphData, node.id, "BOTH") as NodeType[];
       const pathNode = neighbors.find((neighbor) => {
         return reachedNodes.some((reached) => {
           return reached.id === neighbor.id;

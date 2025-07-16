@@ -253,7 +253,7 @@ export const topicSpaceRouter = createTRPCRouter({
       const newLinks: RelationshipType[] = [];
       const nodesWithNeighbors = pathData.nodes
         .map((node) => {
-          const neighbors = neighborNodes(graphData, node.id, false).filter(
+          const neighbors = neighborNodes(graphData, node.id, "BOTH").filter(
             (n): n is NodeType => n !== undefined,
           );
 

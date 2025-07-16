@@ -1,6 +1,8 @@
 import { Input, Switch } from "@headlessui/react";
 import clsx from "clsx";
 import React from "react";
+import { Button } from "../button/button";
+import type { EdgeType } from "@/app/_utils/kg/get-tree-layout-data";
 type ToolbarProps = {
   isLinkFiltered?: boolean;
   setIsLinkFiltered?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -10,8 +12,8 @@ type ToolbarProps = {
   setIsEditing?: React.Dispatch<React.SetStateAction<boolean>>;
   setNodeSearchQuery?: React.Dispatch<React.SetStateAction<string>>;
   rightArea?: React.ReactNode;
-  setSourceTargetSwitch?: React.Dispatch<React.SetStateAction<boolean>>;
-  sourceTargetSwitch?: boolean;
+  edgeType: EdgeType;
+  setEdgeType: React.Dispatch<React.SetStateAction<EdgeType>>;
 };
 export const Toolbar = ({
   isLinkFiltered,
@@ -22,8 +24,8 @@ export const Toolbar = ({
   setIsEditing,
   setNodeSearchQuery,
   rightArea,
-  setSourceTargetSwitch,
-  sourceTargetSwitch,
+  edgeType,
+  setEdgeType,
 }: ToolbarProps) => {
   return (
     <div className="flex h-[46px] w-full flex-row items-center justify-between">
@@ -56,18 +58,14 @@ export const Toolbar = ({
             </div>
           </div>
         )}
-        {!!setSourceTargetSwitch && (
-          <div className="flex flex-row items-center gap-2">
-            <div className="truncate text-sm">外方向への繋がり</div>
-            <div>
-              <Switch
-                checked={sourceTargetSwitch}
-                onChange={setSourceTargetSwitch}
-                className="group inline-flex h-6 w-11 items-center rounded-full bg-slate-400 transition data-[checked]:bg-orange-400"
-              >
-                <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
-              </Switch>
-            </div>
+        {!!setEdgeType && (
+          <div className="flex flex-row items-center">
+            <Button
+              onClick={() => setEdgeType(edgeType === "OUT" ? "IN" : "OUT")}
+              className=" !text-xs"
+            >
+              {edgeType === "OUT" ? "外方向接続" : "内方向接続"}
+            </Button>
           </div>
         )}
         {!!setIsUseExample && (

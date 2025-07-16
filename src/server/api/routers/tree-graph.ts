@@ -10,7 +10,7 @@ export const treeGraphRouter = createTRPCRouter({
       z.object({
         topicSpaceId: z.string(),
         nodeId: z.number(),
-        isSource: z.boolean(),
+        edgeType: z.enum(["IN", "OUT", "BOTH"]),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -23,7 +23,7 @@ export const treeGraphRouter = createTRPCRouter({
       const treeData = getTreeLayoutData(
         topicSpace.graphData as GraphDocument,
         input.nodeId,
-        input.isSource,
+        input.edgeType,
       );
       if (!treeData) throw new Error("TreeData not found");
 

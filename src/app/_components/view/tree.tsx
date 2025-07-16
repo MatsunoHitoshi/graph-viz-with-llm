@@ -4,13 +4,14 @@ import { TabsContainer } from "../tab/tab";
 import { useWindowSize } from "@/app/_hooks/use-window-size";
 import type { GraphDocument } from "@/server/api/routers/kg";
 import type { DocumentResponse } from "@/app/const/types";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TopicGraphDocumentList } from "../list/topic-graph-document-list";
 import { Toolbar } from "../toolbar/toolbar";
 import { D3RadialTree } from "../d3/tree/radial-tree";
 import Slider from "react-input-slider";
 import { ExportGraphButton } from "../d3/export-graph-button";
 import { Switch } from "@headlessui/react";
+import type { EdgeType } from "@/app/_utils/kg/get-tree-layout-data";
 
 export const TreeViewer = ({
   topicSpaceId,
@@ -19,14 +20,14 @@ export const TreeViewer = ({
   topicSpaceId: string;
   nodeId: string;
 }) => {
-  const [sourceTargetSwitch, setSourceTargetSwitch] = useState<boolean>(true);
+  const [edgeType, setEdgeType] = useState<EdgeType>("OUT");
   const { data: topicSpace } = api.topicSpaces.getByIdPublic.useQuery({
     id: topicSpaceId,
   });
   const { data: treeData, refetch } = api.treeGraph.getByNodeId.useQuery({
     topicSpaceId: topicSpaceId,
     nodeId: Number(nodeId),
-    isSource: sourceTargetSwitch,
+    edgeType: edgeType,
   });
   const [innerWidth, innerHeight] = useWindowSize();
   const graphAreaWidth = (2 * (innerWidth ?? 100)) / 3 - 22;
@@ -42,7 +43,7 @@ export const TreeViewer = ({
 
   useEffect(() => {
     refetch;
-  }, [sourceTargetSwitch]);
+  }, [edgeType]);
 
   useEffect(() => {
     setSelectedGraphData(
@@ -80,8 +81,8 @@ export const TreeViewer = ({
           <div className="flex flex-col gap-4">
             <Toolbar
               setNodeSearchQuery={setNodeSearchQuery}
-              sourceTargetSwitch={sourceTargetSwitch}
-              setSourceTargetSwitch={setSourceTargetSwitch}
+              edgeType={edgeType}
+              setEdgeType={setEdgeType}
             />
             <div className="flex flex-row items-center gap-2 px-4">
               <div className="text-sm">ツリーの広さ</div>
