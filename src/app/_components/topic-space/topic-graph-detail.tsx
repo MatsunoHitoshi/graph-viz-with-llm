@@ -154,7 +154,7 @@ export const TopicGraphDetail = ({
 
   return (
     <TabsContainer>
-      <div className="grid h-full grid-flow-row grid-cols-3 gap-8">
+      <div className="grid h-full grid-flow-row grid-cols-3 gap-8 overflow-hidden">
         {!graphFullScreen ? (
           <div className="flex flex-col gap-6 overflow-scroll p-4">
             <a href={`/topic-spaces/${id}/graph`} className="w-max">
@@ -244,7 +244,7 @@ export const TopicGraphDetail = ({
           </div>
         )}
 
-        <div className="col-span-2">
+        <div className="col-span-2 h-full overflow-scroll">
           {graphData ? (
             <MultiDocumentGraphDetailViewer
               topicSpaceId={id}

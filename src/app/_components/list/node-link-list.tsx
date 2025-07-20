@@ -3,9 +3,9 @@ import type { CustomNodeType } from "@/app/const/types";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "../button/button";
 import { CheckboxInput } from "../input/checkbox-input";
-import { NodePropertyList } from "./node-property-list";
 import { MergeNodesForm } from "../form/merge-nodes-form";
 import type { GraphDocument } from "@/server/api/routers/kg";
+import { PropertiesSummaryPanel } from "../d3/force/graph-info-panel";
 
 type NodesSortType = "name" | "centrality" | "none";
 
@@ -36,7 +36,6 @@ export const NodeLinkList = ({
   const [mergeNodes, setMergeNodes] = useState<CustomNodeType[]>();
   const [isMergeNodesEditModalOpen, setIsMergeNodesEditModalOpen] =
     useState<boolean>(false);
-
   const [sortType, setSortType] = useState<NodesSortType>("none");
   const graphNodes = graphDocument.nodes;
 
@@ -53,8 +52,8 @@ export const NodeLinkList = ({
   }, [sortType, graphDocument]);
 
   return (
-    <div className="flex h-screen flex-col gap-2">
-      <div className="mt-2 flex flex-row items-center gap-2">
+    <div className="flex w-full flex-col gap-2">
+      <div className="sticky top-2 z-10 mt-2 flex flex-row items-center gap-2">
         {toolComponent}
         <button
           className="rounded-lg bg-black/20 p-2 backdrop-blur-sm"
@@ -103,7 +102,7 @@ export const NodeLinkList = ({
         </Button>
       </div>
 
-      <div className="flex w-full flex-col divide-y divide-slate-400 overflow-scroll">
+      <div className="flex w-full flex-col divide-y divide-slate-400">
         {sortedGraphNodes.map((node) => {
           const queryFiltered =
             !!nodeSearchQuery &&
@@ -114,7 +113,7 @@ export const NodeLinkList = ({
               key={node.id}
               className={`flex w-full flex-row items-center p-2 ${
                 focusedNode?.id === node.id
-                  ? "bg-slate-400"
+                  ? "bg-slate-600"
                   : queryFiltered
                     ? "bg-slate-700"
                     : ""
@@ -145,11 +144,10 @@ export const NodeLinkList = ({
                   )}
                 </div>
 
-                <NodePropertyList
+                <PropertiesSummaryPanel
                   node={node}
-                  isEditor={isEditor}
                   topicSpaceId={topicSpaceId}
-                  refetch={refetch}
+                  withDetail={true}
                 />
               </div>
             </div>

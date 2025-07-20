@@ -26,23 +26,9 @@ export const Documents = ({ id }: { id?: string }) => {
   if (!session) return null;
   return (
     <TabsContainer>
-      <div className="grid h-full grid-flow-row grid-cols-2 gap-8">
-        <div className="flex flex-col gap-8 overflow-scroll p-4">
+      <div className="grid h-full grid-flow-row grid-cols-2 gap-8 overflow-hidden">
+        <div className="flex h-full flex-col gap-8 overflow-scroll p-4">
           <div className="flex flex-col gap-1 ">
-            <div className="flex w-full flex-row items-center justify-between">
-              <div className="text-lg font-semibold">ドキュメント</div>
-              <Button
-                onClick={() => {
-                  router.push("/");
-                }}
-                className="!h-8 !w-8 !p-2"
-              >
-                <div className="h-4 w-4">
-                  <PlusIcon width={16} height={16} color="white" />
-                </div>
-              </Button>
-            </div>
-
             {documents && (
               <DocumentList
                 documents={documents}

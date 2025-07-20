@@ -19,6 +19,7 @@ export const dragEditorExtension = ({
   dragState,
   setDragState,
   onGraphUpdate,
+  graphIdentifier,
 }: {
   tempLineRef: React.RefObject<SVGLineElement>;
   tempCircleRef: React.RefObject<SVGCircleElement>;
@@ -27,6 +28,7 @@ export const dragEditorExtension = ({
   dragState: DragState;
   setDragState: React.Dispatch<React.SetStateAction<DragState>>;
   onGraphUpdate?: (additionalGraph: GraphDocument) => void;
+  graphIdentifier: string;
 }) => {
   let dragStateInExtension = dragState;
   const dragReset = () => {
@@ -250,7 +252,7 @@ export const dragEditorExtension = ({
     event.subject.fy = null;
   }
 
-  d3.selectAll<Element, unknown>(".node").call(
+  d3.selectAll<Element, unknown>(`.${graphIdentifier}-node`).call(
     drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded),
   );
 };

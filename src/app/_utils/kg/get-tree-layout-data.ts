@@ -36,11 +36,11 @@ const getNodeById = (id: number, nodes: NodeType[]) => {
 };
 
 export type EdgeType = "IN" | "OUT" | "BOTH";
-export const neighborNodes = (
+export const getNeighborNodes = (
   graphData: GraphDocument,
   nodeId: number,
   edgeType: EdgeType,
-) => {
+): NodeType[] => {
   switch (edgeType) {
     case "IN":
       const inNodes = targetLinks(graphData.relationships, nodeId).map(
@@ -48,28 +48,36 @@ export const neighborNodes = (
           return getNodeById(link.sourceId, graphData.nodes);
         },
       );
-      return inNodes.filter((node, index) => {
-        return (
-          index ===
-          inNodes.findIndex((n) => {
-            return node?.id === n?.id;
-          })
-        );
-      });
+      return inNodes
+        .filter((node): node is NodeType => {
+          return node !== undefined;
+        })
+        .filter((node, index) => {
+          return (
+            index ===
+            inNodes.findIndex((n) => {
+              return node?.id === n?.id;
+            })
+          );
+        });
     case "OUT":
       const outNodes = sourceLinks(graphData.relationships, nodeId).map(
         (link) => {
           return getNodeById(link.targetId, graphData.nodes);
         },
       );
-      const filteredOutNodes = outNodes.filter((node, index) => {
-        return (
-          index ===
-          outNodes.findIndex((n) => {
-            return node?.id === n?.id;
-          })
-        );
-      });
+      const filteredOutNodes = outNodes
+        .filter((node): node is NodeType => {
+          return node !== undefined;
+        })
+        .filter((node, index) => {
+          return (
+            index ===
+            outNodes.findIndex((n) => {
+              return node?.id === n?.id;
+            })
+          );
+        });
       return filteredOutNodes;
     case "BOTH":
       const bothNodes = targetLinks(graphData.relationships, nodeId)
@@ -81,14 +89,18 @@ export const neighborNodes = (
             return getNodeById(link.targetId, graphData.nodes);
           }),
         );
-      return bothNodes.filter((node, index) => {
-        return (
-          index ===
-          bothNodes.findIndex((n) => {
-            return node?.id === n?.id;
-          })
-        );
-      });
+      return bothNodes
+        .filter((node): node is NodeType => {
+          return node !== undefined;
+        })
+        .filter((node, index) => {
+          return (
+            index ===
+            bothNodes.findIndex((n) => {
+              return node?.id === n?.id;
+            })
+          );
+        });
   }
 };
 
@@ -101,8 +113,8 @@ export const buildTreeNode = (
   if (depth === 0) return { ...node, children: [] };
   return {
     ...node,
-    children: neighborNodes(graphData, node.id, edgeType)
-      .filter((child): child is NodeType => Boolean(child))
-      .map((child) => buildTreeNode(graphData, child, edgeType, depth - 1)),
+    children: getNeighborNodes(graphData, node.id, edgeType).map((child) =>
+      buildTreeNode(graphData, child, edgeType, depth - 1),
+    ),
   };
 };

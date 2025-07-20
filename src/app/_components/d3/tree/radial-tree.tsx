@@ -240,12 +240,12 @@ export const D3RadialTree = ({
         {toolComponent}
         <svg
           ref={svgRef}
-          id="container"
           width={width}
           height={height}
           viewBox={`0 0 ${String(width)} ${String(height)}`}
         >
           <D3ZoomProvider
+            svgRef={svgRef}
             setCurrentScale={setCurrentScale}
             setCurrentTransformX={setCurrentTransformX}
             setCurrentTransformY={setCurrentTransformY}

@@ -20,6 +20,7 @@ import { shapeGraphData } from "@/app/_utils/kg/shape";
 import type { Extractor } from "@/server/lib/extractors/base";
 import { AssistantsApiExtractor } from "@/server/lib/extractors/assistants";
 import { LangChainExtractor } from "@/server/lib/extractors/langchain";
+import { getNeighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
 // import type { Prisma } from "@prisma/client";
 // import { GraphDataStatus } from "@prisma/client";
 // import { stripGraphData } from "@/app/_utils/kg/data-strip";
@@ -41,6 +42,11 @@ const IntegrateGraphInputSchema = z.object({
     nodes: z.array(z.any()),
     relationships: z.array(z.any()),
   }),
+});
+
+const GetRelatedNodesInputSchema = z.object({
+  nodeId: z.number(),
+  topicSpaceId: z.string(),
 });
 
 export type GraphDocument = {
@@ -228,6 +234,44 @@ export const kgRouter = createTRPCRouter({
 
       return {
         data: updatedTopicSpace,
+      };
+    }),
+
+  getRelatedNodes: publicProcedure
+    .input(GetRelatedNodesInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { nodeId, topicSpaceId } = input;
+
+      const topicSpace = await ctx.db.topicSpace.findFirst({
+        where: { id: topicSpaceId, isDeleted: false },
+      });
+      if (!topicSpace) {
+        throw new Error("TopicSpace not found");
+      }
+
+      const graphData = topicSpace.graphData as GraphDocument;
+      const sourceNode = graphData.nodes.find((node) => node.id === nodeId) ?? {
+        id: nodeId,
+        name: "",
+        label: "",
+        properties: {},
+      };
+      const neighborNodes = getNeighborNodes(graphData, nodeId, "BOTH");
+      const sourceLinks = graphData.relationships.filter(
+        (l) => l.sourceId === nodeId || l.targetId === nodeId,
+      );
+      const neighborLinks = graphData.relationships.filter(
+        (l) =>
+          neighborNodes.some((node) => l.sourceId === node.id) &&
+          neighborNodes.some((node) => l.targetId === node.id),
+      );
+
+      return {
+        nodes:
+          neighborNodes.length !== 0
+            ? [sourceNode, ...neighborNodes]
+            : [sourceNode],
+        relationships: [...sourceLinks, ...neighborLinks],
       };
     }),
 

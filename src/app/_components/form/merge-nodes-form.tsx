@@ -1,8 +1,8 @@
 import { api } from "@/trpc/react";
 import { Button } from "../button/button";
 import type { CustomNodeType } from "@/app/const/types";
-import { NodePropertyList } from "../list/node-property-list";
 import { Modal } from "../modal/modal";
+import { PropertiesSummaryPanel } from "../d3/force/graph-info-panel";
 
 export const MergeNodesForm = ({
   isOpen,
@@ -60,7 +60,10 @@ export const MergeNodesForm = ({
                     <div className="font-semibold">{node.name}</div>
                     <div className="text-xs">{node.label}</div>
                   </div>
-                  <NodePropertyList node={node} isEditor={false} />
+                  <PropertiesSummaryPanel
+                    node={node}
+                    topicSpaceId={topicSpaceId}
+                  />
                 </div>
               );
             })}
@@ -80,7 +83,10 @@ export const MergeNodesForm = ({
               )}
             </div>
             {mergeNodes[0] && (
-              <NodePropertyList node={mergeNodes[0]} isEditor={false} />
+              <PropertiesSummaryPanel
+                node={mergeNodes[0]}
+                topicSpaceId={topicSpaceId}
+              />
             )}
           </div>
         </div>

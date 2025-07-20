@@ -58,7 +58,7 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
   if (!session || !topicSpace) return null;
   return (
     <TabsContainer>
-      <div className="grid h-full grid-flow-row grid-cols-2 gap-8">
+      <div className="grid h-full grid-flow-row grid-cols-2 gap-8 overflow-hidden">
         <div className="flex h-full flex-col gap-8 overflow-hidden p-4">
           <a href={`/topic-spaces/${id}`} className="w-max">
             <div className="text-lg font-semibold">{topicSpace.name}</div>
@@ -225,11 +225,12 @@ export const TopicSpaceDetail = ({ id }: { id: string }) => {
             </TabPanels>
           </TabGroup>
         </div>
-        <div>
+        <div className="h-full overflow-scroll">
           {topicSpace.graphData ? (
             <MultiDocumentGraphViewer
               graphDocument={topicSpace.graphData as GraphDocument}
               topicSpaceId={id}
+              refetch={refetch}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center p-4">

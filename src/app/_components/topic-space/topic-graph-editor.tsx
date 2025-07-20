@@ -90,7 +90,7 @@ export const TopicGraphEditor = ({
 
   return (
     <TabsContainer>
-      <div className="grid h-full grid-flow-row grid-cols-3 gap-8">
+      <div className="grid h-full grid-flow-row grid-cols-3 gap-8 overflow-hidden">
         {!graphFullScreen ? (
           <div className="flex flex-col gap-6 overflow-scroll p-4">
             <a href={`/topic-spaces/${id}/graph`} className="w-max">
@@ -179,8 +179,7 @@ export const TopicGraphEditor = ({
             />
           </div>
         )}
-
-        <div className="col-span-2">
+        <div className="col-span-2 h-full overflow-scroll">
           {graphData ? (
             <MultiDocumentGraphEditor
               graphDocument={graphData}
@@ -195,7 +194,7 @@ export const TopicGraphEditor = ({
               nodeSearchQuery={nodeSearchQuery}
             />
           ) : (
-            <div className="flex h-full w-full flex-col items-center p-4">
+            <div className="flex w-full flex-col items-center p-4">
               <div>まだグラフが作成されていません</div>
               <div>{topicSpace.graphDataStatus}</div>
             </div>

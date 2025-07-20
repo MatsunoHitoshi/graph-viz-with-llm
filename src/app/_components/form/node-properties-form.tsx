@@ -51,7 +51,7 @@ export const NodePropertiesForm = ({
             <div className="flex w-full flex-row items-start gap-1">
               <input
                 type="text"
-                className="w-[96px] rounded-md bg-black/40 p-1 text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
+                className="w-[96px] rounded-md bg-slate-600 px-2 py-1 text-sm text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
                 id={`key-${index}`}
                 name={`key-${index}`}
                 defaultValue={key}
@@ -68,7 +68,7 @@ export const NodePropertiesForm = ({
               {width === "short" ? (
                 <input
                   type="text"
-                  className="w-full rounded-md bg-black/40 p-1 text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
+                  className="w-full rounded-md bg-slate-600 p-1 text-sm text-slate-50 backdrop-blur-2xl focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-2 data-[focus]:outline-slate-400"
                   id={`value-${index}`}
                   name={`value-${index}`}
                   defaultValue={String(value)}
@@ -82,7 +82,7 @@ export const NodePropertiesForm = ({
                 <Textarea
                   placeholder="テキストを入力"
                   autoFocus={true}
-                  className="min-h-[194px] w-full resize-none rounded-xl bg-slate-500 !p-4 text-base"
+                  className="min-h-[194px] w-full resize-none rounded-md bg-slate-600 !p-4 text-sm outline-none"
                   defaultValue={String(value)}
                   onChange={(e) => {
                     const newProperties = { ...properties };
@@ -108,7 +108,7 @@ export const NodePropertiesForm = ({
         );
       })}
 
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center justify-end gap-2">
         <Button
           className="!p-1"
           onClick={() =>
@@ -120,7 +120,7 @@ export const NodePropertiesForm = ({
         >
           <PlusIcon height={18} width={18} />
         </Button>
-        <Button className="!text-small !p-1" onClick={submit}>
+        <Button className="!p-1 !text-sm" onClick={submit}>
           保存
         </Button>
       </div>

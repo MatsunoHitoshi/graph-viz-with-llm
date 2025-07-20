@@ -42,7 +42,7 @@ export const TopicGraphPathDetail = ({
 
   return (
     <TabsContainer>
-      <div className="grid h-full grid-flow-row grid-cols-3 gap-8">
+      <div className="grid h-full grid-flow-row grid-cols-3 gap-8 overflow-hidden">
         <div className="flex flex-col gap-6 overflow-scroll p-4">
           <a href={`/topic-spaces/${id}/graph`} className="w-max">
             <div className="text-lg font-semibold">{topicSpace.name}</div>
@@ -91,7 +91,7 @@ export const TopicGraphPathDetail = ({
           />
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-2 h-full overflow-scroll">
           {topicSpace.graphData ? (
             <MultiDocumentGraphDetailViewer
               graphDocument={topicSpace.graphData as GraphDocument}

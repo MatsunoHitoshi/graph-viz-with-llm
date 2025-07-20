@@ -17,7 +17,7 @@ import type {
 } from "@/app/const/types";
 import { shapeGraphData } from "@/app/_utils/kg/shape";
 import { nodePathSearch } from "@/app/_utils/kg/bfs";
-import { neighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
+import { getNeighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
 import type {
   NodeDiffType,
   NodeType,
@@ -253,10 +253,7 @@ export const topicSpaceRouter = createTRPCRouter({
       const newLinks: RelationshipType[] = [];
       const nodesWithNeighbors = pathData.nodes
         .map((node) => {
-          const neighbors = neighborNodes(graphData, node.id, "BOTH").filter(
-            (n): n is NodeType => n !== undefined,
-          );
-
+          const neighbors = getNeighborNodes(graphData, node.id, "BOTH");
           neighbors.forEach((neighbor) => {
             const additionalLinks = links.filter((link) => {
               return (

@@ -12,6 +12,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import type { GraphDocument } from "@/server/api/routers/kg";
+import { usePathname, useRouter } from "next/navigation";
 
 type GraphInfoPanelProps = {
   focusedNode: CustomNodeType | undefined;
@@ -121,7 +122,7 @@ export const GraphInfoPanel = ({
                     )} */}
                   </div>
 
-                  <PropertyInfo
+                  <PropertiesDetailPanel
                     data={focusedNode}
                     topicSpaceId={topicSpaceId}
                   />
@@ -203,7 +204,7 @@ export const GraphInfoPanel = ({
                   <div className="flex flex-row items-center gap-1">
                     <div className="font-semibold">プロパティ</div>
                   </div>
-                  <PropertyInfo
+                  <PropertiesDetailPanel
                     data={focusedLink}
                     topicSpaceId={topicSpaceId}
                   />
@@ -217,32 +218,42 @@ export const GraphInfoPanel = ({
   );
 };
 
-export const PropertyInfo = ({
-  data,
+export const PropertiesSummaryPanel = ({
+  node,
   topicSpaceId,
+  withDetail = false,
 }: {
-  data: CustomNodeType | CustomLinkType;
-  topicSpaceId?: string;
+  node: CustomNodeType;
+  topicSpaceId: string;
+  withDetail?: boolean;
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <div className="flex flex-col gap-1">
-      {Object.entries(data.properties ?? {}).map(([key, value], index) => (
-        <div key={index} className="whitespace-pre-wrap">
-          {key}:{" "}
-          {value.startsWith("http://") || value.startsWith("https://") ? (
-            <a
-              href={value}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:no-underline"
-            >
-              {value}
-            </a>
-          ) : (
-            <>
-              {key == "tag" ? (
+      <div className="flex flex-row items-center gap-2">
+        <div className="text-xs">プロパティ</div>
+        {withDetail && (
+          <Button
+            className="!p-1 !text-sm"
+            onClick={() =>
+              router.push(`${pathname}?list=true&nodeId=${node.id}`)
+            }
+          >
+            詳細
+          </Button>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1 text-sm">
+        {Object.entries(node.properties ?? {}).map(([key, value], index) => (
+          <div key={index} className="flex flex-row gap-1">
+            <div className="w-32 text-xs text-slate-400">{key}</div>
+            <div className="w-full truncate">
+              {value.startsWith("http://") || value.startsWith("https://") ? (
                 <a
-                  href={`/topic-spaces/${topicSpaceId}/tags/${value}?cut-off=2`}
+                  href={value}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:no-underline"
@@ -250,10 +261,68 @@ export const PropertyInfo = ({
                   {value}
                 </a>
               ) : (
-                value
+                <>
+                  {key == "tag" ? (
+                    <a
+                      href={`/topic-spaces/${topicSpaceId}/tags/${value}?cut-off=2`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:no-underline"
+                    >
+                      {value}
+                    </a>
+                  ) : (
+                    value
+                  )}
+                </>
               )}
-            </>
-          )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const PropertiesDetailPanel = ({
+  data,
+  topicSpaceId,
+}: {
+  data: CustomNodeType | CustomLinkType;
+  topicSpaceId?: string;
+}) => {
+  return (
+    <div className="flex flex-col gap-3">
+      {Object.entries(data.properties ?? {}).map(([key, value], index) => (
+        <div key={index} className="flex flex-row gap-2">
+          <div className="w-32 text-sm text-slate-400">{key}</div>
+          <div className="w-full whitespace-pre-wrap">
+            {value.startsWith("http://") || value.startsWith("https://") ? (
+              <a
+                href={value}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:no-underline"
+              >
+                {value}
+              </a>
+            ) : (
+              <>
+                {key == "tag" ? (
+                  <a
+                    href={`/topic-spaces/${topicSpaceId}/tags/${value}?cut-off=2`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:no-underline"
+                  >
+                    {value}
+                  </a>
+                ) : (
+                  value
+                )}
+              </>
+            )}
+          </div>
         </div>
       ))}
     </div>

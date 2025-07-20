@@ -86,12 +86,10 @@ export const GraphSyncedText = ({
       return;
     }
 
-    const sourceElement = containerRef.current.querySelector(
-      ".text-node-source",
-    ) as HTMLElement;
-    const targetElement = containerRef.current.querySelector(
-      ".text-node-target",
-    ) as HTMLElement;
+    const sourceElement =
+      containerRef.current?.querySelector(".text-node-source");
+    const targetElement =
+      containerRef.current?.querySelector(".text-node-target");
 
     if (sourceElement && targetElement) {
       const containerRect = containerRef.current.getBoundingClientRect();

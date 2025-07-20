@@ -83,6 +83,7 @@ export const D3ForceGraph = ({
   onLinkContextMenu,
   onNodeContextMenu,
   onGraphUpdate,
+  graphIdentifier = "graph",
 }: {
   svgRef: React.RefObject<SVGSVGElement>;
   height: number;
@@ -111,6 +112,7 @@ export const D3ForceGraph = ({
   onNodeContextMenu?: (node: CustomNodeType) => void;
   onLinkContextMenu?: (link: CustomLinkType) => void;
   onGraphUpdate?: (additionalGraph: GraphDocument) => void;
+  graphIdentifier?: string;
 }) => {
   const { nodes, relationships } = graphDocument;
   const initLinks = relationships as CustomLinkType[];
@@ -134,6 +136,7 @@ export const D3ForceGraph = ({
   const [graphLinks, setGraphLinks] = useState<CustomLinkType[]>(newLinks);
   const tempLineRef = useRef<SVGLineElement>(null);
   const tempCircleRef = useRef<SVGCircleElement>(null);
+  const nodeRef = useRef<SVGSVGElement>(null);
   const [dragState, setDragState] = useState<DragState>({
     isDragging: false,
     sourceNode: null,
@@ -231,6 +234,7 @@ export const D3ForceGraph = ({
         dragState,
         setDragState,
         onGraphUpdate,
+        graphIdentifier,
       });
     }
 
@@ -260,12 +264,12 @@ export const D3ForceGraph = ({
         ) : (
           <svg
             ref={svgRef}
-            id="container"
             width={width}
             height={height}
             viewBox={`0 0 ${String(width)} ${String(height)}`}
           >
             <D3ZoomProvider
+              svgRef={svgRef}
               setCurrentScale={setCurrentScale}
               setCurrentTransformX={setCurrentTransformX}
               setCurrentTransformY={setCurrentTransformY}
@@ -429,7 +433,8 @@ export const D3ForceGraph = ({
                   return (
                     <g
                       key={graphNode.id}
-                      className="node cursor-pointer"
+                      ref={nodeRef}
+                      className={`${graphIdentifier}-node cursor-pointer`}
                       onClick={() => {
                         if (graphNode.id === focusedNode?.id) {
                           setFocusedNode(undefined);

@@ -10,6 +10,7 @@ type D3ZoomProvider = {
   currentTransformX: number;
   currentTransformY: number;
   children: React.ReactNode;
+  svgRef: React.RefObject<SVGSVGElement>;
 };
 
 export const D3ZoomProvider = ({
@@ -20,12 +21,18 @@ export const D3ZoomProvider = ({
   currentTransformX,
   currentTransformY,
   children,
+  svgRef,
 }: D3ZoomProvider) => {
   useEffect(() => {
-    const zoomScreen = select<Element, unknown>("#container");
-    const zoomBehavior: ZoomBehavior<Element, unknown> = zoom()
+    if (!svgRef.current) return;
+    // const zoomScreen = select<Element, unknown>("#container");
+    const svgScreen = select<SVGSVGElement, unknown>(svgRef.current);
+    const zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> = zoom<
+      SVGSVGElement,
+      unknown
+    >()
       .scaleExtent([0.1, 10])
-      .on("zoom", (event: d3.D3ZoomEvent<Element, unknown>) => {
+      .on("zoom", (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
         const k = event.transform.k;
         const x = event.transform.x;
         const y = event.transform.y;
@@ -34,8 +41,9 @@ export const D3ZoomProvider = ({
         setCurrentTransformY(y);
       });
 
-    zoomScreen.call(zoomBehavior);
+    svgScreen.call(zoomBehavior);
   }, []);
+
   return (
     <g
       transform={`translate(${currentTransformX}, ${currentTransformY})scale(${currentScale})`}

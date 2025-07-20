@@ -3,7 +3,7 @@ import type {
   NodeType,
   RelationshipType,
 } from "./get-nodes-and-relationships-from-result";
-import { neighborNodes } from "./get-tree-layout-data";
+import { getNeighborNodes } from "./get-tree-layout-data";
 
 export const nodePathSearch = (
   graphData: GraphDocument,
@@ -146,7 +146,7 @@ const getOptimalPath = (graphData: GraphDocument, nodes: NodeType[]) => {
       console.log("skip");
     } else {
       const reachedNodes = reverseNodes.slice(index + 1);
-      const neighbors = neighborNodes(graphData, node.id, "BOTH") as NodeType[];
+      const neighbors = getNeighborNodes(graphData, node.id, "BOTH");
       const pathNode = neighbors.find((neighbor) => {
         return reachedNodes.some((reached) => {
           return reached.id === neighbor.id;

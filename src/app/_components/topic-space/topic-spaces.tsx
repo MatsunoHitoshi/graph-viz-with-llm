@@ -21,10 +21,9 @@ export const TopicSpaces = () => {
   if (!session) return null;
   return (
     <TabsContainer>
-      <div className="grid  grid-flow-row grid-cols-2 gap-8  p-4">
+      <div className="grid h-full grid-flow-row grid-cols-2 gap-8 overflow-scroll p-4">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2 ">
-            <div className="text-lg font-semibold">ドキュメントマップ</div>
             {topicSpaces && (
               <TopicSpaceList
                 topicSpaces={topicSpaces as TopicSpaceResponse[]}
