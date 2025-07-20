@@ -12,7 +12,6 @@ export const getTextFromDocumentFile = async (
     const documents = await loader.load();
     return documents.map((doc) => doc.pageContent).join("\n");
   } else {
-    console.log("url: ", url);
     return await fetch(url).then((res) => res.text());
   }
 };
