@@ -1,6 +1,10 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
-import { exportJson, writeFile } from "@/app/_utils/sys/file";
+import {
+  exportJson,
+  writeFile,
+  writeLocalFileFromUrl,
+} from "@/app/_utils/sys/file";
 import type {
   NodeDiffType,
   NodeType,
@@ -65,10 +69,8 @@ export const kgRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { fileUrl, extractMode, isPlaneTextMode } = input;
 
-      const fileResponse = await fetch(fileUrl);
-      const fileBuffer = await fileResponse.arrayBuffer();
-      const localFilePath = writeFile(
-        Buffer.from(fileBuffer).toString("base64"),
+      const localFilePath = await writeLocalFileFromUrl(
+        fileUrl,
         `input.${isPlaneTextMode ? "txt" : "pdf"}`,
       );
 
@@ -129,10 +131,8 @@ export const kgRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { fileUrl, isPlaneTextMode } = input;
 
-      const fileResponse = await fetch(fileUrl);
-      const fileBuffer = await fileResponse.arrayBuffer();
-      const localFilePath = writeFile(
-        Buffer.from(fileBuffer).toString("base64"),
+      const localFilePath = await writeLocalFileFromUrl(
+        fileUrl,
         `input.${isPlaneTextMode ? "txt" : "pdf"}`,
       );
 

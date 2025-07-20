@@ -22,3 +22,13 @@ export const exportJson = (jsonString: string, name: string) => {
   const path = `./public/json/${new Date().getTime()}_${name}`;
   fs.writeFileSync(path, jsonString);
 };
+
+export const writeLocalFileFromUrl = async (url: string, fileName: string) => {
+  const response = await fetch(url);
+  const fileBuffer = await response.arrayBuffer();
+  const localFilePath = writeFile(
+    Buffer.from(fileBuffer).toString("base64"),
+    fileName,
+  );
+  return localFilePath;
+};

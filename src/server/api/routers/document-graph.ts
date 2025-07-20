@@ -73,7 +73,6 @@ export const documentGraphRouter = createTRPCRouter({
   updateGraph: protectedProcedure
     .input(UpdateDocumentGraphSchema)
     .mutation(async ({ ctx, input }) => {
-      console.log("@@@@updateGraph", input);
       const documentGraph = await ctx.db.documentGraph.findFirst({
         where: { id: input.id, sourceDocument: { isDeleted: false } },
       });

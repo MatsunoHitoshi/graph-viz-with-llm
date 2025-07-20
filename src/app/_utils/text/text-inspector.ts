@@ -6,6 +6,10 @@ import { TokenTextSplitter } from "langchain/text_splitter";
 export const textInspect = async (
   localFilePath: string,
   isPlaneTextMode: boolean,
+  options?: {
+    chunkSize?: number;
+    chunkOverlap?: number;
+  },
 ) => {
   const loader = isPlaneTextMode
     ? new TextLoader(localFilePath)
@@ -13,8 +17,8 @@ export const textInspect = async (
   const rawDocs = await loader.load();
 
   const textSplitter = new TokenTextSplitter({
-    chunkSize: 1024,
-    chunkOverlap: 32,
+    chunkSize: options?.chunkSize ?? 1024,
+    chunkOverlap: options?.chunkOverlap ?? 32,
   });
 
   const documents: Document[] = [];
