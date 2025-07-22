@@ -20,7 +20,6 @@ import { nodePathSearch } from "@/app/_utils/kg/bfs";
 import { getNeighborNodes } from "@/app/_utils/kg/get-tree-layout-data";
 import type {
   NodeDiffType,
-  NodeType,
   RelationshipDiffType,
   RelationshipType,
 } from "@/app/_utils/kg/get-nodes-and-relationships-from-result";
@@ -311,7 +310,8 @@ export const topicSpaceRouter = createTRPCRouter({
         where: { id: input.documentId, isDeleted: false },
         include: { graph: true },
       });
-      const topicSpace = ctx.db.topicSpace.create({
+
+      const topicSpace = await ctx.db.topicSpace.create({
         data: {
           name: input.name,
           image: input.image,

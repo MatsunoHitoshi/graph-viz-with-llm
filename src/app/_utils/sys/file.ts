@@ -1,5 +1,6 @@
 import fs from "fs";
 import { env } from "@/env";
+import { fileTypeFromBuffer } from "file-type";
 
 export const writeFile = (base64: string, name: string) => {
   const path = `${env.TMP_DIRECTORY}/${new Date().getTime()}_${name}`;
@@ -31,4 +32,30 @@ export const writeLocalFileFromUrl = async (url: string, fileName: string) => {
     fileName,
   );
   return localFilePath;
+};
+
+export type DocFileType = "pdf" | "docx" | "doc" | "txt" | undefined;
+
+export const inspectFileTypeFromUrl = async (
+  url: string,
+): Promise<DocFileType> => {
+  console.log(url);
+  const response = await fetch(url);
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const fileTypeResult = await fileTypeFromBuffer(buffer);
+  console.log(fileTypeResult);
+
+  if (fileTypeResult) {
+    if (fileTypeResult.ext === "pdf") {
+      return "pdf";
+    } else if (fileTypeResult.ext === "docx") {
+      return "docx";
+    } else if (fileTypeResult.ext === "doc") {
+      return "doc";
+    } else if (fileTypeResult.ext === "txt") {
+      return "txt";
+    }
+  } else {
+    return "txt";
+  }
 };

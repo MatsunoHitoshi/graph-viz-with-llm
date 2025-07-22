@@ -108,8 +108,49 @@ model DocumentGraph {
   sourceDocument   SourceDocument @relation(fields: [sourceDocumentId], references: [id])
   sourceDocumentId String         @unique
 
+  graphNodes GraphNode[] @relation("DocumentGraphNodes")
+  graphRelationships GraphRelationship[] @relation("DocumentGraphEdges")
+
   additionalGraphFusionQueues GraphFusionQueue[] @relation("AdditionalGraph")
   // targetGraphFusionQueues GraphFusionQueue[] @relation("TargetGraph")
+}
+
+model GraphNode {
+  id            String                       @id @default(cuid())
+  name          String
+  label         String
+  properties    Json                         @default("{}")
+  nameEmbedding Unsupported("vector(1536)")?
+
+  documentGraph   DocumentGraph? @relation("DocumentGraphNodes", fields: [documentGraphId], references: [id])
+  documentGraphId String?
+
+  topicSpace   TopicSpace? @relation("TopicSpaceNodes", fields: [topicSpaceId], references: [id])
+  topicSpaceId String?
+
+  relationshipsFrom GraphRelationship[] @relation("fromNode")
+  relationshipsTo   GraphRelationship[] @relation("toNode")
+
+  deletedAt DateTime?
+}
+
+model GraphRelationship {
+  id         String @id @default(cuid())
+  type       String
+  properties Json   @default("{}")
+
+  documentGraph   DocumentGraph? @relation("DocumentGraphEdges", fields: [documentGraphId], references: [id])
+  documentGraphId String?
+
+  topicSpace   TopicSpace? @relation("TopicSpaceEdges", fields: [topicSpaceId], references: [id])
+  topicSpaceId String?
+
+  fromNode   GraphNode @relation("fromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  fromNodeId String
+  toNode     GraphNode @relation("toNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+  toNodeId   String
+
+  deletedAt DateTime?
 }
 
 model TopicSpace {
@@ -125,6 +166,9 @@ model TopicSpace {
   isDeleted       Boolean         @default(false)
 
   mcpToolIdentifier String?
+
+  graphNodes GraphNode[] @relation("TopicSpaceNodes")
+  graphRelationships GraphRelationship[] @relation("TopicSpaceEdges")
 
   sourceDocuments  SourceDocument[]
   admins           User[]

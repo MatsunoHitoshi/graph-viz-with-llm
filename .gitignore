@@ -55,3 +55,6 @@ yarn-error.log*
 
 # electron
 /dist
+
+# db backup data
+/db-backup

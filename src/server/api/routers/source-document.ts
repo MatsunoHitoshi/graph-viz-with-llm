@@ -14,6 +14,8 @@ import { BUCKETS } from "@/app/_utils/supabase/const";
 import { storageUtils } from "@/app/_utils/supabase/supabase";
 import { env } from "@/env";
 import { getTextFromDocumentFile } from "@/app/_utils/text/text";
+import { inspectFileTypeFromUrl } from "@/app/_utils/sys/file";
+import { DocumentType } from "@prisma/client";
 
 const SourceDocumentSchema = z.object({
   name: z.string(),
@@ -129,10 +131,20 @@ export const sourceDocumentRouter = createTRPCRouter({
   createWithGraphData: protectedProcedure
     .input(SourceDocumentWithGraphSchema)
     .mutation(async ({ ctx, input }) => {
+      const docFileType = await inspectFileTypeFromUrl(input.url);
+
+      if (!docFileType) {
+        throw new Error("ファイルタイプを判定できませんでした");
+      }
+
       const document = await ctx.db.sourceDocument.create({
         data: {
           name: input.name,
           url: input.url,
+          documentType:
+            docFileType === "pdf"
+              ? DocumentType.INPUT_PDF
+              : DocumentType.INPUT_TXT,
           user: { connect: { id: ctx.session.user.id } },
         },
       });
